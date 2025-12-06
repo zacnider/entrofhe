@@ -698,6 +698,9 @@ contract SimpleLottery {
         <p className="text-sm text-blue-700 dark:text-blue-300">
           <strong>💡 Live Example:</strong> Test this contract on the <a href="/examples" className="underline font-semibold">Examples page</a> (Simple Lottery).
         </p>
+        <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">
+          <strong>📦 GitHub:</strong> <a href="https://github.com/zacnider/entrofhe/tree/main/examples/advanced-simplelottery" target="_blank" rel="noopener noreferrer" className="underline font-semibold">View source code</a>
+        </p>
       </div>
     </section>
 
@@ -757,6 +760,9 @@ contract RandomNumberGenerator {
       <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
         <p className="text-sm text-blue-700 dark:text-blue-300">
           <strong>💡 Live Example:</strong> Test this contract on the <a href="/examples" className="underline font-semibold">Examples page</a> (Random Number Generator).
+        </p>
+        <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">
+          <strong>📦 GitHub:</strong> <a href="https://github.com/zacnider/entrofhe/tree/main/examples/advanced-randomnumbergenerator" target="_blank" rel="noopener noreferrer" className="underline font-semibold">View source code</a>
         </p>
       </div>
     </section>
@@ -856,6 +862,9 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
               <p className="text-sm text-blue-700 dark:text-blue-300">
                 <strong>💡 Live Example:</strong> Test this contract on the <a href="/examples" className="underline font-semibold">Examples page</a> (EntropyNFT). Mint real NFTs with IPFS metadata!
               </p>
+              <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">
+                <strong>📦 GitHub:</strong> <a href="https://github.com/zacnider/entrofhe/tree/main/examples/advanced-entropynft" target="_blank" rel="noopener noreferrer" className="underline font-semibold">View source code</a>
+              </p>
             </div>
           </section>
         </div>
@@ -889,8 +898,13 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
           <p className="text-gray-600 dark:text-slate-400 mb-3">
             Counter using EntropyOracle for encrypted randomness. Demonstrates entropy-based counter increments.
           </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500">
+          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/basic-simplecounter</code>
+          </p>
+          <p className="text-sm">
+            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/basic-simplecounter" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+              📦 View on GitHub
+            </a>
           </p>
         </div>
 
@@ -899,8 +913,13 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
           <p className="text-gray-600 dark:text-slate-400 mb-3">
             FHE arithmetic operations using EntropyOracle. Shows entropy-enhanced calculations (add, sub, mul).
           </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500">
+          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/basic-arithmetic</code>
+          </p>
+          <p className="text-sm">
+            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/basic-arithmetic" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+              📦 View on GitHub
+            </a>
           </p>
         </div>
 
@@ -909,8 +928,13 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
           <p className="text-gray-600 dark:text-slate-400 mb-3">
             FHE equality comparison using EntropyOracle. Demonstrates entropy-enhanced comparison operations.
           </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500">
+          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/basic-equalitycomparison</code>
+          </p>
+          <p className="text-sm">
+            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/basic-equalitycomparison" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+              📦 View on GitHub
+            </a>
           </p>
         </div>
       </div>
@@ -926,8 +950,13 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
           <p className="text-gray-600 dark:text-slate-400 mb-3">
             Encrypt and store values using EntropyOracle. Shows entropy-enhanced encryption patterns.
           </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500">
+          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/encryption-encryptsingle</code>
+          </p>
+          <p className="text-sm">
+            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/encryption-encryptsingle" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+              📦 View on GitHub
+            </a>
           </p>
         </div>
       </div>
@@ -943,8 +972,13 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
           <p className="text-gray-600 dark:text-slate-400 mb-3">
             User decrypt using EntropyOracle and FHE.allow. Demonstrates entropy-enhanced user-specific decryption.
           </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500">
+          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/user-decryption-userdecryptsingle</code>
+          </p>
+          <p className="text-sm">
+            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/user-decryption-userdecryptsingle" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+              📦 View on GitHub
+            </a>
           </p>
         </div>
 
@@ -953,8 +987,13 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
           <p className="text-gray-600 dark:text-slate-400 mb-3">
             Public decrypt using EntropyOracle and makePubliclyDecryptable. Shows entropy-enhanced public decryption.
           </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500">
+          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/public-decryption-publicdecryptsingle</code>
+          </p>
+          <p className="text-sm">
+            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/public-decryption-publicdecryptsingle" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+              📦 View on GitHub
+            </a>
           </p>
         </div>
       </div>
@@ -970,8 +1009,13 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
           <p className="text-gray-600 dark:text-slate-400 mb-3">
             Access control with EntropyOracle, FHE.allow and FHE.allowTransient. Demonstrates entropy-enhanced access control patterns.
           </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500">
+          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/access-control-accesscontrol</code>
+          </p>
+          <p className="text-sm">
+            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/access-control-accesscontrol" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+              📦 View on GitHub
+            </a>
           </p>
         </div>
       </div>
@@ -987,8 +1031,13 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
           <p className="text-gray-600 dark:text-slate-400 mb-3">
             Input proofs with EntropyOracle integration. Shows entropy-enhanced input validation and proof requirements.
           </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500">
+          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/input-proof-inputproofexplanation</code>
+          </p>
+          <p className="text-sm">
+            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/input-proof-inputproofexplanation" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+              📦 View on GitHub
+            </a>
           </p>
         </div>
       </div>
@@ -1004,8 +1053,13 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
           <p className="text-gray-600 dark:text-slate-400 mb-3">
             Missing FHE.allowThis() permissions with EntropyOracle. Demonstrates common mistakes when using entropy.
           </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500">
+          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/anti-patterns-missingallowthis</code>
+          </p>
+          <p className="text-sm">
+            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/anti-patterns-missingallowthis" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+              📦 View on GitHub
+            </a>
           </p>
         </div>
 
@@ -1014,8 +1068,13 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
           <p className="text-gray-600 dark:text-slate-400 mb-3">
             View functions with encrypted values and EntropyOracle. Shows limitations of view functions with FHE.
           </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500">
+          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/anti-patterns-viewwithencrypted</code>
+          </p>
+          <p className="text-sm">
+            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/anti-patterns-viewwithencrypted" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+              📦 View on GitHub
+            </a>
           </p>
         </div>
       </div>
@@ -1031,8 +1090,13 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
                 <p className="text-gray-600 dark:text-slate-400 mb-3">
                   Understanding handles and symbolic execution with EntropyOracle. Demonstrates entropy handle lifecycle and permissions.
                 </p>
-                <p className="text-sm text-gray-500 dark:text-slate-500">
+                <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
                   <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/handles-handlelifecycle</code>
+                </p>
+                <p className="text-sm">
+                  <a href="https://github.com/zacnider/entrofhe/tree/main/examples/handles-handlelifecycle" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+                    📦 View on GitHub
+                  </a>
                 </p>
               </div>
             </div>
