@@ -1,10 +1,21 @@
-# FHEVM Example Hub
+# FHEVM Example Hub with EntropyOracle Integration
 
-A comprehensive collection of standalone, Hardhat-based FHEVM examples demonstrating various concepts and patterns for building privacy-preserving smart contracts using Fully Homomorphic Encryption.
+A comprehensive collection of standalone, Hardhat-based FHEVM examples demonstrating various concepts and patterns for building privacy-preserving smart contracts using Fully Homomorphic Encryption. **All examples are integrated with EntropyOracle** - a production-ready FHE-based entropy and randomness infrastructure.
 
 ## 🎯 Overview
 
-This repository provides a complete set of FHEVM examples organized by category, with automated scaffolding tools, comprehensive tests, and auto-generated documentation. Each example is a standalone Hardhat project demonstrating one clear FHEVM concept.
+This repository provides a complete set of FHEVM examples organized by category, with automated scaffolding tools, comprehensive tests, and auto-generated documentation. Each example is a standalone Hardhat project demonstrating one clear FHEVM concept **with EntropyOracle integration** for encrypted randomness.
+
+### 🔑 Key Feature: EntropyOracle Integration
+
+**All 14 tutorial examples** demonstrate how to integrate and use **EntropyOracle** - an on-chain entropy oracle that provides cryptographically secure randomness using FHE technology. Unlike traditional VRF solutions, EntropyOracle keeps seeds encrypted at all times, ensuring maximum privacy and security.
+
+**EntropyOracle Features:**
+- 🔒 **FHE-Based Privacy**: Seeds and entropy remain encrypted on-chain
+- 💰 **Low Cost**: Only 0.00001 ETH per entropy request
+- 🛠️ **Developer-Friendly**: Simple interface for easy integration
+- ⛓️ **On-Chain**: No external dependencies or oracles
+- 📍 **Deployed on Sepolia**: `0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361`
 
 ## ✨ Features
 
@@ -71,37 +82,39 @@ done
 
 ## 📚 Example Categories
 
-### Basic
-- **SimpleCounter**: Basic counter using FHE encryption
-- **Arithmetic**: FHE arithmetic operations (add, sub, mul)
-- **EqualityComparison**: FHE equality comparison (FHE.eq)
+**All examples below are integrated with EntropyOracle** and demonstrate how to use encrypted entropy in different FHEVM scenarios.
 
-### Encryption
-- **EncryptSingle**: Encrypt a single value
+### Basic (EntropyOracle Integration)
+- **EntropyCounter**: Counter using EntropyOracle for encrypted randomness
+- **EntropyArithmetic**: FHE arithmetic operations using EntropyOracle
+- **EntropyEqualityComparison**: FHE equality comparison using EntropyOracle
 
-### User Decryption
-- **UserDecryptSingle**: User decrypt single value using FHE.allow
+### Encryption (EntropyOracle Integration)
+- **EntropyEncryption**: Encrypt and store values using EntropyOracle
 
-### Public Decryption
-- **PublicDecryptSingle**: Public decrypt single value using makePubliclyDecryptable
+### User Decryption (EntropyOracle Integration)
+- **EntropyUserDecryption**: User decrypt using EntropyOracle and FHE.allow
 
-### Access Control
-- **AccessControl**: FHE.allow, FHE.allowTransient patterns
+### Public Decryption (EntropyOracle Integration)
+- **EntropyPublicDecryption**: Public decrypt using EntropyOracle and makePubliclyDecryptable
 
-### Input Proof
-- **InputProofExplanation**: What are input proofs and why they're needed
+### Access Control (EntropyOracle Integration)
+- **EntropyAccessControl**: Access control with EntropyOracle, FHE.allow and FHE.allowTransient
 
-### Anti-Patterns
-- **ViewWithEncrypted**: View functions with encrypted values (not allowed)
-- **MissingAllowThis**: Missing FHE.allowThis() permissions
+### Input Proof (EntropyOracle Integration)
+- **EntropyInputProof**: Input proofs with EntropyOracle integration
 
-### Handles
-- **HandleLifecycle**: Understanding handles and symbolic execution
+### Anti-Patterns (EntropyOracle Integration)
+- **EntropyMissingAllowThis**: Missing FHE.allowThis() permissions with EntropyOracle
+- **EntropyViewWithEncrypted**: View functions with encrypted values and EntropyOracle
 
-### Advanced
-- **SimpleLottery**: Simple lottery using entropy oracle
-- **RandomNumberGenerator**: Random number generator using entropy
-- **EntropyNFT**: ERC721 NFT with trait selection using entropy
+### Handles (EntropyOracle Integration)
+- **EntropyHandleLifecycle**: Understanding handles and symbolic execution with EntropyOracle
+
+### Advanced (Live Contracts with EntropyOracle)
+- **SimpleLottery**: Simple lottery using EntropyOracle (deployed on Sepolia)
+- **RandomNumberGenerator**: Random number generator using EntropyOracle (deployed on Sepolia)
+- **EntropyNFT**: ERC721 NFT with trait selection using EntropyOracle (deployed on Sepolia)
 
 ## 🛠️ Automation Scripts
 
@@ -161,6 +174,34 @@ See [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md) for detailed instructions on:
 - Category guidelines
 - Updating dependencies
 
+## 🔗 EntropyOracle
+
+**EntropyOracle** is a production-ready FHE-based entropy oracle deployed on Sepolia testnet.
+
+- **Contract Address**: `0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361`
+- **Network**: Sepolia Testnet (Chain ID: 11155111)
+- **Fee per Request**: 0.00001 ETH
+- **Interface**: `IEntropyOracle.sol` (included in all examples)
+
+### Quick Integration
+
+```solidity
+import "./interfaces/IEntropyOracle.sol";
+
+contract MyContract {
+    IEntropyOracle public constant ENTROPY_ORACLE = 
+        IEntropyOracle(0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361);
+    
+    function useEntropy(bytes32 tag) external payable {
+        uint256 requestId = ENTROPY_ORACLE.requestEntropy{value: 0.00001 ether}(tag);
+        euint64 entropy = ENTROPY_ORACLE.getEncryptedEntropy(requestId);
+        // Use entropy in your FHE operations...
+    }
+}
+```
+
+See [docs/INTEGRATION.md](./docs/INTEGRATION.md) for detailed integration guide.
+
 ## 🔗 Reference Repositories
 
 - [Zama FHEVM Documentation](https://docs.zama.org/protocol)
@@ -169,19 +210,20 @@ See [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md) for detailed instructions on:
 
 ## 📊 Statistics
 
-- **Total Examples**: 13 examples
-- **Categories**: 8 categories
+- **Total Examples**: 14 examples (all with EntropyOracle integration)
+- **Categories**: 9 categories
+- **EntropyOracle Integration**: ✅ All examples
 - **Test Coverage**: Comprehensive tests for each example
 - **Documentation**: Auto-generated from code
-- **Basic Examples**: 3
-- **Encryption Examples**: 1
-- **User Decryption Examples**: 1
-- **Public Decryption Examples**: 1
-- **Access Control Examples**: 1
-- **Input Proof Examples**: 1
-- **Anti-Patterns Examples**: 2
-- **Handles Examples**: 1
-- **Advanced Examples**: 3
+- **Basic Examples**: 3 (EntropyCounter, EntropyArithmetic, EntropyEqualityComparison)
+- **Encryption Examples**: 1 (EntropyEncryption)
+- **User Decryption Examples**: 1 (EntropyUserDecryption)
+- **Public Decryption Examples**: 1 (EntropyPublicDecryption)
+- **Access Control Examples**: 1 (EntropyAccessControl)
+- **Input Proof Examples**: 1 (EntropyInputProof)
+- **Anti-Patterns Examples**: 2 (EntropyMissingAllowThis, EntropyViewWithEncrypted)
+- **Handles Examples**: 1 (EntropyHandleLifecycle)
+- **Advanced Examples**: 3 (SimpleLottery, RandomNumberGenerator, EntropyNFT)
 
 ## 🤝 Contributing
 
