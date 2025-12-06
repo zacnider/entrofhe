@@ -20,13 +20,18 @@ const Home: React.FC = () => {
       {/* Hero Section */}
       <section className="text-center py-20 px-4 bg-gradient-to-br from-primary-50 via-white to-cyan-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 rounded-3xl">
         <div className="max-w-5xl mx-auto">
-          <h1 className="text-5xl md:text-7xl font-bold text-primary-900 dark:text-slate-100 mb-6 leading-tight">
+          <div className="mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold text-primary-900 dark:text-slate-100 mb-2">
+              Entro<span className="bg-gradient-to-r from-primary-500 to-cyan-500 dark:from-cyan-400 dark:to-cyan-600 bg-clip-text text-transparent">FHE</span>
+            </h1>
+          </div>
+          <h2 className="text-5xl md:text-7xl font-bold text-primary-900 dark:text-slate-100 mb-6 leading-tight">
             Encrypted Randomness
             <br />
             <span className="bg-gradient-to-r from-primary-600 to-cyan-600 dark:from-cyan-400 dark:to-primary-400 bg-clip-text text-transparent">
               For Your dApps
             </span>
-          </h1>
+          </h2>
           <p className="text-xl md:text-2xl text-primary-600 dark:text-slate-400 mb-10 max-w-3xl mx-auto leading-relaxed">
             Get cryptographically secure, encrypted entropy using Fully Homomorphic Encryption. 
             Perfect for lotteries, NFT minting, gaming, and more.

@@ -19,6 +19,9 @@ const Header: React.FC = () => {
               alt="Entrofhe Logo" 
               className="h-28 w-28 md:h-36 md:w-36 object-contain"
             />
+            <span className="ml-3 text-2xl md:text-3xl font-bold text-primary-900 dark:text-slate-100">
+              Entro<span className="bg-gradient-to-r from-primary-500 to-cyan-500 dark:from-cyan-400 dark:to-cyan-600 bg-clip-text text-transparent">FHE</span>
+            </span>
           </Link>
           
           <div className="flex items-center space-x-4">
