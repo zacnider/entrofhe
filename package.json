@@ -21,7 +21,8 @@
     "check:master-seed": "ts-node scripts/initializeMasterSeedSimple.ts",
     "create-example": "ts-node automation/create-fhevm-example.ts",
     "create-category": "ts-node automation/create-fhevm-category.ts",
-    "generate-docs": "ts-node automation/generate-docs.ts"
+    "generate-docs": "ts-node automation/generate-docs.ts",
+    "build": "cd frontend && npm install --legacy-peer-deps && npm run build"
   },
   "keywords": [
     "fhevm",
