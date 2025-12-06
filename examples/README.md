@@ -13,6 +13,7 @@ This directory contains standalone FHEVM examples organized by category.
 - **anti-patterns** - Common mistakes and how to avoid them
 - **handles** - Understanding handles and symbolic execution
 - **advanced** - Advanced patterns and use cases
+- **openzeppelin** - OpenZeppelin confidential contracts (ERC7984) examples
 
 ## Creating a New Example
 
