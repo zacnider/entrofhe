@@ -35,3 +35,6 @@ yarn-error.log*
 # Hardhat
 .hardhat/
 
+# Admin scripts (owner-only, not for public repo)
+scripts/
+
