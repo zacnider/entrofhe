@@ -41,3 +41,9 @@ deployments/
 # Admin scripts (owner-only, not for public repo)
 scripts/
 
+# EntropyOracle production docs (not needed for bounty)
+docs/ADMIN_GUIDE.md
+docs/DESIGN_PROPOSAL.md
+docs/FHE_OPERATIONS_ANALYSIS.md
+docs/MASTER_SEED_EXPLANATION.md
+
