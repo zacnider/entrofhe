@@ -35,6 +35,9 @@ yarn-error.log*
 # Hardhat
 .hardhat/
 
+# Deployment artifacts (keep locally, don't commit)
+deployments/
+
 # Admin scripts (owner-only, not for public repo)
 scripts/
 
