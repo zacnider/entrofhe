@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract, useSendTransaction } from 'wagmi';
 import { parseEther, keccak256, stringToBytes } from 'viem';
 import { toast } from 'react-toastify';
-import { DocumentDuplicateIcon, CheckIcon, PlayIcon, CodeBracketIcon, UserPlusIcon, TrophyIcon, SparklesIcon, CubeIcon, PhotoIcon, CalculatorIcon, LockClosedIcon, KeyIcon, ShieldCheckIcon, DocumentTextIcon, ExclamationTriangleIcon, EyeIcon, LinkIcon } from '@heroicons/react/24/outline';
+import { DocumentDuplicateIcon, CheckIcon, PlayIcon, CodeBracketIcon, UserPlusIcon, TrophyIcon, SparklesIcon, CubeIcon, PhotoIcon, CalculatorIcon, LockClosedIcon, KeyIcon, ShieldCheckIcon, DocumentTextIcon, ExclamationTriangleIcon, EyeIcon, LinkIcon, XMarkIcon, CommandLineIcon, RocketLaunchIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
 import { useFHEVM } from '../hooks/useFHEVM';
+import { useExampleAPI } from '../hooks/useExampleAPI';
 import { pinataService } from '../utils/pinata';
 import SimpleLotteryABI from '../abis/SimpleLottery.json';
 import RandomNumberGeneratorABI from '../abis/RandomNumberGenerator.json';
@@ -332,31 +333,328 @@ interface TutorialExampleCardProps {
 
 const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, description, category, path, icon }) => {
   const githubUrl = `https://github.com/zacnider/entrofhe/tree/main/examples/${path}`;
-  
+  const { address, isConnected } = useAccount();
+  const { loading, output, error, testExample, compileExample, verifyExample, clearOutput } = useExampleAPI();
+  const { sendTransaction, isPending: isDeploying, data: deployHash } = useSendTransaction();
+  const { isLoading: isConfirming, isSuccess: isDeployed, data: receipt } = useWaitForTransactionReceipt({
+    hash: deployHash,
+  });
+  const [showTerminal, setShowTerminal] = useState(false);
+  const [terminalAction, setTerminalAction] = useState<'test' | 'compile' | 'deploy' | 'verify' | null>(null);
+  const [deployedAddress, setDeployedAddress] = useState<string>('');
+  const [compiledBytecode, setCompiledBytecode] = useState<string>('');
+  const [compiledABI, setCompiledABI] = useState<any[]>([]);
+  const [constructorArgs, setConstructorArgs] = useState<string>('');
+
+  // Extract contract name from path (e.g., "basic-simplecounter" -> "EntropyCounter")
+  const getContractName = (path: string): string => {
+    // Mapping for known contract names
+    const contractNameMap: { [key: string]: string } = {
+      'basic-simplecounter': 'EntropyCounter',
+      'basic-arithmetic': 'EntropyArithmetic',
+      'basic-equalitycomparison': 'EntropyEqualityComparison',
+      'basic-videodemo': 'VideoDemo',
+      'encryption-encryptsingle': 'EntropyEncryption',
+      'user-decryption-userdecryptsingle': 'EntropyUserDecryption',
+      'public-decryption-publicdecryptsingle': 'EntropyPublicDecryption',
+      'access-control-accesscontrol': 'EntropyAccessControl',
+      'input-proof-inputproofexplanation': 'EntropyInputProof',
+      'anti-patterns-missingallowthis': 'EntropyMissingAllowThis',
+      'anti-patterns-viewwithencrypted': 'EntropyViewWithEncrypted',
+      'handles-handlelifecycle': 'EntropyHandleLifecycle',
+      'openzeppelin-erc7984token': 'EntropyERC7984Token',
+      'openzeppelin-erc7984toerc20wrapper': 'EntropyERC7984ToERC20Wrapper',
+      'openzeppelin-swaperc7984toerc20': 'EntropySwapERC7984ToERC20',
+      'openzeppelin-swaperc7984toerc7984': 'EntropySwapERC7984ToERC7984',
+      'openzeppelin-vestingwallet': 'EntropyVestingWallet',
+    };
+
+    if (contractNameMap[path]) {
+      return contractNameMap[path];
+    }
+
+    // Fallback: try to extract from path
+    const parts = path.split('-');
+    const category = parts[0];
+    const name = parts.slice(1).join('');
+    // Convert to PascalCase
+    const pascalName = name.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
+    return `Entropy${pascalName}`;
+  };
+
+  const handleTest = async () => {
+    setTerminalAction('test');
+    setShowTerminal(true);
+    clearOutput();
+    try {
+      await testExample(path);
+      toast.success('Tests completed successfully!');
+    } catch (err) {
+      toast.error('Tests failed. Check terminal for details.');
+    }
+  };
+
+  const handleCompile = async () => {
+    setTerminalAction('compile');
+    setShowTerminal(true);
+    clearOutput();
+    try {
+      const contractName = getContractName(path);
+      const result = await compileExample(path, contractName);
+      if (result.bytecode) {
+        setCompiledBytecode(result.bytecode);
+        setCompiledABI(result.abi || []);
+        toast.success('Compilation completed successfully! Bytecode ready for deployment.');
+      } else {
+        toast.success('Compilation completed successfully!');
+      }
+    } catch (err) {
+      toast.error('Compilation failed. Check terminal for details.');
+    }
+  };
+
+  const handleDeploy = async () => {
+    if (!isConnected) {
+      toast.error('Please connect your wallet first');
+      return;
+    }
+
+    if (!compiledBytecode) {
+      toast.error('Please compile the contract first');
+      return;
+    }
+
+    setTerminalAction('deploy');
+    setShowTerminal(true);
+    clearOutput();
+
+    try {
+      // Parse constructor arguments if provided
+      let args: any[] = [];
+      if (constructorArgs.trim()) {
+        try {
+          args = JSON.parse(constructorArgs);
+        } catch {
+          // If not JSON, try to parse as space-separated values
+          args = constructorArgs.split(',').map(arg => arg.trim());
+        }
+      }
+
+      // For EntropyOracle-based contracts, we need to pass the oracle address
+      // Most examples take EntropyOracle address as first constructor arg
+      if (args.length === 0) {
+        args = [ENTROPY_ORACLE_ADDRESS];
+      }
+
+      // Encode constructor arguments
+      const { encodeAbiParameters } = await import('viem');
+      let encodedArgs = '0x';
+      if (compiledABI.length > 0 && args.length > 0) {
+        const constructor = compiledABI.find((item: any) => item.type === 'constructor');
+        if (constructor && constructor.inputs && constructor.inputs.length > 0) {
+          // Use constructor inputs directly as AbiParameter[]
+          const abiParameters = constructor.inputs.map((input: any) => ({
+            type: input.type,
+            name: input.name,
+            internalType: input.internalType,
+          }));
+          encodedArgs = encodeAbiParameters(abiParameters as any, args);
+        }
+      }
+
+      // Combine bytecode with constructor args
+      const deployData = compiledBytecode + encodedArgs.slice(2);
+
+      // Deploy using wagmi (contract creation - no 'to' field)
+      sendTransaction({
+        data: deployData as `0x${string}`,
+      } as any);
+    } catch (err: any) {
+      toast.error(`Deployment failed: ${err.message}`);
+    }
+  };
+
+  // Handle deployment success
+  useEffect(() => {
+    if (isDeployed && receipt) {
+      // Get contract address from transaction receipt
+      const contractAddress = receipt.contractAddress;
+      if (contractAddress) {
+        setDeployedAddress(contractAddress);
+        toast.success(`Contract deployed to ${contractAddress}`);
+      }
+    }
+  }, [isDeployed, receipt]);
+
+  const handleVerify = async () => {
+    if (!deployedAddress) {
+      toast.error('Please deploy the contract first');
+      return;
+    }
+    setTerminalAction('verify');
+    setShowTerminal(true);
+    clearOutput();
+    try {
+      await verifyExample(path, deployedAddress, 'sepolia');
+      toast.success('Contract verified successfully!');
+    } catch (err) {
+      toast.error('Verification failed. Check terminal for details.');
+    }
+  };
+
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border-2 border-gray-200 dark:border-slate-700 hover:border-primary-300 dark:hover:border-slate-600 transition-all p-6">
-      <div className="flex items-center space-x-4 mb-3">
-        <div className="text-primary-500 dark:text-cyan-400">{icon}</div>
-        <h3 className="text-lg font-bold text-primary-900 dark:text-slate-100">{title}</h3>
+    <>
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border-2 border-gray-200 dark:border-slate-700 hover:border-primary-300 dark:hover:border-slate-600 transition-all p-6">
+        <div className="flex items-center space-x-4 mb-3">
+          <div className="text-primary-500 dark:text-cyan-400">{icon}</div>
+          <h3 className="text-lg font-bold text-primary-900 dark:text-slate-100">{title}</h3>
+        </div>
+        <p className="text-primary-600 dark:text-slate-400 text-sm mb-4">{description}</p>
+        
+        {/* Action Buttons */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          <button
+            onClick={handleTest}
+            disabled={loading}
+            className="flex items-center space-x-1 px-3 py-1.5 text-xs font-medium bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded-lg hover:bg-green-200 dark:hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <PlayIcon className="w-4 h-4" />
+            <span>Test</span>
+          </button>
+          <button
+            onClick={handleCompile}
+            disabled={loading}
+            className="flex items-center space-x-1 px-3 py-1.5 text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <CodeBracketIcon className="w-4 h-4" />
+            <span>Compile</span>
+          </button>
+          <button
+            onClick={handleDeploy}
+            disabled={loading || isDeploying || isConfirming || !isConnected || !compiledBytecode}
+            className="flex items-center space-x-1 px-3 py-1.5 text-xs font-medium bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded-lg hover:bg-purple-200 dark:hover:bg-purple-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <RocketLaunchIcon className="w-4 h-4" />
+            <span>{isDeploying || isConfirming ? 'Deploying...' : 'Deploy'}</span>
+          </button>
+          {deployedAddress && (
+            <button
+              onClick={handleVerify}
+              disabled={loading}
+              className="flex items-center space-x-1 px-3 py-1.5 text-xs font-medium bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 rounded-lg hover:bg-orange-200 dark:hover:bg-orange-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <CheckCircleIcon className="w-4 h-4" />
+              <span>Verify</span>
+            </button>
+          )}
+        </div>
+
+        {/* Deploy Input - Constructor Args */}
+        {terminalAction === 'deploy' && !deployedAddress && compiledBytecode && (
+          <div className="mb-4">
+            <label className="block text-xs font-medium text-primary-700 dark:text-slate-300 mb-1">
+              Constructor Arguments (JSON array or comma-separated)
+            </label>
+            <input
+              type="text"
+              value={constructorArgs}
+              onChange={(e) => setConstructorArgs(e.target.value)}
+              placeholder={`Default: ["${ENTROPY_ORACLE_ADDRESS}"]`}
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-primary-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            />
+            <p className="text-xs text-primary-500 dark:text-slate-400 mt-1">
+              Leave empty to use default EntropyOracle address
+            </p>
+          </div>
+        )}
+
+        {/* Wallet Connection Warning */}
+        {terminalAction === 'deploy' && !isConnected && (
+          <div className="mb-4 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+            <p className="text-xs text-yellow-700 dark:text-yellow-300">
+              Please connect your wallet to deploy
+            </p>
+          </div>
+        )}
+
+        {/* Deployed Address Display */}
+        {deployedAddress && (
+          <div className="mb-4 p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
+            <p className="text-xs font-medium text-green-700 dark:text-green-300 mb-1">Deployed Address:</p>
+            <p className="text-xs font-mono text-green-600 dark:text-green-400 break-all">{deployedAddress}</p>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between">
+          <span className="text-xs px-2 py-1 bg-primary-100 dark:bg-slate-700 text-primary-700 dark:text-slate-300 rounded">
+            {category}
+          </span>
+          <a
+            href={githubUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary-500 dark:text-cyan-400 hover:text-primary-700 dark:hover:text-cyan-300 text-sm font-medium flex items-center space-x-1"
+          >
+            <span>View Code</span>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
+        </div>
       </div>
-      <p className="text-primary-600 dark:text-slate-400 text-sm mb-4">{description}</p>
-      <div className="flex items-center justify-between">
-        <span className="text-xs px-2 py-1 bg-primary-100 dark:bg-slate-700 text-primary-700 dark:text-slate-300 rounded">
-          {category}
-        </span>
-        <a
-          href={githubUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-primary-500 dark:text-cyan-400 hover:text-primary-700 dark:hover:text-cyan-300 text-sm font-medium flex items-center space-x-1"
-        >
-          <span>View Code</span>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-          </svg>
-        </a>
-      </div>
-    </div>
+
+      {/* Terminal Modal */}
+      {showTerminal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-900 rounded-lg shadow-2xl w-full max-w-4xl max-h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b border-slate-700">
+              <div className="flex items-center space-x-2">
+                <CommandLineIcon className="w-5 h-5 text-green-400" />
+                <h3 className="text-lg font-semibold text-white">
+                  {terminalAction === 'test' && 'Running Tests'}
+                  {terminalAction === 'compile' && 'Compiling Contracts'}
+                  {terminalAction === 'deploy' && 'Deploying Contract'}
+                  {terminalAction === 'verify' && 'Verifying Contract'}
+                </h3>
+              </div>
+              <button
+                onClick={() => {
+                  setShowTerminal(false);
+                  clearOutput();
+                }}
+                className="text-slate-400 hover:text-white transition-colors"
+              >
+                <XMarkIcon className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto p-4">
+              <pre className="text-green-400 font-mono text-sm whitespace-pre-wrap break-words">
+                {loading ? (
+                  <span className="text-yellow-400">Running... Please wait...</span>
+                ) : output ? (
+                  output
+                ) : error ? (
+                  <span className="text-red-400">{error}</span>
+                ) : (
+                  <span className="text-slate-500">No output yet...</span>
+                )}
+              </pre>
+            </div>
+            <div className="p-4 border-t border-slate-700 flex justify-end">
+              <button
+                onClick={() => {
+                  setShowTerminal(false);
+                  clearOutput();
+                }}
+                className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
