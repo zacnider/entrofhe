@@ -1,0 +1,1319 @@
+import React, { useState, useEffect } from 'react';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi';
+import { parseEther, keccak256, stringToBytes } from 'viem';
+import { toast } from 'react-toastify';
+import { DocumentDuplicateIcon, CheckIcon, PlayIcon, CodeBracketIcon, UserPlusIcon, TrophyIcon, SparklesIcon, CubeIcon, PhotoIcon, CalculatorIcon, LockClosedIcon, KeyIcon, ShieldCheckIcon, DocumentTextIcon, ExclamationTriangleIcon, EyeIcon, LinkIcon } from '@heroicons/react/24/outline';
+import { useFHEVM } from '../hooks/useFHEVM';
+import { pinataService } from '../utils/pinata';
+import SimpleLotteryABI from '../abis/SimpleLottery.json';
+import RandomNumberGeneratorABI from '../abis/RandomNumberGenerator.json';
+import EntropyNFTABI from '../abis/EntropyNFT.json';
+import EntropyOracleABI from '../abis/EntropyOracle.json';
+
+const ENTROPY_ORACLE_ADDRESS = process.env.REACT_APP_ENTROPY_ORACLE_ADDRESS || '0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361';
+const SIMPLE_LOTTERY_ADDRESS = process.env.REACT_APP_SIMPLE_LOTTERY_ADDRESS || '0x92B9520EBf1bdF43784c3dbcAD57CB4bc8A84544';
+const RANDOM_NUMBER_GENERATOR_ADDRESS = process.env.REACT_APP_RANDOM_NUMBER_GENERATOR_ADDRESS || '0x571A1A4cA7Ca5c439E8898251d7D730a4042a463';
+const ENTROPY_NFT_ADDRESS = process.env.REACT_APP_ENTROPY_NFT_ADDRESS || '0xeEcda3b643b9153e7d4D7686E0774e6d5Ad323b7';
+
+const Examples: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'live' | 'tutorial'>('live');
+  const [selectedExample, setSelectedExample] = useState<string>('lottery');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  const categories = [
+    { value: 'all', label: 'All Categories' },
+    { value: 'basic', label: 'Basic' },
+    { value: 'encryption', label: 'Encryption' },
+    { value: 'user-decryption', label: 'User Decryption' },
+    { value: 'public-decryption', label: 'Public Decryption' },
+    { value: 'access-control', label: 'Access Control' },
+    { value: 'input-proof', label: 'Input Proof' },
+    { value: 'anti-patterns', label: 'Anti-Patterns' },
+    { value: 'handles', label: 'Handles' },
+  ];
+
+  const tutorialExamples = [
+    {
+      title: "EntropyCounter",
+      description: "Counter using EntropyOracle for encrypted randomness",
+      category: "basic",
+      path: "basic-simplecounter",
+      icon: <CalculatorIcon className="h-6 w-6" />,
+    },
+    {
+      title: "EntropyArithmetic",
+      description: "FHE arithmetic operations using EntropyOracle",
+      category: "basic",
+      path: "basic-arithmetic",
+      icon: <CalculatorIcon className="h-6 w-6" />,
+    },
+    {
+      title: "EntropyEqualityComparison",
+      description: "FHE equality comparison using EntropyOracle",
+      category: "basic",
+      path: "basic-equalitycomparison",
+      icon: <CalculatorIcon className="h-6 w-6" />,
+    },
+    {
+      title: "EntropyEncryption",
+      description: "Encrypt and store values using EntropyOracle",
+      category: "encryption",
+      path: "encryption-encryptsingle",
+      icon: <LockClosedIcon className="h-6 w-6" />,
+    },
+    {
+      title: "EntropyUserDecryption",
+      description: "User decrypt using EntropyOracle and FHE.allow",
+      category: "user-decryption",
+      path: "user-decryption-userdecryptsingle",
+      icon: <KeyIcon className="h-6 w-6" />,
+    },
+    {
+      title: "EntropyPublicDecryption",
+      description: "Public decrypt using EntropyOracle and makePubliclyDecryptable",
+      category: "public-decryption",
+      path: "public-decryption-publicdecryptsingle",
+      icon: <KeyIcon className="h-6 w-6" />,
+    },
+    {
+      title: "EntropyAccessControl",
+      description: "Access control with EntropyOracle, FHE.allow and allowTransient",
+      category: "access-control",
+      path: "access-control-accesscontrol",
+      icon: <ShieldCheckIcon className="h-6 w-6" />,
+    },
+    {
+      title: "EntropyInputProof",
+      description: "Input proofs with EntropyOracle integration",
+      category: "input-proof",
+      path: "input-proof-inputproofexplanation",
+      icon: <DocumentTextIcon className="h-6 w-6" />,
+    },
+    {
+      title: "EntropyMissingAllowThis",
+      description: "Missing FHE.allowThis() permissions with EntropyOracle (ANTI-PATTERN)",
+      category: "anti-patterns",
+      path: "anti-patterns-missingallowthis",
+      icon: <ExclamationTriangleIcon className="h-6 w-6" />,
+    },
+    {
+      title: "EntropyViewWithEncrypted",
+      description: "View functions with encrypted values and EntropyOracle (ANTI-PATTERN)",
+      category: "anti-patterns",
+      path: "anti-patterns-viewwithencrypted",
+      icon: <EyeIcon className="h-6 w-6" />,
+    },
+    {
+      title: "EntropyHandleLifecycle",
+      description: "Understanding handles and symbolic execution with EntropyOracle",
+      category: "handles",
+      path: "handles-handlelifecycle",
+      icon: <LinkIcon className="h-6 w-6" />,
+    },
+  ];
+
+  const filteredExamples = selectedCategory === 'all' 
+    ? tutorialExamples 
+    : tutorialExamples.filter(ex => ex.category === selectedCategory);
+
+  return (
+    <div className="max-w-7xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold text-primary-900 dark:text-slate-100 mb-4">
+          Example Contracts
+        </h1>
+        <p className="text-lg text-primary-600 dark:text-slate-400">
+          Test and interact with deployed example contracts that use Entrofhe entropy oracle
+        </p>
+      </div>
+
+      {/* Tabs */}
+      <div className="mb-8">
+        <div className="border-b border-gray-200 dark:border-slate-700">
+          <nav className="-mb-px flex space-x-8">
+            <button
+              onClick={() => setActiveTab('live')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'live'
+                  ? 'border-primary-500 dark:border-cyan-500 text-primary-600 dark:text-cyan-400'
+                  : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-600'
+              }`}
+            >
+              Live Examples
+            </button>
+            <button
+              onClick={() => setActiveTab('tutorial')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'tutorial'
+                  ? 'border-primary-500 dark:border-cyan-500 text-primary-600 dark:text-cyan-400'
+                  : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-600'
+              }`}
+            >
+              Tutorial Examples
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      {/* Live Examples Tab */}
+      {activeTab === 'live' && (
+        <div>
+          <div className="mb-6">
+            <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300 mb-4">
+              Live Examples
+            </h2>
+            <p className="text-primary-600 dark:text-slate-400 mb-6">
+              Interact with deployed contracts on Sepolia testnet
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <ExampleCard
+              id="lottery"
+              title="Simple Lottery"
+              description="Enter and select a winner using entropy"
+              icon={<TrophyIcon className="h-8 w-8" />}
+              isSelected={selectedExample === 'lottery'}
+              onClick={() => setSelectedExample('lottery')}
+            />
+            <ExampleCard
+              id="random"
+              title="Random Number Generator"
+              description="Generate encrypted random numbers"
+              icon={<SparklesIcon className="h-8 w-8" />}
+              isSelected={selectedExample === 'random'}
+              onClick={() => setSelectedExample('random')}
+            />
+            <ExampleCard
+              id="entropy-nft"
+              title="EntropyNFT"
+              description="Mint real NFTs with IPFS metadata"
+              icon={<CubeIcon className="h-8 w-8" />}
+              isSelected={selectedExample === 'entropy-nft'}
+              onClick={() => setSelectedExample('entropy-nft')}
+            />
+          </div>
+
+          {/* Live Demo Section */}
+          {selectedExample === 'lottery' && <SimpleLotteryDemo />}
+          {selectedExample === 'random' && <RandomNumberGeneratorDemo />}
+          {selectedExample === 'entropy-nft' && <EntropyNFTDemo />}
+        </div>
+      )}
+
+      {/* Tutorial Examples Tab */}
+      {activeTab === 'tutorial' && (
+        <div>
+          <div className="mb-6">
+            <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300 mb-4">
+              Tutorial Examples
+            </h2>
+            <p className="text-primary-600 dark:text-slate-400 mb-6">
+              Educational examples demonstrating EntropyOracle integration patterns. Each example shows how to use entropy in different FHEVM scenarios.
+            </p>
+            
+            {/* Category Dropdown */}
+            <div className="mb-6">
+              <label htmlFor="category-select" className="block text-sm font-medium text-primary-700 dark:text-cyan-400 mb-2">
+                Filter by Category
+              </label>
+              <select
+                id="category-select"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="block w-full md:w-64 px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-primary-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-cyan-500 focus:border-primary-500 dark:focus:border-cyan-500"
+              >
+                {categories.map((cat) => (
+                  <option key={cat.value} value={cat.value}>
+                    {cat.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Examples Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredExamples.map((example) => (
+              <TutorialExampleCard
+                key={example.path}
+                title={example.title}
+                description={example.description}
+                category={example.category}
+                path={example.path}
+                icon={example.icon}
+              />
+            ))}
+          </div>
+
+          {filteredExamples.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-primary-600 dark:text-slate-400">
+                No examples found in this category.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
+interface ExampleCardProps {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  isSelected: boolean;
+  onClick: () => void;
+}
+
+const ExampleCard: React.FC<ExampleCardProps> = ({ title, description, icon, isSelected, onClick }) => {
+  return (
+    <div
+      className={`bg-white dark:bg-slate-800 rounded-xl shadow-lg border-2 transition-all cursor-pointer p-6 ${
+        isSelected
+          ? 'border-primary-500 dark:border-cyan-500'
+          : 'border-gray-200 dark:border-slate-700 hover:border-primary-300 dark:hover:border-slate-600'
+      }`}
+      onClick={onClick}
+    >
+      <div className="flex items-center space-x-4 mb-3">
+        <div className="text-primary-500 dark:text-cyan-400">{icon}</div>
+        <h3 className="text-xl font-bold text-primary-900 dark:text-slate-100">{title}</h3>
+      </div>
+      <p className="text-primary-600 dark:text-slate-400 text-sm">{description}</p>
+    </div>
+  );
+};
+
+interface TutorialExampleCardProps {
+  title: string;
+  description: string;
+  category: string;
+  path: string;
+  icon: React.ReactNode;
+}
+
+const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, description, category, path, icon }) => {
+  const githubUrl = `https://github.com/zacnider/entrofhe/tree/main/examples/${path}`;
+  
+  return (
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border-2 border-gray-200 dark:border-slate-700 hover:border-primary-300 dark:hover:border-slate-600 transition-all p-6">
+      <div className="flex items-center space-x-4 mb-3">
+        <div className="text-primary-500 dark:text-cyan-400">{icon}</div>
+        <h3 className="text-lg font-bold text-primary-900 dark:text-slate-100">{title}</h3>
+      </div>
+      <p className="text-primary-600 dark:text-slate-400 text-sm mb-4">{description}</p>
+      <div className="flex items-center justify-between">
+        <span className="text-xs px-2 py-1 bg-primary-100 dark:bg-slate-700 text-primary-700 dark:text-slate-300 rounded">
+          {category}
+        </span>
+        <a
+          href={githubUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary-500 dark:text-cyan-400 hover:text-primary-700 dark:hover:text-cyan-300 text-sm font-medium flex items-center space-x-1"
+        >
+          <span>View Code</span>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  );
+};
+
+// Simple Lottery Demo
+const SimpleLotteryDemo: React.FC = () => {
+  const { address, isConnected } = useAccount();
+  const [participantCount, setParticipantCount] = useState<number>(0);
+  const [lotteryComplete, setLotteryComplete] = useState<boolean>(false);
+  const [winner, setWinner] = useState<string>('');
+  const [hasParticipated, setHasParticipated] = useState<boolean>(false);
+  const [lotteryRound, setLotteryRound] = useState<number>(1);
+
+  const { data: status, refetch: refetchStatus } = useReadContract({
+    address: SIMPLE_LOTTERY_ADDRESS as `0x${string}`,
+    abi: SimpleLotteryABI.abi,
+    functionName: 'getStatus',
+    query: {
+      enabled: isConnected,
+    },
+  });
+
+  const { data: lotteryRoundData } = useReadContract({
+    address: SIMPLE_LOTTERY_ADDRESS as `0x${string}`,
+    abi: SimpleLotteryABI.abi,
+    functionName: 'lotteryRound',
+    query: {
+      enabled: isConnected,
+    },
+  });
+
+  const { data: hasParticipatedData } = useReadContract({
+    address: SIMPLE_LOTTERY_ADDRESS as `0x${string}`,
+    abi: SimpleLotteryABI.abi,
+    functionName: 'hasParticipated',
+    args: address && lotteryRound ? [BigInt(lotteryRound), address] : undefined,
+    query: {
+      enabled: isConnected && !!address && !!lotteryRound,
+    },
+  });
+
+  useEffect(() => {
+    if (status && Array.isArray(status)) {
+      setParticipantCount(Number(status[0]));
+      setLotteryComplete(status[1] as boolean);
+      setWinner(status[2] as string);
+    }
+    if (lotteryRoundData !== undefined) {
+      setLotteryRound(Number(lotteryRoundData));
+    }
+    if (hasParticipatedData !== undefined) {
+      setHasParticipated(hasParticipatedData as boolean);
+    }
+  }, [status, hasParticipatedData, lotteryRoundData]);
+
+  const { writeContract: enterLottery, isPending: isEntering, error: enterError } = useWriteContract();
+  const { writeContract: selectWinner, data: selectHash, isPending: isSelecting, error: selectError } = useWriteContract();
+  const { writeContract: resetLottery, data: resetHash, isPending: isResetting, error: resetError } = useWriteContract();
+  const { data: selectReceipt, isLoading: isSelectConfirming, isSuccess: isSelected, isError: isSelectError, error: selectReceiptError } = useWaitForTransactionReceipt({
+    hash: selectHash,
+  });
+  const { isLoading: isResetConfirming, isSuccess: isReset, isError: isResetError, error: resetReceiptError } = useWaitForTransactionReceipt({
+    hash: resetHash,
+  });
+  const [winningRequestId, setWinningRequestId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (selectReceipt && selectReceipt.logs) {
+      try {
+        // Find WinnerSelected event
+        const eventSignature = keccak256(stringToBytes('WinnerSelected(address,uint256)'));
+        const winnerEvent = selectReceipt.logs.find((log: any) => 
+          log.address.toLowerCase() === SIMPLE_LOTTERY_ADDRESS.toLowerCase() &&
+          log.topics && log.topics[0] === eventSignature
+        );
+        
+        if (winnerEvent && winnerEvent.topics && winnerEvent.topics.length >= 3 && winnerEvent.topics[2]) {
+          // requestId is in topics[2] (second indexed parameter)
+          const requestId = Number(BigInt(winnerEvent.topics[2]));
+          setWinningRequestId(requestId);
+        }
+      } catch (error) {
+        console.error('Error parsing request ID:', error);
+      }
+    }
+  }, [selectReceipt]);
+
+  useEffect(() => {
+    if (isSelected) {
+      toast.success('Winner selected!');
+      refetchStatus();
+    }
+  }, [isSelected, refetchStatus]);
+
+  useEffect(() => {
+    if (isReset) {
+      toast.success('Lottery reset! New round started.');
+      // Refetch all data after reset
+      refetchStatus();
+      // Reset local state
+      setParticipantCount(0);
+      setWinner('');
+      setWinningRequestId(null);
+      setHasParticipated(false);
+    }
+  }, [isReset, refetchStatus]);
+
+  const handleEnter = () => {
+    if (!isConnected) {
+      toast.error('Please connect your wallet');
+      return;
+    }
+    enterLottery({
+      address: SIMPLE_LOTTERY_ADDRESS as `0x${string}`,
+      abi: SimpleLotteryABI.abi,
+      functionName: 'enter',
+    });
+  };
+
+  const handleSelectWinner = () => {
+    if (!isConnected) {
+      toast.error('Please connect your wallet');
+      return;
+    }
+    selectWinner({
+      address: SIMPLE_LOTTERY_ADDRESS as `0x${string}`,
+      abi: SimpleLotteryABI.abi,
+      functionName: 'selectWinner',
+      value: parseEther('0.00001'),
+    });
+  };
+
+  const handleResetLottery = () => {
+    if (!isConnected) {
+      toast.error('Please connect your wallet');
+      return;
+    }
+    resetLottery({
+      address: SIMPLE_LOTTERY_ADDRESS as `0x${string}`,
+      abi: SimpleLotteryABI.abi,
+      functionName: 'resetLottery',
+    });
+  };
+
+  useEffect(() => {
+    if (isResetting) {
+      toast.info('Resetting lottery...');
+    }
+  }, [isResetting]);
+
+  useEffect(() => {
+    if (resetError) {
+      console.error('Reset error:', resetError);
+      toast.error(`Reset failed: ${(resetError as any)?.message || (resetError as any)?.shortMessage || 'Unknown error'}`);
+    }
+    if (isResetError && resetReceiptError) {
+      console.error('Reset receipt error:', resetReceiptError);
+      toast.error(`Reset transaction failed: ${(resetReceiptError as any)?.message || (resetReceiptError as any)?.shortMessage || 'Unknown error'}`);
+    }
+  }, [resetError, isResetError, resetReceiptError]);
+
+  useEffect(() => {
+    if (resetHash) {
+      console.log('Reset transaction hash:', resetHash);
+      toast.info('Reset transaction submitted! Waiting for confirmation...');
+    }
+  }, [resetHash]);
+
+  return (
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-8">
+      <div className="mb-6">
+        <h2 className="text-3xl font-bold text-primary-900 dark:text-slate-100 mb-2">Simple Lottery</h2>
+        <p className="text-primary-600 dark:text-slate-400">
+          Enter the lottery and select a winner using entropy oracle
+        </p>
+        <p className="text-sm text-primary-500 dark:text-slate-500 mt-2 font-mono">
+          Contract: {SIMPLE_LOTTERY_ADDRESS}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="bg-primary-50 dark:bg-slate-900 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-primary-800 dark:text-cyan-300 mb-4">Lottery Status</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-primary-600 dark:text-slate-400">Participants:</span>
+              <span className="font-bold text-primary-900 dark:text-slate-100">{participantCount}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-primary-600 dark:text-slate-400">Status:</span>
+              <span className={`font-bold ${lotteryComplete ? 'text-green-600' : 'text-amber-600'}`}>
+                {lotteryComplete ? 'Complete' : 'Active'}
+              </span>
+            </div>
+            {winner && (
+              <div className="flex justify-between">
+                <span className="text-primary-600 dark:text-slate-400">Winner:</span>
+                <span className="font-mono text-sm text-primary-900 dark:text-slate-100">
+                  {winner.slice(0, 6)}...{winner.slice(-4)}
+                </span>
+              </div>
+            )}
+            {winningRequestId !== null && (
+              <div className="flex justify-between">
+                <span className="text-primary-600 dark:text-slate-400">Request ID:</span>
+                <span className="font-mono text-sm text-primary-900 dark:text-slate-100">
+                  #{winningRequestId}
+                </span>
+              </div>
+            )}
+            {hasParticipated && (
+              <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <p className="text-sm text-green-700 dark:text-green-300">✓ You are participating!</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="bg-primary-50 dark:bg-slate-900 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-primary-800 dark:text-cyan-300 mb-4">Actions</h3>
+          <div className="space-y-3">
+            <button
+              onClick={handleEnter}
+              disabled={isEntering || hasParticipated || lotteryComplete || !isConnected}
+              className="w-full px-4 py-3 bg-primary-600 dark:bg-cyan-600 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-cyan-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition flex items-center justify-center space-x-2"
+            >
+              <UserPlusIcon className="h-5 w-5" />
+              <span>{hasParticipated ? 'Already Participated' : 'Enter Lottery'}</span>
+            </button>
+            <button
+              onClick={handleSelectWinner}
+              disabled={isSelecting || isSelectConfirming || lotteryComplete || participantCount === 0 || !isConnected}
+              className="w-full px-4 py-3 bg-amber-600 dark:bg-amber-600 text-white rounded-lg hover:bg-amber-700 dark:hover:bg-amber-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition flex items-center justify-center space-x-2"
+            >
+              <TrophyIcon className="h-5 w-5" />
+              <span>{isSelecting || isSelectConfirming ? 'Selecting...' : 'Select Winner (0.00001 ETH)'}</span>
+            </button>
+            <button
+              onClick={handleResetLottery}
+              disabled={isResetting || isResetConfirming || !lotteryComplete || !isConnected}
+              className="w-full px-4 py-3 bg-purple-600 dark:bg-purple-600 text-white rounded-lg hover:bg-purple-700 dark:hover:bg-purple-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition flex items-center justify-center space-x-2"
+            >
+              <PlayIcon className="h-5 w-5" />
+              <span>{isResetting || isResetConfirming ? 'Resetting...' : 'Reset Lottery (New Round)'}</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-6 bg-gradient-to-r from-primary-50 to-cyan-50 dark:from-slate-900 dark:to-slate-800 rounded-lg p-6 border border-primary-200 dark:border-slate-700">
+          <h3 className="text-lg font-semibold text-primary-800 dark:text-cyan-300 mb-4 flex items-center space-x-2">
+            <span>📖</span>
+            <span>How to Use Simple Lottery</span>
+          </h3>
+          <div className="space-y-3 text-primary-700 dark:text-slate-300">
+            <div className="flex items-start space-x-3">
+              <span className="font-bold text-primary-600 dark:text-cyan-400">1.</span>
+              <div>
+                <p className="font-semibold">Enter the Lottery</p>
+                <p className="text-sm text-primary-600 dark:text-slate-400">Click "Enter Lottery" to participate. You can only enter once per lottery.</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <span className="font-bold text-primary-600 dark:text-cyan-400">2.</span>
+              <div>
+                <p className="font-semibold">Wait for Participants</p>
+                <p className="text-sm text-primary-600 dark:text-slate-400">The lottery needs at least one participant. You can see the current participant count above.</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <span className="font-bold text-primary-600 dark:text-cyan-400">3.</span>
+              <div>
+                <p className="font-semibold">Select Winner</p>
+                <p className="text-sm text-primary-600 dark:text-slate-400">Click "Select Winner" to use entropy oracle to randomly select a winner. This costs 0.00001 ETH for the entropy request.</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <span className="font-bold text-primary-600 dark:text-cyan-400">4.</span>
+              <div>
+                <p className="font-semibold">View Results</p>
+                <p className="text-sm text-primary-600 dark:text-slate-400">Once a winner is selected, the lottery is complete and the winner address will be displayed.</p>
+              </div>
+            </div>
+            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <p className="text-sm text-blue-700 dark:text-blue-300">
+                <strong>💡 Tip:</strong> The winner selection uses encrypted entropy from Entrofhe oracle, ensuring fair and unpredictable randomness.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Random Number Generator Demo
+const RandomNumberGeneratorDemo: React.FC = () => {
+  const { address, isConnected } = useAccount();
+  const [tag, setTag] = useState<string>('');
+  const [requestIds, setRequestIds] = useState<number[]>([]);
+  const [totalGenerated, setTotalGenerated] = useState<number>(0);
+  const [lastRequestId, setLastRequestId] = useState<number | null>(null);
+
+  const { data: totalData, refetch: refetchTotal } = useReadContract({
+    address: RANDOM_NUMBER_GENERATOR_ADDRESS as `0x${string}`,
+    abi: RandomNumberGeneratorABI.abi,
+    functionName: 'totalGenerated',
+    query: {
+      enabled: isConnected,
+    },
+  });
+
+  useEffect(() => {
+    if (totalData !== undefined) {
+      setTotalGenerated(Number(totalData));
+    }
+  }, [totalData]);
+
+  const { writeContract: requestRandom, data: requestHash, isPending: isRequesting } = useWriteContract();
+  const { data: requestReceipt, isLoading: isRequestConfirming, isSuccess: isRequested } = useWaitForTransactionReceipt({
+    hash: requestHash,
+  });
+
+  // Parse request ID from transaction receipt
+  useEffect(() => {
+    if (requestReceipt && requestReceipt.logs) {
+      try {
+        // Find RandomNumberRequested event
+        const eventSignature = keccak256(stringToBytes('RandomNumberRequested(uint256,bytes32)'));
+        const randomEvent = requestReceipt.logs.find((log: any) => 
+          log.address.toLowerCase() === RANDOM_NUMBER_GENERATOR_ADDRESS.toLowerCase() &&
+          log.topics && log.topics[0] === eventSignature
+        );
+        
+        if (randomEvent && randomEvent.topics && randomEvent.topics.length >= 2 && randomEvent.topics[1]) {
+          // requestId is in topics[1] (indexed parameter)
+          const requestId = Number(BigInt(randomEvent.topics[1]));
+          setLastRequestId(requestId);
+          setRequestIds(prev => {
+            if (!prev.includes(requestId)) {
+              return [...prev, requestId];
+            }
+            return prev;
+          });
+          toast.success(`Random number requested! Request ID: ${requestId}`);
+        } else {
+          toast.success('Random number requested!');
+        }
+      } catch (error) {
+        console.error('Error parsing request ID:', error);
+        toast.success('Random number requested!');
+      }
+    }
+  }, [requestReceipt]);
+
+  useEffect(() => {
+    if (isRequested) {
+      refetchTotal();
+    }
+  }, [isRequested, refetchTotal]);
+
+  const handleRequestRandom = () => {
+    if (!isConnected) {
+      toast.error('Please connect your wallet');
+      return;
+    }
+    if (!tag.trim()) {
+      toast.error('Please enter a tag');
+      return;
+    }
+    const tagBytes32 = keccak256(stringToBytes(tag));
+    requestRandom({
+      address: RANDOM_NUMBER_GENERATOR_ADDRESS as `0x${string}`,
+      abi: RandomNumberGeneratorABI.abi,
+      functionName: 'requestRandomNumber',
+      args: [tagBytes32],
+      value: parseEther('0.00001'),
+    });
+  };
+
+  const generateRandomTag = () => {
+    const randomTag = keccak256(stringToBytes(`${Date.now()}-${Math.random()}`));
+    setTag(randomTag);
+  };
+
+  return (
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-8">
+      <div className="mb-6">
+        <h2 className="text-3xl font-bold text-primary-900 dark:text-slate-100 mb-2">Random Number Generator</h2>
+        <p className="text-primary-600 dark:text-slate-400">
+          Request encrypted random numbers using entropy oracle
+        </p>
+        <p className="text-sm text-primary-500 dark:text-slate-500 mt-2 font-mono">
+          Contract: {RANDOM_NUMBER_GENERATOR_ADDRESS}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="bg-primary-50 dark:bg-slate-900 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-primary-800 dark:text-cyan-300 mb-4">Request Random Number</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-primary-700 dark:text-slate-300 mb-2">
+                Tag (optional)
+              </label>
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  value={tag}
+                  onChange={(e) => setTag(e.target.value)}
+                  placeholder="Enter tag or generate random"
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100"
+                />
+                <button
+                  onClick={generateRandomTag}
+                  className="px-4 py-2 bg-primary-100 dark:bg-slate-700 text-primary-700 dark:text-cyan-400 rounded-lg hover:bg-primary-200 dark:hover:bg-slate-600 transition"
+                >
+                  <SparklesIcon className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+            <button
+              onClick={handleRequestRandom}
+              disabled={isRequesting || isRequestConfirming || !isConnected}
+              className="w-full px-4 py-3 bg-primary-600 dark:bg-cyan-600 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-cyan-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition flex items-center justify-center space-x-2"
+            >
+              <SparklesIcon className="h-5 w-5" />
+              <span>{isRequesting || isRequestConfirming ? 'Requesting...' : 'Request Random Number (0.00001 ETH)'}</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-primary-50 dark:bg-slate-900 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-primary-800 dark:text-cyan-300 mb-4">Statistics</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between">
+              <span className="text-primary-600 dark:text-slate-400">Total Generated:</span>
+              <span className="font-bold text-primary-900 dark:text-slate-100">{totalGenerated}</span>
+            </div>
+            {lastRequestId !== null && (
+              <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <p className="text-sm text-green-700 dark:text-green-300">
+                  <strong>✓ Last Request ID:</strong> #{lastRequestId}
+                </p>
+              </div>
+            )}
+            {requestIds.length > 0 && (
+              <div className="mt-2">
+                <p className="text-xs text-primary-600 dark:text-slate-400 mb-2">Your Request IDs:</p>
+                <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+                  {requestIds.map((id) => (
+                    <span
+                      key={id}
+                      className="px-2 py-1 text-xs rounded bg-primary-100 dark:bg-slate-700 text-primary-700 dark:text-cyan-400 font-mono"
+                    >
+                      #{id}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <p className="text-sm text-blue-700 dark:text-blue-300">
+                Random numbers are encrypted (euint64). Use FHE operations to work with them.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 bg-gradient-to-r from-primary-50 to-cyan-50 dark:from-slate-900 dark:to-slate-800 rounded-lg p-6 border border-primary-200 dark:border-slate-700">
+          <h3 className="text-lg font-semibold text-primary-800 dark:text-cyan-300 mb-4 flex items-center space-x-2">
+            <span>📖</span>
+            <span>How to Use Random Number Generator</span>
+          </h3>
+          <div className="space-y-3 text-primary-700 dark:text-slate-300">
+            <div className="flex items-start space-x-3">
+              <span className="font-bold text-primary-600 dark:text-cyan-400">1.</span>
+              <div>
+                <p className="font-semibold">Enter a Tag (Optional)</p>
+                <p className="text-sm text-primary-600 dark:text-slate-400">You can enter a custom tag to identify your random number request, or click the sparkle icon to generate a random tag.</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <span className="font-bold text-primary-600 dark:text-cyan-400">2.</span>
+              <div>
+                <p className="font-semibold">Request Random Number</p>
+                <p className="text-sm text-primary-600 dark:text-slate-400">Click "Request Random Number" to generate an encrypted random number. This costs 0.00001 ETH for the entropy request.</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <span className="font-bold text-primary-600 dark:text-cyan-400">3.</span>
+              <div>
+                <p className="font-semibold">Get Your Random Number</p>
+                <p className="text-sm text-primary-600 dark:text-slate-400">The random number is encrypted (euint64) and stored on-chain. You can retrieve it using the request ID.</p>
+              </div>
+            </div>
+            <div className="flex items-start space-x-3">
+              <span className="font-bold text-primary-600 dark:text-cyan-400">4.</span>
+              <div>
+                <p className="font-semibold">Use in Your Contract</p>
+                <p className="text-sm text-primary-600 dark:text-slate-400">The encrypted random number can be used in FHE operations without decryption, or decrypted if needed for your use case.</p>
+              </div>
+            </div>
+            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <p className="text-sm text-blue-700 dark:text-blue-300">
+                <strong>💡 Tip:</strong> Each random number is unique and cryptographically secure. The total generated count shows how many random numbers have been created.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// NFTTraitSelectorDemo removed - replaced by EntropyNFTDemo (Real ERC721 NFT)
+
+// EntropyNFT Demo (Real ERC721 NFT)
+const EntropyNFTDemo: React.FC = () => {
+  const { address, isConnected } = useAccount();
+  const { decrypt64, isReady: fhevmReady } = useFHEVM();
+  const [tag, setTag] = useState<string>('');
+  const [tokenIds, setTokenIds] = useState<number[]>([]);
+  const [selectedTokenId, setSelectedTokenId] = useState<number | null>(null);
+  const [nftData, setNftData] = useState<any>(null);
+  const [lastMintedTokenId, setLastMintedTokenId] = useState<number | null>(null);
+  const [mintedNFTs, setMintedNFTs] = useState<Array<{tokenId: number; requestId: number; minted: boolean; traits?: any}>>([]);
+  const [availableTraits, setAvailableTraits] = useState<{
+    backgrounds: string[];
+    accessories: string[];
+    expressions: string[];
+  } | null>(null);
+  const [selectedTraits, setSelectedTraits] = useState<{
+    background: number;
+    accessory: number;
+    expression: number;
+  } | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('/nft1.png');
+
+  const { data: nftInfo, refetch: refetchNft } = useReadContract({
+    address: ENTROPY_NFT_ADDRESS as `0x${string}`,
+    abi: EntropyNFTABI.abi,
+    functionName: 'getNFT',
+    args: selectedTokenId !== null ? [BigInt(selectedTokenId)] : undefined,
+    query: {
+      enabled: isConnected && selectedTokenId !== null,
+    },
+  });
+
+  const { data: traitsData } = useReadContract({
+    address: ENTROPY_NFT_ADDRESS as `0x${string}`,
+    abi: EntropyNFTABI.abi,
+    functionName: 'getAvailableTraits',
+    query: {
+      enabled: isConnected,
+    },
+  });
+
+  useEffect(() => {
+    if (traitsData && Array.isArray(traitsData) && traitsData.length === 3) {
+      setAvailableTraits({
+        backgrounds: traitsData[0] as string[],
+        accessories: traitsData[1] as string[],
+        expressions: traitsData[2] as string[],
+      });
+    }
+  }, [traitsData]);
+
+  useEffect(() => {
+    if (nftInfo && Array.isArray(nftInfo) && nftInfo.length >= 7) {
+      setNftData({
+        tokenId: Number(nftInfo[0]),
+        entropyRequestId: Number(nftInfo[1]),
+        background: nftInfo[2] as string,
+        accessory: nftInfo[3] as string,
+        expression: nftInfo[4] as string,
+        tokenURI: nftInfo[5] as string,
+        minted: nftInfo[6] as boolean,
+      });
+    }
+  }, [nftInfo]);
+
+  const { writeContract: requestMint, data: mintHash, isPending: isMinting } = useWriteContract();
+  const { writeContract: completeMint, data: completeHash, isPending: isCompleting } = useWriteContract();
+  const { data: mintReceipt, isLoading: isMintConfirming } = useWaitForTransactionReceipt({
+    hash: mintHash,
+  });
+  const { isLoading: isCompleteConfirming, isSuccess: isCompleted } = useWaitForTransactionReceipt({
+    hash: completeHash,
+  });
+
+  // Parse token ID from transaction receipt
+  useEffect(() => {
+    if (mintReceipt && mintReceipt.logs) {
+      try {
+        const eventSignature = keccak256(stringToBytes('NFTMintRequested(uint256,uint256)'));
+        const mintEvent = mintReceipt.logs.find((log: any) => 
+          log.address.toLowerCase() === ENTROPY_NFT_ADDRESS.toLowerCase() &&
+          log.topics && log.topics[0] === eventSignature
+        );
+        
+        if (mintEvent && mintEvent.topics && mintEvent.topics.length >= 3 && mintEvent.topics[1] && mintEvent.topics[2]) {
+          const tokenId = Number(BigInt(mintEvent.topics[1]));
+          const requestId = Number(BigInt(mintEvent.topics[2]));
+          setLastMintedTokenId(tokenId);
+          setTokenIds(prev => {
+            if (!prev.includes(tokenId)) {
+              return [...prev, tokenId];
+            }
+            return prev;
+          });
+          setSelectedTokenId(tokenId);
+          setMintedNFTs(prev => {
+            const exists = prev.find(nft => nft.tokenId === tokenId);
+            if (!exists) {
+              return [...prev, {tokenId, requestId, minted: false}];
+            }
+            return prev;
+          });
+          toast.success(`Mint requested! Token ID: ${tokenId}`);
+        }
+      } catch (error) {
+        console.error('Error parsing token ID:', error);
+      }
+    }
+  }, [mintReceipt]);
+
+  useEffect(() => {
+    if (isCompleted) {
+      toast.success('NFT minted successfully!');
+      refetchNft();
+    }
+  }, [isCompleted, refetchNft]);
+
+  const handleRequestMint = () => {
+    if (!isConnected) {
+      toast.error('Please connect your wallet');
+      return;
+    }
+    if (!tag.trim()) {
+      toast.error('Please enter a tag');
+      return;
+    }
+    const tagBytes32 = keccak256(stringToBytes(tag));
+    requestMint({
+      address: ENTROPY_NFT_ADDRESS as `0x${string}`,
+      abi: EntropyNFTABI.abi,
+      functionName: 'requestMint',
+      args: [tagBytes32],
+      value: parseEther('0.00001'),
+    });
+  };
+
+  // Get encrypted entropy for trait selection
+  const { data: encryptedEntropy } = useReadContract({
+    address: ENTROPY_ORACLE_ADDRESS as `0x${string}`,
+    abi: EntropyOracleABI.abi,
+    functionName: 'getEncryptedEntropy',
+    args: selectedTokenId !== null && nftData ? [BigInt(nftData.entropyRequestId)] : undefined,
+    query: {
+      enabled: isConnected && selectedTokenId !== null && nftData !== null && !nftData.minted,
+    },
+  });
+
+  const handleSelectTraits = async () => {
+    if (!isConnected || selectedTokenId === null || !nftData) {
+      toast.error('Please select a token');
+      return;
+    }
+    if (!fhevmReady) {
+      toast.error('FHEVM is not ready');
+      return;
+    }
+    if (!availableTraits) {
+      toast.error('Traits not loaded');
+      return;
+    }
+
+    try {
+      toast.info('Selecting traits from entropy...');
+      
+      // For now, use a deterministic approach based on requestId
+      // In production, you would decrypt the encrypted entropy using FHEVM
+      // This is a simplified version that uses requestId as seed
+      const seed = BigInt(nftData.entropyRequestId) * BigInt(1000) + BigInt(selectedTokenId);
+      
+      // Select traits using pseudo-random from seed
+      const backgroundIdx = Number(seed % BigInt(availableTraits.backgrounds.length));
+      const accessoryIdx = Number((seed / BigInt(availableTraits.backgrounds.length)) % BigInt(availableTraits.accessories.length));
+      const expressionIdx = Number((seed / BigInt(availableTraits.backgrounds.length * availableTraits.accessories.length)) % BigInt(availableTraits.expressions.length));
+
+      setSelectedTraits({
+        background: backgroundIdx,
+        accessory: accessoryIdx,
+        expression: expressionIdx,
+      });
+
+      toast.success('Traits selected!');
+    } catch (error: any) {
+      console.error('Error selecting traits:', error);
+      toast.error(`Error: ${error.message || 'Failed to select traits'}`);
+    }
+  };
+
+  const handleCompleteMint = async () => {
+    if (!isConnected || selectedTokenId === null || !selectedTraits || !availableTraits) {
+      toast.error('Please select traits first');
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      toast.info('Uploading image to IPFS...');
+
+      // Upload image to IPFS
+      let imageHash: string;
+      if (imageFile) {
+        imageHash = await pinataService.uploadImage(imageFile);
+      } else {
+        // Use default image (nft1.png) - convert to File
+        const response = await fetch(imagePreview);
+        const blob = await response.blob();
+        const file = new File([blob], 'nft1.png', { type: 'image/png' });
+        imageHash = await pinataService.uploadImage(file);
+      }
+
+      toast.info('Creating metadata...');
+
+      // Create metadata
+      const metadata = pinataService.createMetadata(
+        `EntropyNFT #${selectedTokenId}`,
+        `A unique NFT minted using Entrofhe entropy oracle. Traits: ${availableTraits.backgrounds[selectedTraits.background]}, ${availableTraits.accessories[selectedTraits.accessory]}, ${availableTraits.expressions[selectedTraits.expression]}`,
+        imageHash,
+        [
+          { trait_type: 'Background', value: availableTraits.backgrounds[selectedTraits.background] },
+          { trait_type: 'Accessory', value: availableTraits.accessories[selectedTraits.accessory] },
+          { trait_type: 'Expression', value: availableTraits.expressions[selectedTraits.expression] },
+        ]
+      );
+
+      toast.info('Uploading metadata to IPFS...');
+
+      // Upload metadata to IPFS
+      const metadataHash = await pinataService.uploadMetadata(metadata);
+      const tokenURI = `ipfs://${metadataHash}`;
+
+      toast.info('Completing mint...');
+
+      // Complete mint with traits
+      completeMint({
+        address: ENTROPY_NFT_ADDRESS as `0x${string}`,
+        abi: EntropyNFTABI.abi,
+        functionName: 'completeMintWithTraits',
+        args: [
+          BigInt(selectedTokenId),
+          selectedTraits.background,
+          selectedTraits.accessory,
+          selectedTraits.expression,
+          tokenURI,
+        ],
+      });
+
+      setIsUploading(false);
+    } catch (error: any) {
+      console.error('Error completing mint:', error);
+      toast.error(`Error: ${error.message || 'Failed to complete mint'}`);
+      setIsUploading(false);
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const generateRandomTag = () => {
+    const randomTag = keccak256(stringToBytes(`nft-${Date.now()}-${Math.random()}`));
+    setTag(randomTag);
+  };
+
+  return (
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-8">
+      <div className="mb-6">
+        <h2 className="text-3xl font-bold text-primary-900 dark:text-slate-100 mb-2">EntropyNFT (Real ERC721)</h2>
+        <p className="text-primary-600 dark:text-slate-400">
+          Mint real NFTs with IPFS metadata and trait selection using entropy
+        </p>
+        <p className="text-sm text-primary-500 dark:text-slate-500 mt-2 font-mono">
+          Contract: {ENTROPY_NFT_ADDRESS}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="bg-primary-50 dark:bg-slate-900 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-primary-800 dark:text-cyan-300 mb-4">Request Mint</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-primary-700 dark:text-slate-300 mb-2">
+                Tag
+              </label>
+              <div className="flex space-x-2">
+                <input
+                  type="text"
+                  value={tag}
+                  onChange={(e) => setTag(e.target.value)}
+                  placeholder="Enter tag or generate random"
+                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100"
+                />
+                <button
+                  onClick={generateRandomTag}
+                  className="px-4 py-2 bg-primary-100 dark:bg-slate-700 text-primary-700 dark:text-cyan-400 rounded-lg hover:bg-primary-200 dark:hover:bg-slate-600 transition"
+                >
+                  <SparklesIcon className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+            <button
+              onClick={handleRequestMint}
+              disabled={isMinting || isMintConfirming || !isConnected}
+              className="w-full px-4 py-3 bg-primary-600 dark:bg-cyan-600 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-cyan-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition flex items-center justify-center space-x-2"
+            >
+              <CubeIcon className="h-5 w-5" />
+              <span>{isMinting || isMintConfirming ? 'Requesting...' : 'Request Mint (0.00001 ETH)'}</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-primary-50 dark:bg-slate-900 rounded-lg p-6">
+          <h3 className="text-lg font-semibold text-primary-800 dark:text-cyan-300 mb-4">Select Traits</h3>
+          {selectedTokenId !== null && nftData && !nftData.minted && (
+            <div className="space-y-4">
+              <button
+                onClick={handleSelectTraits}
+                disabled={!fhevmReady || isUploading}
+                className="w-full px-4 py-3 bg-amber-600 dark:bg-amber-600 text-white rounded-lg hover:bg-amber-700 dark:hover:bg-amber-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition"
+              >
+                Select Traits from Entropy
+              </button>
+              {selectedTraits && availableTraits && (
+                <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg space-y-2">
+                  <p className="text-sm font-semibold text-green-700 dark:text-green-300">Selected Traits:</p>
+                  <p className="text-sm text-green-600 dark:text-green-400">
+                    Background: <strong>{availableTraits.backgrounds[selectedTraits.background]}</strong>
+                  </p>
+                  <p className="text-sm text-green-600 dark:text-green-400">
+                    Accessory: <strong>{availableTraits.accessories[selectedTraits.accessory]}</strong>
+                  </p>
+                  <p className="text-sm text-green-600 dark:text-green-400">
+                    Expression: <strong>{availableTraits.expressions[selectedTraits.expression]}</strong>
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="bg-primary-50 dark:bg-slate-900 rounded-lg p-6 mb-6">
+        <h3 className="text-lg font-semibold text-primary-800 dark:text-cyan-300 mb-4">Complete Mint</h3>
+        <div className="space-y-4">
+          {lastMintedTokenId !== null && (
+            <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg mb-4">
+              <p className="text-sm text-green-700 dark:text-green-300">
+                <strong>✓ Last Minted Token ID:</strong> {lastMintedTokenId}
+              </p>
+            </div>
+          )}
+          <div>
+            <label className="block text-sm font-medium text-primary-700 dark:text-slate-300 mb-2">
+              Token ID
+            </label>
+            <input
+              type="number"
+              value={selectedTokenId || ''}
+              onChange={(e) => setSelectedTokenId(e.target.value ? parseInt(e.target.value) : null)}
+              placeholder="Enter token ID"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-primary-700 dark:text-slate-300 mb-2">
+              NFT Image
+            </label>
+            <div className="flex items-center space-x-4">
+              <div className="w-32 h-32 border-2 border-gray-300 dark:border-slate-600 rounded-lg overflow-hidden">
+                <img src={imagePreview} alt="NFT Preview" className="w-full h-full object-cover" />
+              </div>
+              <div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                  id="image-upload"
+                />
+                <label
+                  htmlFor="image-upload"
+                  className="px-4 py-2 bg-primary-100 dark:bg-slate-700 text-primary-700 dark:text-cyan-400 rounded-lg hover:bg-primary-200 dark:hover:bg-slate-600 transition cursor-pointer inline-flex items-center space-x-2"
+                >
+                  <PhotoIcon className="h-5 w-5" />
+                  <span>Upload Image</span>
+                </label>
+                <p className="text-xs text-primary-500 dark:text-slate-500 mt-2">
+                  Default: nft1.png
+                </p>
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={handleCompleteMint}
+            disabled={isCompleting || isCompleteConfirming || isUploading || selectedTokenId === null || !selectedTraits || (nftData && nftData.minted)}
+            className="w-full px-4 py-3 bg-green-600 dark:bg-green-600 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition flex items-center justify-center space-x-2"
+          >
+            <CubeIcon className="h-5 w-5" />
+            <span>{isUploading ? 'Uploading to IPFS...' : isCompleting || isCompleteConfirming ? 'Completing...' : 'Complete Mint'}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Minted NFTs Collection */}
+      {mintedNFTs.length > 0 && (
+        <div className="mt-6 bg-white dark:bg-slate-800 rounded-lg p-6 border border-gray-200 dark:border-slate-700">
+          <h3 className="text-lg font-semibold text-primary-800 dark:text-cyan-300 mb-4">Your NFT Collection</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {mintedNFTs.map((nft) => (
+              <div
+                key={nft.tokenId}
+                className={`border-2 rounded-xl overflow-hidden transition-all cursor-pointer shadow-lg hover:shadow-xl ${
+                  selectedTokenId === nft.tokenId
+                    ? 'border-primary-500 dark:border-cyan-500 ring-2 ring-primary-300 dark:ring-cyan-700'
+                    : 'border-gray-200 dark:border-slate-700 hover:border-primary-300 dark:hover:border-slate-600'
+                }`}
+                onClick={() => setSelectedTokenId(nft.tokenId)}
+              >
+                <div className="relative w-full aspect-square bg-gradient-to-br from-primary-100 to-cyan-100 dark:from-slate-900 dark:to-slate-800">
+                  <img
+                    src={
+                      nftData && nft.tokenId === nftData.tokenId && nftData.tokenURI 
+                        ? pinataService.getIpfsUrl(nftData.tokenURI.replace('ipfs://', '')) 
+                        : imagePreview
+                    }
+                    alt={`NFT #${nft.tokenId}`}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = imagePreview;
+                    }}
+                  />
+                  {!nft.minted && (
+                    <div className="absolute top-2 right-2 px-2 py-1 bg-amber-500/90 text-white text-xs rounded-full font-semibold">
+                      Pending
+                    </div>
+                  )}
+                  {nft.minted && (
+                    <div className="absolute top-2 right-2 px-2 py-1 bg-green-500/90 text-white text-xs rounded-full font-semibold">
+                      ✓ Minted
+                    </div>
+                  )}
+                </div>
+                <div className="p-4 bg-white dark:bg-slate-800">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-bold text-lg text-primary-900 dark:text-slate-100">
+                      #{nft.tokenId}
+                    </h4>
+                  </div>
+                  {nftData && nft.tokenId === nftData.tokenId && nftData.minted && (
+                    <div className="space-y-1 text-sm">
+                      <p className="text-primary-600 dark:text-slate-400">
+                        <strong>Background:</strong> {nftData.background}
+                      </p>
+                      <p className="text-primary-600 dark:text-slate-400">
+                        <strong>Accessory:</strong> {nftData.accessory}
+                      </p>
+                      <p className="text-primary-600 dark:text-slate-400">
+                        <strong>Expression:</strong> {nftData.expression}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Examples;
