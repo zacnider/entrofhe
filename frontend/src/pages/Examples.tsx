@@ -30,6 +30,7 @@ const Examples: React.FC = () => {
     { value: 'input-proof', label: 'Input Proof' },
     { value: 'anti-patterns', label: 'Anti-Patterns' },
     { value: 'handles', label: 'Handles' },
+    { value: 'openzeppelin', label: 'OpenZeppelin' },
   ];
 
   const tutorialExamples = [
@@ -109,6 +110,41 @@ const Examples: React.FC = () => {
       category: "handles",
       path: "handles-handlelifecycle",
       icon: <LinkIcon className="h-6 w-6" />,
+    },
+    {
+      title: "EntropyERC7984Token",
+      description: "Basic ERC7984 confidential token implementation with EntropyOracle",
+      category: "openzeppelin",
+      path: "openzeppelin-erc7984token",
+      icon: <CubeIcon className="h-6 w-6" />,
+    },
+    {
+      title: "EntropyERC7984ToERC20Wrapper",
+      description: "Wrapper contract to convert ERC7984 to ERC20 tokens with EntropyOracle",
+      category: "openzeppelin",
+      path: "openzeppelin-erc7984toerc20wrapper",
+      icon: <CubeIcon className="h-6 w-6" />,
+    },
+    {
+      title: "EntropySwapERC7984ToERC20",
+      description: "Swap ERC7984 confidential tokens to ERC20 tokens with EntropyOracle",
+      category: "openzeppelin",
+      path: "openzeppelin-swaperc7984toerc20",
+      icon: <CubeIcon className="h-6 w-6" />,
+    },
+    {
+      title: "EntropySwapERC7984ToERC7984",
+      description: "Swap between two ERC7984 tokens with EntropyOracle integration",
+      category: "openzeppelin",
+      path: "openzeppelin-swaperc7984toerc7984",
+      icon: <CubeIcon className="h-6 w-6" />,
+    },
+    {
+      title: "EntropyVestingWallet",
+      description: "Vesting wallet with encrypted amounts and EntropyOracle integration",
+      category: "openzeppelin",
+      path: "openzeppelin-vestingwallet",
+      icon: <CubeIcon className="h-6 w-6" />,
     },
   ];
 

@@ -26,7 +26,8 @@ const CATEGORIES = [
   'input-proof',
   'anti-patterns',
   'handles',
-  'advanced'
+  'advanced',
+  'openzeppelin'
 ];
 
 function parseArgs(): ExampleConfig {

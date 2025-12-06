@@ -116,6 +116,13 @@ done
 - **RandomNumberGenerator**: Random number generator using EntropyOracle (deployed on Sepolia)
 - **EntropyNFT**: ERC721 NFT with trait selection using EntropyOracle (deployed on Sepolia)
 
+### OpenZeppelin Confidential Contracts (EntropyOracle Integration)
+- **EntropyERC7984Token**: Basic ERC7984 confidential token implementation with EntropyOracle
+- **EntropyERC7984ToERC20Wrapper**: Wrapper contract to convert ERC7984 to ERC20 tokens
+- **EntropySwapERC7984ToERC20**: Swap ERC7984 confidential tokens to ERC20 tokens
+- **EntropySwapERC7984ToERC7984**: Swap between two ERC7984 tokens
+- **EntropyVestingWallet**: Vesting wallet with encrypted amounts and EntropyOracle
+
 ## 🛠️ Automation Scripts
 
 ### Create Example
@@ -124,7 +131,7 @@ done
 npm run create-example -- --name <name> --category <category> [--description <description>] [--chapter <chapter>]
 ```
 
-**Categories**: `basic`, `encryption`, `user-decryption`, `public-decryption`, `access-control`, `input-proof`, `anti-patterns`, `handles`, `advanced`
+**Categories**: `basic`, `encryption`, `user-decryption`, `public-decryption`, `access-control`, `input-proof`, `anti-patterns`, `handles`, `advanced`, `openzeppelin`
 
 ### Create Category
 
@@ -210,8 +217,8 @@ See [docs/INTEGRATION.md](./docs/INTEGRATION.md) for detailed integration guide.
 
 ## 📊 Statistics
 
-- **Total Examples**: 14 examples (all with EntropyOracle integration)
-- **Categories**: 9 categories
+- **Total Examples**: 19 examples (all with EntropyOracle integration)
+- **Categories**: 10 categories
 - **EntropyOracle Integration**: ✅ All examples
 - **Test Coverage**: Comprehensive tests for each example
 - **Documentation**: Auto-generated from code
@@ -224,6 +231,7 @@ See [docs/INTEGRATION.md](./docs/INTEGRATION.md) for detailed integration guide.
 - **Anti-Patterns Examples**: 2 (EntropyMissingAllowThis, EntropyViewWithEncrypted)
 - **Handles Examples**: 1 (EntropyHandleLifecycle)
 - **Advanced Examples**: 3 (SimpleLottery, RandomNumberGenerator, EntropyNFT)
+- **OpenZeppelin Examples**: 5 (ERC7984Token, ERC7984ToERC20Wrapper, SwapERC7984ToERC20, SwapERC7984ToERC7984, VestingWallet)
 
 ## 🤝 Contributing
 

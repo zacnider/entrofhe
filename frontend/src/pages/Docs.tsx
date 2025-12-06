@@ -1100,6 +1100,88 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
                 </p>
               </div>
             </div>
+
+            {/* OpenZeppelin Examples */}
+            <div className="space-y-4">
+              <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 border-b border-gray-200 dark:border-slate-700 pb-2">
+                OpenZeppelin Confidential Contracts Examples
+              </h3>
+
+              <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
+                <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropyERC7984Token</h4>
+                <p className="text-gray-600 dark:text-slate-400 mb-3">
+                  Basic ERC7984 confidential token implementation with EntropyOracle. Demonstrates encrypted balances and token operations.
+                </p>
+                <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
+                  <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/openzeppelin-erc7984token</code>
+                </p>
+                <p className="text-sm">
+                  <a href="https://github.com/zacnider/entrofhe/tree/main/examples/openzeppelin-erc7984token" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+                    📦 View on GitHub
+                  </a>
+                </p>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
+                <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropyERC7984ToERC20Wrapper</h4>
+                <p className="text-gray-600 dark:text-slate-400 mb-3">
+                  Wrapper contract to convert ERC7984 confidential tokens to ERC20 tokens with EntropyOracle integration.
+                </p>
+                <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
+                  <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/openzeppelin-erc7984toerc20wrapper</code>
+                </p>
+                <p className="text-sm">
+                  <a href="https://github.com/zacnider/entrofhe/tree/main/examples/openzeppelin-erc7984toerc20wrapper" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+                    📦 View on GitHub
+                  </a>
+                </p>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
+                <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropySwapERC7984ToERC20</h4>
+                <p className="text-gray-600 dark:text-slate-400 mb-3">
+                  Swap ERC7984 confidential tokens to ERC20 tokens with EntropyOracle integration.
+                </p>
+                <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
+                  <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/openzeppelin-swaperc7984toerc20</code>
+                </p>
+                <p className="text-sm">
+                  <a href="https://github.com/zacnider/entrofhe/tree/main/examples/openzeppelin-swaperc7984toerc20" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+                    📦 View on GitHub
+                  </a>
+                </p>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
+                <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropySwapERC7984ToERC7984</h4>
+                <p className="text-gray-600 dark:text-slate-400 mb-3">
+                  Swap between two ERC7984 tokens with EntropyOracle integration. Demonstrates cross-token swaps with encrypted amounts.
+                </p>
+                <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
+                  <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/openzeppelin-swaperc7984toerc7984</code>
+                </p>
+                <p className="text-sm">
+                  <a href="https://github.com/zacnider/entrofhe/tree/main/examples/openzeppelin-swaperc7984toerc7984" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+                    📦 View on GitHub
+                  </a>
+                </p>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
+                <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropyVestingWallet</h4>
+                <p className="text-gray-600 dark:text-slate-400 mb-3">
+                  Vesting wallet with encrypted amounts and EntropyOracle integration. Demonstrates time-based vesting with confidential amounts.
+                </p>
+                <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
+                  <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/openzeppelin-vestingwallet</code>
+                </p>
+                <p className="text-sm">
+                  <a href="https://github.com/zacnider/entrofhe/tree/main/examples/openzeppelin-vestingwallet" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+                    📦 View on GitHub
+                  </a>
+                </p>
+              </div>
+            </div>
           </div>
         )}
       </div>
