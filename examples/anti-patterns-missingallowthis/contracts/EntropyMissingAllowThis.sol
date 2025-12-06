@@ -69,13 +69,14 @@ contract EntropyMissingAllowThis is ZamaEthereumConfig {
     function initializeWrong(
         externalEuint64 encryptedInput1,
         externalEuint64 encryptedInput2,
-        bytes calldata inputProof
+        bytes calldata inputProof1,
+        bytes calldata inputProof2
     ) external {
         require(!initialized, "Already initialized");
         
         // Convert external to internal
-        euint64 internalValue1 = FHE.fromExternal(encryptedInput1, inputProof);
-        euint64 internalValue2 = FHE.fromExternal(encryptedInput2, inputProof);
+        euint64 internalValue1 = FHE.fromExternal(encryptedInput1, inputProof1);
+        euint64 internalValue2 = FHE.fromExternal(encryptedInput2, inputProof2);
         
         // ❌ MISSING: FHE.allowThis(internalValue1);
         // ❌ MISSING: FHE.allowThis(internalValue2);
@@ -94,13 +95,14 @@ contract EntropyMissingAllowThis is ZamaEthereumConfig {
     function initializeCorrect(
         externalEuint64 encryptedInput1,
         externalEuint64 encryptedInput2,
-        bytes calldata inputProof
+        bytes calldata inputProof1,
+        bytes calldata inputProof2
     ) external {
         require(!initialized, "Already initialized");
         
         // Convert external to internal
-        euint64 internalValue1 = FHE.fromExternal(encryptedInput1, inputProof);
-        euint64 internalValue2 = FHE.fromExternal(encryptedInput2, inputProof);
+        euint64 internalValue1 = FHE.fromExternal(encryptedInput1, inputProof1);
+        euint64 internalValue2 = FHE.fromExternal(encryptedInput2, inputProof2);
         
         // ✅ CORRECT: Allow contract to use encrypted values
         FHE.allowThis(internalValue1);

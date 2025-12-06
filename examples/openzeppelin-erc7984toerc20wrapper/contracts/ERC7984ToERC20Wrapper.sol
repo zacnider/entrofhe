@@ -1,27 +1,27 @@
 // SPDX-License-Identifier: BSD-3-Clause-Clear
 pragma solidity ^0.8.27;
 
-import {FHE, euint256, externalEuint256} from "@fhevm/solidity/lib/FHE.sol";
+import {FHE, euint64, externalEuint64} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./IEntropyOracle.sol";
 
 /**
  * @title EntropyERC7984ToERC20Wrapper
  * @notice Wrapper contract to convert ERC7984 confidential tokens to ERC20 tokens
  * @dev Demonstrates wrapping confidential tokens into standard ERC20 tokens
- * @chapter openzeppelin
  * 
  * This example shows:
  * - Wrapping ERC7984 tokens into ERC20
  * - Unwrapping ERC20 back to ERC7984
  * - EntropyOracle integration for random operations
+ * 
+ * Note: Simplified implementation without OpenZeppelin ERC20 to avoid import conflicts
  */
-contract EntropyERC7984ToERC20Wrapper is ZamaEthereumConfig, ERC20 {
+contract EntropyERC7984ToERC20Wrapper is ZamaEthereumConfig {
     IEntropyOracle public entropyOracle;
     
     // Encrypted balances for wrapped tokens
-    mapping(address => euint256) private encryptedBalances;
+    mapping(address => euint64) private encryptedBalances;
     
     // Track entropy requests
     mapping(uint256 => address) public wrapRequests;
@@ -31,13 +31,20 @@ contract EntropyERC7984ToERC20Wrapper is ZamaEthereumConfig, ERC20 {
     event Unwrapped(address indexed user, uint256 erc20Amount, bytes encryptedAmount);
     event WrapRequested(address indexed user, uint256 indexed requestId);
     
+    // Simple ERC20-like balances (for demonstration)
+    mapping(address => uint256) public erc20Balances;
+    string public name;
+    string public symbol;
+    
     constructor(
         address _entropyOracle,
         string memory _name,
         string memory _symbol
-    ) ERC20(_name, _symbol) {
+    ) {
         require(_entropyOracle != address(0), "Invalid oracle address");
         entropyOracle = IEntropyOracle(_entropyOracle);
+        name = _name;
+        symbol = _symbol;
     }
     
     /**
@@ -65,13 +72,14 @@ contract EntropyERC7984ToERC20Wrapper is ZamaEthereumConfig, ERC20 {
      */
     function wrapWithEntropy(
         uint256 requestId,
-        externalEuint256 calldata encryptedAmount,
+        externalEuint64 encryptedAmount,
         bytes calldata inputProof
     ) external {
         require(entropyOracle.isRequestFulfilled(requestId), "Entropy not ready");
         require(wrapRequests[requestId] == msg.sender, "Invalid request");
         
-        euint256 amount = FHE.asEuint256(encryptedAmount, inputProof);
+        euint64 amount = FHE.fromExternal(encryptedAmount, inputProof);
+        FHE.allowThis(amount);
         
         // Add encrypted amount to user's balance
         encryptedBalances[msg.sender] = FHE.add(encryptedBalances[msg.sender], amount);
@@ -81,7 +89,7 @@ contract EntropyERC7984ToERC20Wrapper is ZamaEthereumConfig, ERC20 {
         // For simplicity, we'll use a fixed conversion
         uint256 wrappedAmount = 1000; // Placeholder - in real implementation, decrypt or use oracle
         
-        _mint(msg.sender, wrappedAmount);
+        erc20Balances[msg.sender] += wrappedAmount;
         
         delete wrapRequests[requestId];
         
@@ -96,14 +104,15 @@ contract EntropyERC7984ToERC20Wrapper is ZamaEthereumConfig, ERC20 {
      */
     function unwrap(
         uint256 erc20Amount,
-        externalEuint256 calldata encryptedAmount,
+        externalEuint64 encryptedAmount,
         bytes calldata inputProof
     ) external {
-        require(balanceOf(msg.sender) >= erc20Amount, "Insufficient ERC20 balance");
+        require(erc20Balances[msg.sender] >= erc20Amount, "Insufficient ERC20 balance");
         
-        _burn(msg.sender, erc20Amount);
+        erc20Balances[msg.sender] -= erc20Amount;
         
-        euint256 amount = FHE.asEuint256(encryptedAmount, inputProof);
+        euint64 amount = FHE.fromExternal(encryptedAmount, inputProof);
+        FHE.allowThis(amount);
         encryptedBalances[msg.sender] = FHE.add(encryptedBalances[msg.sender], amount);
         
         emit Unwrapped(msg.sender, erc20Amount, abi.encode(encryptedAmount));
@@ -114,7 +123,7 @@ contract EntropyERC7984ToERC20Wrapper is ZamaEthereumConfig, ERC20 {
      * @param account Address to query
      * @return Encrypted balance
      */
-    function getEncryptedBalance(address account) external view returns (euint256) {
+    function getEncryptedBalance(address account) external view returns (euint64) {
         return encryptedBalances[account];
     }
     

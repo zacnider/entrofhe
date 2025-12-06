@@ -12,15 +12,15 @@ describe("EntropyNFT", function () {
   async function deployContractFixture() {
     const [owner, user1, user2] = await hre.ethers.getSigners();
     
-    // Deploy mock entropy oracle (for testing, we'll use a simple mock)
-    // In real scenario, this would be the actual EntropyOracle address
-    const mockOracleAddress = hre.ethers.ZeroAddress; // Placeholder
+    // Use a valid non-zero address for testing (contract requires non-zero address)
+    const ORACLE_ADDRESS = process.env.ENTROPY_ORACLE_ADDRESS || "0x1111111111111111111111111111111111111111";
     
     const ContractFactory = await hre.ethers.getContractFactory("EntropyNFT");
-    const contract = await ContractFactory.deploy(mockOracleAddress);
+    const contract = await ContractFactory.deploy(ORACLE_ADDRESS, owner.address);
     await contract.waitForDeployment();
     
-    await hre.fhevm.assertCoprocessorInitialized(contract, "EntropyNFT");
+    // Note: EntropyNFT doesn't use FHE directly, only EntropyOracle
+    // So we don't need to assert coprocessor initialization
     
     return { contract, owner, user1, user2 };
   }

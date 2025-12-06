@@ -9,19 +9,36 @@ import { EntropyEncryption } from "../types";
  * @chapter encryption
  */
 describe("EntropyEncryption", function () {
-  async function deployContractFixture() {
+    async function deployContractFixture() {
     const [owner, user1] = await hre.ethers.getSigners();
     
-    const ORACLE_ADDRESS = process.env.ENTROPY_ORACLE_ADDRESS || "0x0000000000000000000000000000000000000000";
+    // Deploy FHEChaosEngine
+    const ChaosEngineFactory = await hre.ethers.getContractFactory("FHEChaosEngine");
+    const chaosEngine = await ChaosEngineFactory.deploy(owner.address);
+    await chaosEngine.waitForDeployment();
+    const chaosEngineAddress = await chaosEngine.getAddress();
     
+    // Initialize master seed for FHEChaosEngine
+    const masterSeedInput = hre.fhevm.createEncryptedInput(chaosEngineAddress, owner.address);
+    masterSeedInput.add64(12345);
+    const encryptedMasterSeed = await masterSeedInput.encrypt();
+    await chaosEngine.initializeMasterSeed(encryptedMasterSeed.handles[0], encryptedMasterSeed.inputProof);
+    
+    // Deploy EntropyOracle
+    const OracleFactory = await hre.ethers.getContractFactory("EntropyOracle");
+    const oracle = await OracleFactory.deploy(chaosEngineAddress, owner.address, owner.address);
+    await oracle.waitForDeployment();
+    const oracleAddress = await oracle.getAddress();
+    
+    // Deploy EntropyEncryption
     const ContractFactory = await hre.ethers.getContractFactory("EntropyEncryption");
-    const contract = await ContractFactory.deploy(ORACLE_ADDRESS) as EntropyEncryption;
+    const contract = await ContractFactory.deploy(oracleAddress) as EntropyEncryption;
     await contract.waitForDeployment();
     const contractAddress = await contract.getAddress();
     
     await hre.fhevm.assertCoprocessorInitialized(contract, "EntropyEncryption");
     
-    return { contract, owner, user1, contractAddress, oracleAddress: ORACLE_ADDRESS };
+    return { contract, owner, user1, contractAddress, oracleAddress, oracle, chaosEngine };
   }
 
   describe("Deployment", function () {
@@ -43,7 +60,7 @@ describe("EntropyEncryption", function () {
 
   describe("Basic Encryption", function () {
     it("Should encrypt and store value", async function () {
-      const { contract, contractAddress, owner } = await loadFixture(deployContractFixture);
+      const { contract, contractAddress, owner, oracle } = await loadFixture(deployContractFixture);
       
       const input = hre.fhevm.createEncryptedInput(contractAddress, owner.address);
       input.add64(42);
@@ -55,7 +72,7 @@ describe("EntropyEncryption", function () {
     });
 
     it("Should update encrypted value", async function () {
-      const { contract, contractAddress, owner } = await loadFixture(deployContractFixture);
+      const { contract, contractAddress, owner, oracle } = await loadFixture(deployContractFixture);
       
       const input1 = hre.fhevm.createEncryptedInput(contractAddress, owner.address);
       input1.add64(42);
@@ -76,16 +93,10 @@ describe("EntropyEncryption", function () {
 
   describe("Entropy-Enhanced Encryption", function () {
     it("Should request entropy", async function () {
-      const { contract } = await loadFixture(deployContractFixture);
-      
-      const oracleAddress = await contract.getEntropyOracle();
-      if (oracleAddress === "0x0000000000000000000000000000000000000000") {
-        console.log("⚠️  Skipping entropy test - EntropyOracle not deployed");
-        return;
-      }
+      const { contract, oracle } = await loadFixture(deployContractFixture);
       
       const tag = hre.ethers.id("test-encryption");
-      const fee = await contract.entropyOracle.getFee();
+      const fee = await oracle.getFee();
       
       await expect(
         contract.requestEntropy(tag, { value: fee })
@@ -93,17 +104,13 @@ describe("EntropyEncryption", function () {
     });
 
     it("Should encrypt with entropy", async function () {
-      const { contract, contractAddress, owner } = await loadFixture(deployContractFixture);
+      const { contract, contractAddress, owner, oracle } = await loadFixture(deployContractFixture);
       
-      const oracleAddress = await contract.getEntropyOracle();
-      if (oracleAddress === "0x0000000000000000000000000000000000000000") {
-        console.log("⚠️  Skipping entropy test - EntropyOracle not deployed");
-        return;
-      }
+      
       
       // Request entropy
       const tag = hre.ethers.id("encrypt-1");
-      const fee = await contract.entropyOracle.getFee();
+      const fee = await oracle.getFee();
       const requestId = await contract.requestEntropy(tag, { value: fee });
       
       // Wait for entropy (in real scenario)

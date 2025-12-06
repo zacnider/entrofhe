@@ -12,16 +12,32 @@ describe("EntropyVestingWallet", function () {
   async function deployContractsFixture() {
     const [owner, user1, user2] = await hre.ethers.getSigners();
     
-    const ORACLE_ADDRESS = process.env.ENTROPY_ORACLE_ADDRESS || "0x0000000000000000000000000000000000000000";
+    // Deploy FHEChaosEngine
+    const ChaosEngineFactory = await hre.ethers.getContractFactory("FHEChaosEngine");
+    const chaosEngine = await ChaosEngineFactory.deploy(owner.address);
+    await chaosEngine.waitForDeployment();
+    const chaosEngineAddress = await chaosEngine.getAddress();
+    
+    // Initialize master seed
+    const masterSeedInput = hre.fhevm.createEncryptedInput(chaosEngineAddress, owner.address);
+    masterSeedInput.add64(12345);
+    const encryptedMasterSeed = await masterSeedInput.encrypt();
+    await chaosEngine.initializeMasterSeed(encryptedMasterSeed.handles[0], encryptedMasterSeed.inputProof);
+    
+    // Deploy EntropyOracle
+    const OracleFactory = await hre.ethers.getContractFactory("EntropyOracle");
+    const oracle = await OracleFactory.deploy(chaosEngineAddress, owner.address, owner.address);
+    await oracle.waitForDeployment();
+    const oracleAddress = await oracle.getAddress();
     
     const ContractFactory = await hre.ethers.getContractFactory("EntropyVestingWallet");
-    const contract = await ContractFactory.deploy(ORACLE_ADDRESS) as EntropyVestingWallet;
+    const contract = await ContractFactory.deploy(oracleAddress) as EntropyVestingWallet;
     await contract.waitForDeployment();
     
     const contractAddress = await contract.getAddress();
     await hre.fhevm.assertCoprocessorInitialized(contract, "EntropyVestingWallet");
     
-    return { contract, owner, user1, user2, contractAddress, oracleAddress: ORACLE_ADDRESS };
+    return { contract, owner, user1, user2, contractAddress, oracleAddress, oracle, chaosEngine };
   }
 
   describe("Deployment", function () {
@@ -38,10 +54,10 @@ describe("EntropyVestingWallet", function () {
 
   describe("Vesting with Entropy", function () {
     it("Should request entropy for vesting", async function () {
-      const { contract, user1 } = await loadFixture(deployContractsFixture);
+      const { contract, user1, oracle } = await loadFixture(deployContractsFixture);
       
       const tag = hre.ethers.keccak256(hre.ethers.toUtf8Bytes("vesting"));
-      const fee = hre.ethers.parseEther("0.00001");
+      const fee = await oracle.getFee();
       
       await expect(
         contract.connect(user1).requestVestingWithEntropy(tag, { value: fee })

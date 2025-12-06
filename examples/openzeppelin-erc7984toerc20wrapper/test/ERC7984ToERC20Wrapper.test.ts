@@ -12,11 +12,28 @@ describe("EntropyERC7984ToERC20Wrapper", function () {
   async function deployContractsFixture() {
     const [owner, user1, user2] = await hre.ethers.getSigners();
     
-    const ORACLE_ADDRESS = process.env.ENTROPY_ORACLE_ADDRESS || "0x0000000000000000000000000000000000000000";
+    // Deploy FHEChaosEngine
+    const ChaosEngineFactory = await hre.ethers.getContractFactory("FHEChaosEngine");
+    const chaosEngine = await ChaosEngineFactory.deploy(owner.address);
+    await chaosEngine.waitForDeployment();
+    const chaosEngineAddress = await chaosEngine.getAddress();
     
+    // Initialize master seed for FHEChaosEngine
+    const masterSeedInput = hre.fhevm.createEncryptedInput(chaosEngineAddress, owner.address);
+    masterSeedInput.add64(12345);
+    const encryptedMasterSeed = await masterSeedInput.encrypt();
+    await chaosEngine.initializeMasterSeed(encryptedMasterSeed.handles[0], encryptedMasterSeed.inputProof);
+    
+    // Deploy EntropyOracle
+    const OracleFactory = await hre.ethers.getContractFactory("EntropyOracle");
+    const oracle = await OracleFactory.deploy(chaosEngineAddress, owner.address, owner.address);
+    await oracle.waitForDeployment();
+    const oracleAddress = await oracle.getAddress();
+    
+    // Deploy EntropyERC7984ToERC20Wrapper
     const ContractFactory = await hre.ethers.getContractFactory("EntropyERC7984ToERC20Wrapper");
     const contract = await ContractFactory.deploy(
-      ORACLE_ADDRESS,
+      oracleAddress,
       "Wrapped Token",
       "WPT"
     ) as EntropyERC7984ToERC20Wrapper;
@@ -25,7 +42,7 @@ describe("EntropyERC7984ToERC20Wrapper", function () {
     const contractAddress = await contract.getAddress();
     await hre.fhevm.assertCoprocessorInitialized(contract, "EntropyERC7984ToERC20Wrapper");
     
-    return { contract, owner, user1, user2, contractAddress, oracleAddress: ORACLE_ADDRESS };
+    return { contract, owner, user1, user2, contractAddress, oracleAddress, oracle, chaosEngine };
   }
 
   describe("Deployment", function () {
@@ -48,10 +65,10 @@ describe("EntropyERC7984ToERC20Wrapper", function () {
 
   describe("Wrapping with Entropy", function () {
     it("Should request entropy for wrapping", async function () {
-      const { contract, user1 } = await loadFixture(deployContractsFixture);
+      const { contract, user1, oracle } = await loadFixture(deployContractsFixture);
       
       const tag = hre.ethers.keccak256(hre.ethers.toUtf8Bytes("wrap"));
-      const fee = hre.ethers.parseEther("0.00001");
+      const fee = await oracle.getFee();
       
       await expect(
         contract.connect(user1).requestWrapWithEntropy(tag, { value: fee })

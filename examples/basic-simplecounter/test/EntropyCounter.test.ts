@@ -11,18 +11,33 @@ import { EntropyCounter } from "../types";
 describe("EntropyCounter", function () {
   /**
    * @notice Deploy contracts fixture
-   * @dev Deploys both EntropyOracle (mock) and EntropyCounter
+   * @dev Deploys FHEChaosEngine, EntropyOracle, and EntropyCounter
    */
   async function deployContractsFixture() {
     const [owner, user1, user2] = await hre.ethers.getSigners();
     
-    // Deploy EntropyOracle (we'll use a mock or the actual deployed one)
-    // For testing, we can use a mock or deploy the actual oracle
-    // For now, we'll use a placeholder address - in real tests, deploy actual oracle
-    const ORACLE_ADDRESS = process.env.ENTROPY_ORACLE_ADDRESS || "0x0000000000000000000000000000000000000000";
+    // Deploy FHEChaosEngine
+    const ChaosEngineFactory = await hre.ethers.getContractFactory("FHEChaosEngine");
+    const chaosEngine = await ChaosEngineFactory.deploy(owner.address);
+    await chaosEngine.waitForDeployment();
+    const chaosEngineAddress = await chaosEngine.getAddress();
     
+    // Initialize master seed for FHEChaosEngine
+    const chaosEngineContractAddress = chaosEngineAddress;
+    const masterSeedInput = hre.fhevm.createEncryptedInput(chaosEngineContractAddress, owner.address);
+    masterSeedInput.add64(12345); // Use a test seed value
+    const encryptedMasterSeed = await masterSeedInput.encrypt();
+    await chaosEngine.initializeMasterSeed(encryptedMasterSeed.handles[0], encryptedMasterSeed.inputProof);
+    
+    // Deploy EntropyOracle
+    const OracleFactory = await hre.ethers.getContractFactory("EntropyOracle");
+    const oracle = await OracleFactory.deploy(chaosEngineAddress, owner.address, owner.address);
+    await oracle.waitForDeployment();
+    const oracleAddress = await oracle.getAddress();
+    
+    // Deploy EntropyCounter
     const ContractFactory = await hre.ethers.getContractFactory("EntropyCounter");
-    const contract = await ContractFactory.deploy(ORACLE_ADDRESS) as EntropyCounter;
+    const contract = await ContractFactory.deploy(oracleAddress) as EntropyCounter;
     await contract.waitForDeployment();
     
     const contractAddress = await contract.getAddress();
@@ -30,7 +45,16 @@ describe("EntropyCounter", function () {
     // Assert coprocessor is initialized
     await hre.fhevm.assertCoprocessorInitialized(contract, "EntropyCounter");
     
-    return { contract, owner, user1, user2, contractAddress, oracleAddress: ORACLE_ADDRESS };
+    return { 
+      contract, 
+      owner, 
+      user1, 
+      user2, 
+      contractAddress, 
+      oracleAddress,
+      oracle,
+      chaosEngine
+    };
   }
 
   describe("Deployment", function () {
@@ -48,6 +72,7 @@ describe("EntropyCounter", function () {
       const { contract, oracleAddress } = await loadFixture(deployContractsFixture);
       expect(await contract.getEntropyOracle()).to.equal(oracleAddress);
     });
+
   });
 
   describe("Initialization", function () {
@@ -107,7 +132,7 @@ describe("EntropyCounter", function () {
 
   describe("Entropy-based Increment", function () {
     it("Should request entropy for increment", async function () {
-      const { contract, contractAddress, owner, user1 } = await loadFixture(deployContractsFixture);
+      const { contract, contractAddress, owner, user1, oracle } = await loadFixture(deployContractsFixture);
       
       const input = hre.fhevm.createEncryptedInput(contractAddress, owner.address);
       input.add64(0);
@@ -115,17 +140,8 @@ describe("EntropyCounter", function () {
       
       await contract.initialize(encryptedInput.handles[0], encryptedInput.inputProof);
       
-      // Note: This test requires a deployed EntropyOracle
-      // In a real scenario, you would deploy EntropyOracle first
-      // For now, we'll skip this test if oracle is not available
-      const oracleAddress = await contract.getEntropyOracle();
-      if (oracleAddress === "0x0000000000000000000000000000000000000000") {
-        console.log("⚠️  Skipping entropy test - EntropyOracle not deployed");
-        return;
-      }
-      
       const tag = hre.ethers.id("test-increment");
-      const fee = await contract.entropyOracle.getFee();
+      const fee = await oracle.getFee();
       
       await expect(
         contract.connect(user1).requestIncrement(tag, { value: fee })

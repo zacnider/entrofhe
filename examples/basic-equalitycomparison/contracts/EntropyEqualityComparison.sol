@@ -47,18 +47,20 @@ contract EntropyEqualityComparison is ZamaEthereumConfig {
      * @notice Initialize two encrypted values
      * @param encryptedValue1 First encrypted value
      * @param encryptedValue2 Second encrypted value
-     * @param inputProof Input proof for encrypted values
+     * @param inputProof1 Input proof for first encrypted value
+     * @param inputProof2 Input proof for second encrypted value
      */
     function initialize(
         externalEuint64 encryptedValue1,
         externalEuint64 encryptedValue2,
-        bytes calldata inputProof
+        bytes calldata inputProof1,
+        bytes calldata inputProof2
     ) external {
         require(!initialized, "Already initialized");
         
         // Convert external to internal
-        euint64 internalValue1 = FHE.fromExternal(encryptedValue1, inputProof);
-        euint64 internalValue2 = FHE.fromExternal(encryptedValue2, inputProof);
+        euint64 internalValue1 = FHE.fromExternal(encryptedValue1, inputProof1);
+        euint64 internalValue2 = FHE.fromExternal(encryptedValue2, inputProof2);
         
         // Allow contract to use
         FHE.allowThis(internalValue1);

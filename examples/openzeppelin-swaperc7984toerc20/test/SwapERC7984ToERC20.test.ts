@@ -12,12 +12,29 @@ describe("EntropySwapERC7984ToERC20", function () {
   async function deployContractsFixture() {
     const [owner, user1, user2] = await hre.ethers.getSigners();
     
-    const ORACLE_ADDRESS = process.env.ENTROPY_ORACLE_ADDRESS || "0x0000000000000000000000000000000000000000";
+    // Deploy FHEChaosEngine
+    const ChaosEngineFactory = await hre.ethers.getContractFactory("FHEChaosEngine");
+    const chaosEngine = await ChaosEngineFactory.deploy(owner.address);
+    await chaosEngine.waitForDeployment();
+    const chaosEngineAddress = await chaosEngine.getAddress();
+    
+    // Initialize master seed
+    const masterSeedInput = hre.fhevm.createEncryptedInput(chaosEngineAddress, owner.address);
+    masterSeedInput.add64(12345);
+    const encryptedMasterSeed = await masterSeedInput.encrypt();
+    await chaosEngine.initializeMasterSeed(encryptedMasterSeed.handles[0], encryptedMasterSeed.inputProof);
+    
+    // Deploy EntropyOracle
+    const OracleFactory = await hre.ethers.getContractFactory("EntropyOracle");
+    const oracle = await OracleFactory.deploy(chaosEngineAddress, owner.address, owner.address);
+    await oracle.waitForDeployment();
+    const oracleAddress = await oracle.getAddress();
+    
     const ERC20_ADDRESS = "0x0000000000000000000000000000000000000001"; // Placeholder
     
     const ContractFactory = await hre.ethers.getContractFactory("EntropySwapERC7984ToERC20");
     const contract = await ContractFactory.deploy(
-      ORACLE_ADDRESS,
+      oracleAddress,
       ERC20_ADDRESS
     ) as EntropySwapERC7984ToERC20;
     await contract.waitForDeployment();
@@ -25,7 +42,7 @@ describe("EntropySwapERC7984ToERC20", function () {
     const contractAddress = await contract.getAddress();
     await hre.fhevm.assertCoprocessorInitialized(contract, "EntropySwapERC7984ToERC20");
     
-    return { contract, owner, user1, user2, contractAddress, oracleAddress: ORACLE_ADDRESS };
+    return { contract, owner, user1, user2, contractAddress, oracleAddress, oracle, chaosEngine };
   }
 
   describe("Deployment", function () {
@@ -42,10 +59,10 @@ describe("EntropySwapERC7984ToERC20", function () {
 
   describe("Swapping with Entropy", function () {
     it("Should request entropy for swap", async function () {
-      const { contract, user1 } = await loadFixture(deployContractsFixture);
+      const { contract, user1, oracle } = await loadFixture(deployContractsFixture);
       
       const tag = hre.ethers.keccak256(hre.ethers.toUtf8Bytes("swap"));
-      const fee = hre.ethers.parseEther("0.00001");
+      const fee = await oracle.getFee();
       
       await expect(
         contract.connect(user1).requestSwapWithEntropy(tag, { value: fee })

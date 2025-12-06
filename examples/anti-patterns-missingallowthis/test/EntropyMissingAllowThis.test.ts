@@ -12,7 +12,8 @@ describe("EntropyMissingAllowThis", function () {
   async function deployContractFixture() {
     const [owner] = await hre.ethers.getSigners();
     
-    const ORACLE_ADDRESS = process.env.ENTROPY_ORACLE_ADDRESS || "0x0000000000000000000000000000000000000000";
+    // Use a valid non-zero address for testing (contract requires non-zero address)
+    const ORACLE_ADDRESS = process.env.ENTROPY_ORACLE_ADDRESS || "0x1111111111111111111111111111111111111111";
     
     const ContractFactory = await hre.ethers.getContractFactory("EntropyMissingAllowThis");
     const contract = await ContractFactory.deploy(ORACLE_ADDRESS) as EntropyMissingAllowThis;
@@ -52,7 +53,8 @@ describe("EntropyMissingAllowThis", function () {
       await contract.initializeWrong(
         encryptedInput1.handles[0],
         encryptedInput2.handles[0],
-        encryptedInput1.inputProof
+        encryptedInput1.inputProof,
+        encryptedInput2.inputProof
       );
       
       // This should fail because allowThis was not called
@@ -73,7 +75,8 @@ describe("EntropyMissingAllowThis", function () {
       await contract.initializeCorrect(
         encryptedInput1.handles[0],
         encryptedInput2.handles[0],
-        encryptedInput1.inputProof
+        encryptedInput1.inputProof,
+        encryptedInput2.inputProof
       );
       
       // This should work because allowThis was called

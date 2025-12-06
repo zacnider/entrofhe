@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: BSD-3-Clause-Clear
 pragma solidity ^0.8.27;
 
-import {FHE, euint256, externalEuint256} from "@fhevm/solidity/lib/FHE.sol";
+import {FHE, euint64, externalEuint64} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./IEntropyOracle.sol";
@@ -10,7 +10,6 @@ import "./IEntropyOracle.sol";
  * @title EntropySwapERC7984ToERC20
  * @notice Swap contract for exchanging ERC7984 confidential tokens to ERC20 tokens
  * @dev Demonstrates swapping confidential tokens to standard tokens
- * @chapter openzeppelin
  * 
  * This example shows:
  * - Swapping ERC7984 tokens to ERC20
@@ -22,7 +21,7 @@ contract EntropySwapERC7984ToERC20 is ZamaEthereumConfig {
     IERC20 public erc20Token;
     
     // Encrypted balances
-    mapping(address => euint256) private encryptedBalances;
+    mapping(address => euint64) private encryptedBalances;
     
     // Exchange rate (1 ERC7984 = rate ERC20)
     uint256 public exchangeRate = 1; // 1:1 by default
@@ -68,13 +67,14 @@ contract EntropySwapERC7984ToERC20 is ZamaEthereumConfig {
      */
     function swapWithEntropy(
         uint256 requestId,
-        externalEuint256 calldata encryptedAmount,
+        externalEuint64 encryptedAmount,
         bytes calldata inputProof
     ) external {
         require(entropyOracle.isRequestFulfilled(requestId), "Entropy not ready");
         require(swapRequests[requestId] == msg.sender, "Invalid request");
         
-        euint256 amount = FHE.asEuint256(encryptedAmount, inputProof);
+        euint64 amount = FHE.fromExternal(encryptedAmount, inputProof);
+        FHE.allowThis(amount);
         
         // Deduct from encrypted balance
         encryptedBalances[msg.sender] = FHE.sub(encryptedBalances[msg.sender], amount);
@@ -96,10 +96,11 @@ contract EntropySwapERC7984ToERC20 is ZamaEthereumConfig {
      * @param inputProof Input proof for encrypted amount
      */
     function deposit(
-        externalEuint256 calldata encryptedAmount,
+        externalEuint64 encryptedAmount,
         bytes calldata inputProof
     ) external {
-        euint256 amount = FHE.asEuint256(encryptedAmount, inputProof);
+        euint64 amount = FHE.fromExternal(encryptedAmount, inputProof);
+        FHE.allowThis(amount);
         encryptedBalances[msg.sender] = FHE.add(encryptedBalances[msg.sender], amount);
     }
     
@@ -108,7 +109,7 @@ contract EntropySwapERC7984ToERC20 is ZamaEthereumConfig {
      * @param account Address to query
      * @return Encrypted balance
      */
-    function getEncryptedBalance(address account) external view returns (euint256) {
+    function getEncryptedBalance(address account) external view returns (euint64) {
         return encryptedBalances[account];
     }
     

@@ -12,7 +12,8 @@ describe("EntropyViewWithEncrypted", function () {
   async function deployContractFixture() {
     const [owner] = await hre.ethers.getSigners();
     
-    const ORACLE_ADDRESS = process.env.ENTROPY_ORACLE_ADDRESS || "0x0000000000000000000000000000000000000000";
+    // Use a valid non-zero address for testing (contract requires non-zero address)
+    const ORACLE_ADDRESS = process.env.ENTROPY_ORACLE_ADDRESS || "0x1111111111111111111111111111111111111111";
     
     const ContractFactory = await hre.ethers.getContractFactory("EntropyViewWithEncrypted");
     const contract = await ContractFactory.deploy(ORACLE_ADDRESS) as EntropyViewWithEncrypted;
