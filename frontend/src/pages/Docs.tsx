@@ -572,7 +572,7 @@ const CodeExamples: React.FC = () => {
           Code Examples
         </h1>
         <p className="text-lg text-gray-600 dark:text-slate-400">
-          Practical examples for common use cases.
+          Practical examples for common use cases. Includes 3 live examples and 19 tutorial examples (14 FHEVM + 5 OpenZeppelin) - all integrated with EntropyOracle.
         </p>
       </div>
 
@@ -878,7 +878,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
                 Tutorial Examples
               </h2>
               <p className="text-gray-600 dark:text-slate-400 mb-6">
-                Educational examples demonstrating EntropyOracle integration patterns. Each example shows how to use entropy in different FHEVM scenarios.
+                Educational examples demonstrating EntropyOracle integration patterns. Each example shows how to use entropy in different FHEVM scenarios. Includes 19 examples across 10 categories: Basic, Encryption, Decryption, Access Control, Input Proof, Anti-Patterns, Handles, Advanced, and OpenZeppelin Confidential Contracts.
               </p>
               <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-6">
                 <p className="text-sm text-blue-700 dark:text-blue-300">
