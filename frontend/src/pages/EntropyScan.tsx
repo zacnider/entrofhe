@@ -63,10 +63,6 @@ const EntropyScan: React.FC = () => {
         const currentBlock = await publicClient.getBlockNumber();
         console.log('Current block:', currentBlock.toString());
         
-        // Fetch events from last 10000 blocks (increase range)
-        const fromBlock = currentBlock > BigInt(10000) ? currentBlock - BigInt(10000) : BigInt(0);
-        console.log('Fetching events from block', fromBlock.toString(), 'to', currentBlock.toString());
-        
         // Get EntropyRequested event ABI
         const eventABI = EntropyOracleABI.abi.find((item: any) => item.name === 'EntropyRequested' && item.type === 'event');
         if (!eventABI) {
@@ -75,19 +71,54 @@ const EntropyScan: React.FC = () => {
           return;
         }
         
-        // Get EntropyRequested events to find all request IDs
-        const events = await publicClient.getLogs({
-          address: ENTROPY_ORACLE_ADDRESS as `0x${string}`,
-          event: {
-            type: 'event',
-            name: 'EntropyRequested',
-            inputs: eventABI.inputs || [],
-          },
-          fromBlock,
-          toBlock: currentBlock,
-        });
+        // Fetch events in chunks of 1000 blocks (RPC limit is 1000 blocks per request)
+        // Fetch from last 10000 blocks by making multiple requests
+        const totalBlocksToFetch = BigInt(10000);
+        const chunkSize = BigInt(1000);
+        const fromBlock = currentBlock > totalBlocksToFetch ? currentBlock - totalBlocksToFetch : BigInt(0);
         
-        console.log('Found events:', events.length);
+        console.log('Fetching events from block', fromBlock.toString(), 'to', currentBlock.toString(), 'in chunks of', chunkSize.toString());
+        
+        // Fetch events in chunks
+        const allEvents: any[] = [];
+        let currentFromBlock = fromBlock;
+        
+        while (currentFromBlock < currentBlock) {
+          const currentToBlock = currentFromBlock + chunkSize > currentBlock 
+            ? currentBlock 
+            : currentFromBlock + chunkSize;
+          
+          console.log(`Fetching chunk: block ${currentFromBlock.toString()} to ${currentToBlock.toString()}`);
+          
+          try {
+            const chunkEvents = await publicClient.getLogs({
+              address: ENTROPY_ORACLE_ADDRESS as `0x${string}`,
+              event: {
+                type: 'event',
+                name: 'EntropyRequested',
+                inputs: eventABI.inputs || [],
+              },
+              fromBlock: currentFromBlock,
+              toBlock: currentToBlock,
+            });
+            
+            allEvents.push(...chunkEvents);
+            console.log(`Found ${chunkEvents.length} events in this chunk`);
+            
+            // Move to next chunk
+            currentFromBlock = currentToBlock + BigInt(1);
+            
+            // Small delay to avoid rate limiting
+            await new Promise(resolve => setTimeout(resolve, 100));
+          } catch (error: any) {
+            console.error(`Error fetching chunk ${currentFromBlock.toString()} to ${currentToBlock.toString()}:`, error);
+            // Continue with next chunk even if one fails
+            currentFromBlock = currentToBlock + BigInt(1);
+          }
+        }
+        
+        console.log('Total events found:', allEvents.length);
+        const events = allEvents;
 
         // Extract unique request IDs and fetch details
         const requestIds = new Set<bigint>();
