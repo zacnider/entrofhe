@@ -51,14 +51,29 @@ const EntropyScan: React.FC = () => {
   // Fetch all requests from events
   useEffect(() => {
     const fetchRequests = async () => {
-      if (!publicClient) return;
+      if (!publicClient) {
+        console.log('Public client not available');
+        setLoading(false);
+        return;
+      }
 
       setLoading(true);
       try {
         // Get current block number
         const currentBlock = await publicClient.getBlockNumber();
-        // Fetch events from last 1000 blocks (RPC limit)
-        const fromBlock = currentBlock > BigInt(1000) ? currentBlock - BigInt(1000) : BigInt(0);
+        console.log('Current block:', currentBlock.toString());
+        
+        // Fetch events from last 10000 blocks (increase range)
+        const fromBlock = currentBlock > BigInt(10000) ? currentBlock - BigInt(10000) : BigInt(0);
+        console.log('Fetching events from block', fromBlock.toString(), 'to', currentBlock.toString());
+        
+        // Get EntropyRequested event ABI
+        const eventABI = EntropyOracleABI.abi.find((item: any) => item.name === 'EntropyRequested' && item.type === 'event');
+        if (!eventABI) {
+          console.error('EntropyRequested event ABI not found');
+          setLoading(false);
+          return;
+        }
         
         // Get EntropyRequested events to find all request IDs
         const events = await publicClient.getLogs({
@@ -66,61 +81,55 @@ const EntropyScan: React.FC = () => {
           event: {
             type: 'event',
             name: 'EntropyRequested',
-            inputs: EntropyOracleABI.abi.find((item: any) => item.name === 'EntropyRequested')?.inputs || [],
+            inputs: eventABI.inputs || [],
           },
           fromBlock,
           toBlock: currentBlock,
         });
+        
+        console.log('Found events:', events.length);
 
         // Extract unique request IDs and fetch details
         const requestIds = new Set<bigint>();
         const eventMap = new Map<string, { consumer: string; tag: string; txHash: string; blockNumber: bigint }>();
-
-        // Get event ABI for decoding
-        const eventABI = EntropyOracleABI.abi.find((item: any) => item.name === 'EntropyRequested');
         
         for (const event of events) {
           try {
             // Decode event using viem's decodeEventLog
-            // Note: Events now use hashedConsumer (bytes32) and hashedTag (bytes32) for privacy
             const decoded = decodeEventLog({
               abi: [eventABI] as any,
               data: event.data,
               topics: event.topics,
-            }) as { args: { requestId: bigint; hashedConsumer: string; hashedTag: string } };
+            }) as { args: { requestId: bigint; hashedConsumer: string; hashedTag: string; feePaid: bigint } };
 
             const requestId = decoded.args.requestId;
             const hashedConsumer = decoded.args.hashedConsumer; // bytes32 hash
             const hashedTag = decoded.args.hashedTag; // bytes32 hash
             
-            // For privacy: we show hashed values, not original
-            // In private mode, we'll try to get actual consumer from transaction
-            const consumer = hashedConsumer; // Will be replaced with actual address from tx if available
-            const tag = hashedTag; // Hashed tag for privacy
-            
-            if (requestId > 0 && consumer) {
+            if (requestId > 0) {
               requestIds.add(requestId);
               eventMap.set(requestId.toString(), {
-                consumer: consumer.toLowerCase(), // Normalize to lowercase for comparison
-                tag: tag,
+                consumer: hashedConsumer, // Will be replaced with actual address from tx
+                tag: hashedTag,
                 txHash: event.transactionHash,
                 blockNumber: event.blockNumber,
               });
             }
           } catch (error) {
-            console.error('Error decoding event:', error);
+            console.error('Error decoding event:', error, event);
             // Fallback: try to parse from topics (indexed params)
-            // Note: hashedConsumer is bytes32 in topics[2], not an address
+            // topics[0] = event signature
+            // topics[1] = requestId (indexed)
+            // topics[2] = hashedConsumer (indexed, bytes32)
             if (event.topics && event.topics.length >= 3 && event.topics[1] && event.topics[2]) {
               try {
                 const requestId = BigInt(event.topics[1]);
                 const hashedConsumerTopic = event.topics[2]; // bytes32 hash
-                // hashedConsumer is a bytes32 hash, not an address
-                const hashedConsumer = hashedConsumerTopic; // Keep as hash for privacy
+                
                 if (requestId > 0) {
                   requestIds.add(requestId);
                   eventMap.set(requestId.toString(), {
-                    consumer: hashedConsumer, // This is a hash, will be replaced with actual address from tx
+                    consumer: hashedConsumerTopic, // Will be replaced with actual address from tx
                     tag: '0x0', // Tag not in topics, will get from getRequest
                     txHash: event.transactionHash,
                     blockNumber: event.blockNumber,
@@ -132,6 +141,8 @@ const EntropyScan: React.FC = () => {
             }
           }
         }
+        
+        console.log('Unique request IDs found:', requestIds.size);
 
         // Fetch request details for all unique IDs
         const requestPromises = Array.from(requestIds).map(async (requestId) => {
@@ -231,6 +242,8 @@ const EntropyScan: React.FC = () => {
 
         const results = await Promise.all(requestPromises);
         const validRequests = results.filter((r): r is EntropyRequest => r !== null);
+        
+        console.log('Valid requests after fetching details:', validRequests.length);
 
         // Fetch timestamps from blocks if missing
         for (const req of validRequests) {
@@ -250,6 +263,7 @@ const EntropyScan: React.FC = () => {
         setRequests(validRequests);
       } catch (error) {
         console.error('Error fetching requests:', error);
+        toast.error(`Error loading requests: ${error instanceof Error ? error.message : 'Unknown error'}`);
       } finally {
         setLoading(false);
       }
