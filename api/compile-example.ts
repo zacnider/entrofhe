@@ -165,7 +165,7 @@ export default async function handler(
         }
         
         // Wait a bit for file system to sync
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Increased wait time
         
         // Verify node_modules exists (nodeModulesPath already defined above)
         if (!fs.existsSync(nodeModulesPath)) {
@@ -178,7 +178,30 @@ export default async function handler(
           });
         }
         
-        console.log('node_modules exists, installation successful');
+        // Verify hardhat is installed
+        const hardhatPackagePath = path.join(exampleDir, 'node_modules', 'hardhat');
+        const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
+        
+        console.log('node_modules exists, checking Hardhat...');
+        console.log('hardhat package exists:', fs.existsSync(hardhatPackagePath));
+        console.log('hardhat binary exists:', fs.existsSync(hardhatPath));
+        
+        if (!fs.existsSync(hardhatPackagePath)) {
+          return res.status(500).json({
+            success: false,
+            error: 'Hardhat package not found after installation. npm install may have failed.',
+            stdout: installResult.stdout || '',
+            stderr: installResult.stderr || '',
+            installOutput,
+            debug: {
+              nodeModulesExists: fs.existsSync(nodeModulesPath),
+              hardhatPackageExists: fs.existsSync(hardhatPackagePath),
+              hardhatBinaryExists: fs.existsSync(hardhatPath),
+            },
+          });
+        }
+        
+        console.log('Installation successful');
       } catch (installError: any) {
         return res.status(500).json({
           success: false,
