@@ -129,6 +129,10 @@ export default async function handler(
       }
       
       try {
+        // Create /tmp directories for npm
+        fs.mkdirSync('/tmp/.npm', { recursive: true });
+        fs.mkdirSync('/tmp/.npm-global', { recursive: true });
+        
         // Set environment variables to use /tmp for npm cache and logs
         // Vercel serverless functions have read-only home directories
         const env = {
@@ -162,6 +166,10 @@ export default async function handler(
       }
     }
 
+    // Create /tmp directories for npm if not already created
+    fs.mkdirSync('/tmp/.npm', { recursive: true });
+    fs.mkdirSync('/tmp/.npm-global', { recursive: true });
+    
     // Note: Type generation happens automatically during hardhat test
     // No need to pre-generate types - hardhat compile runs as part of test execution
     // Run tests using npx to ensure hardhat is found

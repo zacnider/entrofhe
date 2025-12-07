@@ -605,40 +605,85 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
 
       {/* Terminal Modal */}
       {showTerminal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-900 rounded-lg shadow-2xl w-full max-w-4xl max-h-[80vh] flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-slate-700">
-              <div className="flex items-center space-x-2">
-                <CommandLineIcon className="w-5 h-5 text-green-400" />
-                <h3 className="text-lg font-semibold text-white">
-                  {terminalAction === 'test' && 'Running Tests'}
-                  {terminalAction === 'compile' && 'Compiling Contracts'}
-                  {terminalAction === 'deploy' && 'Deploying Contract'}
-                  {terminalAction === 'verify' && 'Verifying Contract'}
-                </h3>
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-900 rounded-lg shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col border border-slate-700">
+            {/* Terminal Header */}
+            <div className="flex items-center justify-between p-3 border-b border-slate-700 bg-slate-800">
+              <div className="flex items-center space-x-3">
+                <div className="flex space-x-2">
+                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <CommandLineIcon className="w-5 h-5 text-green-400" />
+                  <h3 className="text-sm font-semibold text-white">
+                    {terminalAction === 'test' && 'Terminal - Running Tests'}
+                    {terminalAction === 'compile' && 'Terminal - Compiling Contracts'}
+                    {terminalAction === 'deploy' && 'Terminal - Deploying Contract'}
+                    {terminalAction === 'verify' && 'Terminal - Verifying Contract'}
+                  </h3>
+                </div>
               </div>
               <button
                 onClick={() => {
                   setShowTerminal(false);
                   clearOutput();
                 }}
-                className="text-slate-400 hover:text-white transition-colors"
+                className="text-slate-400 hover:text-white transition-colors p-1 hover:bg-slate-700 rounded"
               >
-                <XMarkIcon className="w-6 h-6" />
+                <XMarkIcon className="w-5 h-5" />
               </button>
             </div>
-            <div className="flex-1 overflow-auto p-4">
-              <pre className="text-green-400 font-mono text-sm whitespace-pre-wrap break-words">
+            <div className="flex-1 overflow-auto p-4 bg-black rounded">
+              <div className="font-mono text-sm text-green-400 whitespace-pre-wrap break-words">
                 {loading ? (
-                  <span className="text-yellow-400">Running... Please wait...</span>
+                  <div>
+                    <span className="text-yellow-400 animate-pulse">$ </span>
+                    <span className="text-cyan-400">
+                      {terminalAction === 'test' && 'npx hardhat test'}
+                      {terminalAction === 'compile' && 'npx hardhat compile'}
+                      {terminalAction === 'deploy' && 'Deploying contract...'}
+                      {terminalAction === 'verify' && 'npx hardhat verify'}
+                    </span>
+                    <span className="animate-pulse">▋</span>
+                    <div className="mt-2 text-slate-400">Running... Please wait...</div>
+                  </div>
                 ) : output ? (
-                  output
+                  <div>
+                    <span className="text-slate-500">$ </span>
+                    <span className="text-cyan-400">
+                      {terminalAction === 'test' && 'npx hardhat test'}
+                      {terminalAction === 'compile' && 'npx hardhat compile'}
+                      {terminalAction === 'deploy' && 'Deploying contract...'}
+                      {terminalAction === 'verify' && 'npx hardhat verify'}
+                    </span>
+                    <div className="mt-2 text-green-400">{output}</div>
+                  </div>
                 ) : error ? (
-                  <span className="text-red-400">{error}</span>
+                  <div>
+                    <span className="text-slate-500">$ </span>
+                    <span className="text-cyan-400">
+                      {terminalAction === 'test' && 'npx hardhat test'}
+                      {terminalAction === 'compile' && 'npx hardhat compile'}
+                      {terminalAction === 'deploy' && 'Deploying contract...'}
+                      {terminalAction === 'verify' && 'npx hardhat verify'}
+                    </span>
+                    <div className="mt-2 text-red-400">{error}</div>
+                  </div>
                 ) : (
-                  <span className="text-slate-500">No output yet...</span>
+                  <div>
+                    <span className="text-slate-500">$ </span>
+                    <span className="text-cyan-400">
+                      {terminalAction === 'test' && 'npx hardhat test'}
+                      {terminalAction === 'compile' && 'npx hardhat compile'}
+                      {terminalAction === 'deploy' && 'Deploying contract...'}
+                      {terminalAction === 'verify' && 'npx hardhat verify'}
+                    </span>
+                    <div className="mt-2 text-slate-500">Ready to run...</div>
+                  </div>
                 )}
-              </pre>
+              </div>
             </div>
             <div className="p-4 border-t border-slate-700 flex justify-end">
               <button
