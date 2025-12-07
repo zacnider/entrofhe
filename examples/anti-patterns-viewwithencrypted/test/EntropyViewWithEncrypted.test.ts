@@ -12,17 +12,53 @@ describe("EntropyViewWithEncrypted", function () {
   async function deployContractFixture() {
     const [owner] = await hre.ethers.getSigners();
     
-    // Use a valid non-zero address for testing (contract requires non-zero address)
-    const ORACLE_ADDRESS = process.env.ENTROPY_ORACLE_ADDRESS || "0x1111111111111111111111111111111111111111";
+    // Check if we're on Sepolia and have real oracle address
+    const network = await hre.ethers.provider.getNetwork();
+    const isSepolia = network.chainId === BigInt(11155111);
+    const realOracleAddress = process.env.ENTROPY_ORACLE_ADDRESS || "0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361";
     
+    let oracleAddress: string;
+    let oracle: any;
+    let chaosEngine: any;
+    
+    if (isSepolia && realOracleAddress && realOracleAddress !== "0x0000000000000000000000000000000000000000") {
+      // Use real deployed EntropyOracle on Sepolia
+      console.log(`Using real EntropyOracle on Sepolia: ${realOracleAddress}`);
+      oracleAddress = realOracleAddress;
+      const OracleFactory = await hre.ethers.getContractFactory("EntropyOracle");
+      oracle = OracleFactory.attach(oracleAddress);
+    } else {
+      // Deploy locally for testing
+      console.log("Deploying EntropyOracle locally for testing...");
+      
+      // Deploy FHEChaosEngine
+      const ChaosEngineFactory = await hre.ethers.getContractFactory("FHEChaosEngine");
+      chaosEngine = await ChaosEngineFactory.deploy(owner.address);
+      await chaosEngine.waitForDeployment();
+      const chaosEngineAddress = await chaosEngine.getAddress();
+      
+      // Initialize master seed for FHEChaosEngine
+      const masterSeedInput = hre.fhevm.createEncryptedInput(chaosEngineAddress, owner.address);
+      masterSeedInput.add64(12345); // Use a test seed value
+      const encryptedMasterSeed = await masterSeedInput.encrypt();
+      await chaosEngine.initializeMasterSeed(encryptedMasterSeed.handles[0], encryptedMasterSeed.inputProof);
+      
+      // Deploy EntropyOracle
+      const OracleFactory = await hre.ethers.getContractFactory("EntropyOracle");
+      oracle = await OracleFactory.deploy(chaosEngineAddress, owner.address, owner.address);
+      await oracle.waitForDeployment();
+      oracleAddress = await oracle.getAddress();
+    }
+    
+    // Deploy EntropyViewWithEncrypted
     const ContractFactory = await hre.ethers.getContractFactory("EntropyViewWithEncrypted");
-    const contract = await ContractFactory.deploy(ORACLE_ADDRESS) as any;
+    const contract = await ContractFactory.deploy(oracleAddress) as any;
     await contract.waitForDeployment();
     const contractAddress = await contract.getAddress();
     
     await hre.fhevm.assertCoprocessorInitialized(contract, "EntropyViewWithEncrypted");
     
-    return { contract, owner, contractAddress, oracleAddress: ORACLE_ADDRESS };
+    return { contract, owner, contractAddress, oracleAddress, oracle, chaosEngine: chaosEngine || null };
   }
 
   describe("Deployment", function () {
