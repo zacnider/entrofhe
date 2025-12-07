@@ -168,8 +168,7 @@ export default async function handler(
         // Wait a bit for file system to sync
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // Verify hardhat is installed locally
-        const nodeModulesPath = path.join(exampleDir, 'node_modules');
+        // Verify hardhat is installed locally (nodeModulesPath already defined above)
         const hardhatPackagePath = path.join(exampleDir, 'node_modules', 'hardhat');
         const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
         
