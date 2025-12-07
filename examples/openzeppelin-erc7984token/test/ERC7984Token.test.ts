@@ -68,7 +68,7 @@ describe("EntropyERC7984Token", function () {
     // Assert coprocessor is initialized
     await hre.fhevm.assertCoprocessorInitialized(contract, "EntropyERC7984Token");
     
-    return { contract, owner, user1, user2, contractAddress, oracleAddress, oracle, chaosEngine };
+    return { contract, owner, user1, user2, contractAddress, oracleAddress, oracle, chaosEngine: chaosEngine || null };
   }
 
   describe("Deployment", function () {
