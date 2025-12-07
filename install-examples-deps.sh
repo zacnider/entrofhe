@@ -20,6 +20,13 @@ for dir in */; do
     cd "${dir}"
     npm install --legacy-peer-deps --silent || {
       echo "⚠️  Warning: Failed to install dependencies for ${dir}, continuing..."
+      cd ..
+      continue
+    }
+    # Generate TypeScript types (skip if it fails, not critical for build)
+    echo "  Generating TypeScript types..."
+    npx hardhat compile --quiet 2>/dev/null || {
+      echo "  ⚠️  Warning: Failed to generate types for ${dir}, continuing..."
     }
     cd ..
   fi

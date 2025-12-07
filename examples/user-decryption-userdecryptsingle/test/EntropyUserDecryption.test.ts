@@ -70,7 +70,7 @@ describe("EntropyUserDecryption", function () {
 
   describe("Entropy-Enhanced Storage", function () {
     it("Should request entropy", async function () {
-      const { contract } = await loadFixture(deployContractFixture);
+      const { contract, oracle } = await loadFixture(deployContractFixture);
       
       
       

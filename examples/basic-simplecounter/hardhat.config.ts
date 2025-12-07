@@ -58,15 +58,6 @@ const config: HardhatUserConfig = {
     cache: "./cache",
     artifacts: "./artifacts",
   },
-  // Include root contracts for FHEChaosEngine and EntropyOracle
-  external: {
-    contracts: [
-      {
-        artifacts: "../../artifacts",
-        deploy: "../../deploy",
-      },
-    ],
-  },
   typechain: {
     outDir: "types",
     target: "ethers-v6",

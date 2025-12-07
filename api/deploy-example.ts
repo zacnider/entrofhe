@@ -1,4 +1,14 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+// Vercel automatically provides these types at runtime
+// Using inline types to avoid build-time dependency issues
+type VercelRequest = {
+  method?: string;
+  body?: any;
+};
+
+type VercelResponse = {
+  status: (code: number) => VercelResponse;
+  json: (data: any) => void;
+};
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import path from 'path';

@@ -69,7 +69,7 @@ describe("EntropyInputProof", function () {
 
   describe("Entropy-Enhanced Input Proof", function () {
     it("Should request entropy", async function () {
-      const { contract } = await loadFixture(deployContractFixture);
+      const { contract, oracle } = await loadFixture(deployContractFixture);
       
       
       
