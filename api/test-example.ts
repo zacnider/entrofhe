@@ -42,6 +42,8 @@ export default async function handler(
 
     // Install dependencies if not already installed (runtime installation)
     const nodeModulesPath = path.join(exampleDir, 'node_modules');
+    let installOutput = '';
+    
     if (!fs.existsSync(nodeModulesPath)) {
       // Install dependencies on first use
       console.log(`Installing dependencies for ${examplePath}... This may take 2-3 minutes on first use.`);
@@ -53,15 +55,12 @@ export default async function handler(
         });
         console.log(`Dependencies installed successfully for ${examplePath}. Running tests...`);
         // Include install output in response
-        if (installResult.stdout || installResult.stderr) {
-          const installOutput = [
-            'Installing dependencies... This may take 2-3 minutes on first use.\n',
-            installResult.stdout || '',
-            installResult.stderr || '',
-            'Dependencies installed successfully. Running tests...\n',
-          ].filter(Boolean).join('\n');
-          // We'll prepend this to the test output
-        }
+        installOutput = [
+          'Installing dependencies... This may take 2-3 minutes on first use.\n',
+          installResult.stdout || '',
+          installResult.stderr || '',
+          'Dependencies installed successfully. Running tests...\n\n',
+        ].filter(Boolean).join('\n');
       } catch (installError: any) {
         return res.status(500).json({
           success: false,
@@ -83,7 +82,7 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      stdout,
+      stdout: installOutput + stdout,
       stderr,
     });
   } catch (error: any) {
