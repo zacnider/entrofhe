@@ -272,6 +272,8 @@ export default async function handler(
     });
   } catch (error: any) {
     console.error('Error in test-example:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error message:', error.message);
     try {
       return res.status(500).json({
         success: false,
@@ -279,9 +281,15 @@ export default async function handler(
         stdout: error.stdout || '',
         stderr: error.stderr || '',
         stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+        details: {
+          examplePath,
+          exampleDir: exampleDir || 'not set',
+          nodeModulesExists: exampleDir ? fs.existsSync(path.join(exampleDir, 'node_modules')) : false,
+        },
       });
     } catch (jsonError: any) {
       // If JSON response fails, send plain text
+      console.error('Failed to send JSON response:', jsonError);
       return res.status(500).send(`Error: ${error.message || 'Unknown error'}`);
     }
   }
