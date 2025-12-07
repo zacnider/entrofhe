@@ -136,8 +136,17 @@ export default async function handler(
       verifyCmd += ` ${constructorArgs.join(' ')}`;
     }
 
+    // Set environment variables to use /tmp for npm cache and logs
+    const env = {
+      ...process.env,
+      HOME: '/tmp',
+      npm_config_cache: '/tmp/.npm',
+      npm_config_prefix: '/tmp/.npm-global',
+    };
+
     const { stdout, stderr } = await execAsync(verifyCmd, {
       cwd: exampleDir,
+      env,
       timeout: 120000, // 2 minutes timeout
       maxBuffer: 10 * 1024 * 1024,
     });

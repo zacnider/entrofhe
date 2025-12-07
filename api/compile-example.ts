@@ -152,8 +152,17 @@ export default async function handler(
     }
 
     // Compile contracts using npx (this also generates types)
+    // Set environment variables to use /tmp for npm cache and logs
+    const env = {
+      ...process.env,
+      HOME: '/tmp',
+      npm_config_cache: '/tmp/.npm',
+      npm_config_prefix: '/tmp/.npm-global',
+    };
+    
     const { stdout, stderr } = await execAsync('npx hardhat compile', {
       cwd: exampleDir,
+      env,
       timeout: 120000, // 2 minutes timeout
       maxBuffer: 10 * 1024 * 1024,
     });
