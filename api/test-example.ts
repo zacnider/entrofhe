@@ -44,14 +44,24 @@ export default async function handler(
     const nodeModulesPath = path.join(exampleDir, 'node_modules');
     if (!fs.existsSync(nodeModulesPath)) {
       // Install dependencies on first use
-      setOutput('Installing dependencies for this example... This may take 2-3 minutes on first use.\n');
+      console.log(`Installing dependencies for ${examplePath}... This may take 2-3 minutes on first use.`);
       try {
-        await execAsync('npm install --legacy-peer-deps', {
+        const installResult = await execAsync('npm install --legacy-peer-deps', {
           cwd: exampleDir,
           timeout: 300000, // 5 minutes for install
           maxBuffer: 10 * 1024 * 1024,
         });
-        setOutput('Dependencies installed successfully. Running tests...\n');
+        console.log(`Dependencies installed successfully for ${examplePath}. Running tests...`);
+        // Include install output in response
+        if (installResult.stdout || installResult.stderr) {
+          const installOutput = [
+            'Installing dependencies... This may take 2-3 minutes on first use.\n',
+            installResult.stdout || '',
+            installResult.stderr || '',
+            'Dependencies installed successfully. Running tests...\n',
+          ].filter(Boolean).join('\n');
+          // We'll prepend this to the test output
+        }
       } catch (installError: any) {
         return res.status(500).json({
           success: false,
