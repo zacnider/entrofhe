@@ -83,8 +83,18 @@ export default async function handler(
       // Install dependencies on first use
       console.log(`Installing dependencies for ${examplePath}... This may take 2-3 minutes on first use.`);
       try {
-        const installResult = await execAsync('npm install --legacy-peer-deps', {
+        // Set environment variables to use /tmp for npm cache and logs
+        // Vercel serverless functions have read-only home directories
+        const env = {
+          ...process.env,
+          HOME: '/tmp',
+          npm_config_cache: '/tmp/.npm',
+          npm_config_prefix: '/tmp/.npm-global',
+        };
+        
+        const installResult = await execAsync('npm install --legacy-peer-deps --cache /tmp/.npm', {
           cwd: exampleDir,
+          env,
           timeout: 300000, // 5 minutes for install
           maxBuffer: 10 * 1024 * 1024,
         });
