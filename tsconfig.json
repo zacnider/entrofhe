@@ -13,7 +13,8 @@
     "moduleResolution": "node",
     "declaration": true,
     "declarationMap": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "types": ["node", "mocha"]
   },
   "include": ["./scripts", "./deploy", "./test", "./api"],
   "exclude": ["node_modules", "dist", "examples", "frontend"]
