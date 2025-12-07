@@ -137,15 +137,21 @@ export default async function handler(
     
     // Check if hardhat exists in node_modules
     const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
-    const hardhatCmd = fs.existsSync(hardhatPath) 
-      ? hardhatPath 
-      : 'npx --yes hardhat';
-    
-    // Build verify command
-    let verifyCmd = `${hardhatCmd} verify --network ${network} ${contractAddress}`;
-    if (constructorArgs && constructorArgs.length > 0) {
-      verifyCmd += ` ${constructorArgs.join(' ')}`;
+    if (!fs.existsSync(hardhatPath)) {
+      return res.status(500).json({
+        success: false,
+        error: 'Hardhat not found in node_modules. Please install dependencies first.',
+        stdout: '',
+        stderr: '',
+      });
     }
+    
+    // Build verify command using local hardhat
+    let verifyArgs = `verify --network ${network} ${contractAddress}`;
+    if (constructorArgs && constructorArgs.length > 0) {
+      verifyArgs += ` ${constructorArgs.join(' ')}`;
+    }
+    const verifyCmd = `node "${hardhatPath}" ${verifyArgs}`;
 
     // Set environment variables to use /tmp for npm cache and logs
     const env = {

@@ -148,6 +148,18 @@ export default async function handler(
           maxBuffer: 10 * 1024 * 1024,
         });
         console.log(`Dependencies installed successfully for ${examplePath}. Running tests...`);
+        
+        // Verify hardhat is installed locally
+        const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
+        if (!fs.existsSync(hardhatPath)) {
+          return res.status(500).json({
+            success: false,
+            error: 'Hardhat not found in node_modules after installation',
+            stdout: installResult.stdout || '',
+            stderr: installResult.stderr || '',
+          });
+        }
+        
         // Include install output in response
         installOutput = [
           'Installing dependencies... This may take 2-3 minutes on first use.\n',
@@ -180,11 +192,17 @@ export default async function handler(
     
     // Check if hardhat exists in node_modules
     const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
-    const hardhatCmd = fs.existsSync(hardhatPath) 
-      ? hardhatPath 
-      : 'npx --yes hardhat';
+    if (!fs.existsSync(hardhatPath)) {
+      return res.status(500).json({
+        success: false,
+        error: 'Hardhat not found in node_modules. Please install dependencies first.',
+        stdout: '',
+        stderr: '',
+      });
+    }
     
-    const { stdout, stderr } = await execAsync(`${hardhatCmd} test`, {
+    // Use local hardhat installation
+    const { stdout, stderr } = await execAsync(`node "${hardhatPath}" test`, {
       cwd: exampleDir,
       env,
       timeout: 60000, // 60 seconds timeout

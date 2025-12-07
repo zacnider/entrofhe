@@ -137,12 +137,23 @@ export default async function handler(
           npm_config_cache: '/tmp/.npm',
         };
         
-        await execAsync('npm install --legacy-peer-deps --cache /tmp/.npm', {
+        const installResult = await execAsync('npm install --legacy-peer-deps --cache /tmp/.npm', {
           cwd: exampleDir,
           env,
           timeout: 300000, // 5 minutes for install
           maxBuffer: 10 * 1024 * 1024,
         });
+        
+        // Verify hardhat is installed locally
+        const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
+        if (!fs.existsSync(hardhatPath)) {
+          return res.status(500).json({
+            success: false,
+            error: 'Hardhat not found in node_modules after installation',
+            stdout: installResult.stdout || '',
+            stderr: installResult.stderr || '',
+          });
+        }
       } catch (installError: any) {
         return res.status(500).json({
           success: false,
@@ -166,11 +177,17 @@ export default async function handler(
     
     // Check if hardhat exists in node_modules
     const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
-    const hardhatCmd = fs.existsSync(hardhatPath) 
-      ? hardhatPath 
-      : 'npx --yes hardhat';
+    if (!fs.existsSync(hardhatPath)) {
+      return res.status(500).json({
+        success: false,
+        error: 'Hardhat not found in node_modules. Please install dependencies first.',
+        stdout: '',
+        stderr: '',
+      });
+    }
     
-    const { stdout, stderr } = await execAsync(`${hardhatCmd} compile`, {
+    // Use local hardhat installation
+    const { stdout, stderr } = await execAsync(`node "${hardhatPath}" compile`, {
       cwd: exampleDir,
       env,
       timeout: 120000, // 2 minutes timeout
