@@ -144,6 +144,23 @@ export default async function handler(
         };
         
         console.log('Starting npm install...');
+        console.log('Working directory:', exampleDir);
+        console.log('package.json exists:', fs.existsSync(path.join(exampleDir, 'package.json')));
+        
+        // Read package.json to verify it exists and has hardhat
+        let packageJsonContent = '';
+        try {
+          packageJsonContent = fs.readFileSync(path.join(exampleDir, 'package.json'), 'utf-8');
+          const packageJson = JSON.parse(packageJsonContent);
+          console.log('package.json dependencies:', Object.keys(packageJson.dependencies || {}).slice(0, 10));
+          console.log('package.json devDependencies:', Object.keys(packageJson.devDependencies || {}).slice(0, 10));
+          if (!packageJson.dependencies?.hardhat && !packageJson.devDependencies?.hardhat) {
+            console.log('WARNING: hardhat not found in package.json dependencies or devDependencies!');
+          }
+        } catch (e) {
+          console.log('Could not read/parse package.json:', e);
+        }
+        
         const installResult = await execAsync('npm install --legacy-peer-deps --cache /tmp/.npm 2>&1', {
           cwd: exampleDir,
           env,
@@ -152,20 +169,33 @@ export default async function handler(
         });
         
         console.log('npm install completed');
+        console.log('Install stdout (first 500 chars):', (installResult.stdout || '').substring(0, 500));
+        console.log('Install stderr (first 500 chars):', (installResult.stderr || '').substring(0, 500));
         console.log('Install stdout length:', (installResult.stdout || '').length);
         console.log('Install stderr length:', (installResult.stderr || '').length);
         
-        // Check if npm install actually succeeded
+        // Check if npm install actually succeeded - be more lenient
         const installOutputCheck = (installResult.stdout || '') + (installResult.stderr || '');
-        if (installOutputCheck.includes('npm ERR') || installOutputCheck.includes('Error:')) {
+        const hasErrors = installOutputCheck.includes('npm ERR') || 
+                         (installOutputCheck.includes('Error:') && !installOutputCheck.includes('npm warn'));
+        
+        // Check for success indicators
+        const hasSuccess = installOutputCheck.includes('added') || 
+                          installOutputCheck.includes('up to date') ||
+                          installOutputCheck.includes('packages in');
+        
+        if (hasErrors && !hasSuccess) {
+          console.log('npm install appears to have failed');
           return res.status(500).json({
             success: false,
             error: 'npm install failed',
             stdout: installResult.stdout || '',
             stderr: installResult.stderr || '',
-            installOutput: installOutputCheck,
+            installOutput: installOutputCheck.substring(0, 2000), // Limit output
           });
         }
+        
+        console.log('npm install appears successful');
         
         // Wait a bit for file system to sync
         await new Promise(resolve => setTimeout(resolve, 2000)); // Increased wait time
@@ -202,16 +232,46 @@ export default async function handler(
         // Check if hardhat package exists (even if binary doesn't)
         if (!fs.existsSync(hardhatPackagePath)) {
           console.log('Hardhat package not found in node_modules. Installation may have failed.');
+          console.log('Full node_modules path:', nodeModulesPath);
+          console.log('Hardhat package path:', hardhatPackagePath);
+          
+          // Try to find hardhat in a different location
+          const alternativePaths = [
+            path.join(exampleDir, 'node_modules', '@nomicfoundation', 'hardhat'),
+            path.join(exampleDir, 'node_modules', 'hardhat', 'package.json'),
+          ];
+          
+          for (const altPath of alternativePaths) {
+            if (fs.existsSync(altPath)) {
+              console.log('Found hardhat at alternative path:', altPath);
+            }
+          }
+          
+          // List all directories in node_modules to see what was actually installed
+          if (fs.existsSync(nodeModulesPath)) {
+            try {
+              const allPackages = fs.readdirSync(nodeModulesPath);
+              console.log('All packages in node_modules:', allPackages.slice(0, 30));
+              const hardhatRelated = allPackages.filter(p => p.toLowerCase().includes('hardhat'));
+              console.log('Hardhat-related packages:', hardhatRelated);
+            } catch (e) {
+              console.log('Could not list node_modules:', e);
+            }
+          }
+          
           return res.status(500).json({
             success: false,
             error: 'Hardhat package not found after installation. npm install may have failed.',
-            stdout: installResult.stdout || '',
-            stderr: installResult.stderr || '',
-            installOutput: installOutputCheck,
+            stdout: installResult.stdout?.substring(0, 1000) || '',
+            stderr: installResult.stderr?.substring(0, 1000) || '',
+            installOutput: installOutputCheck.substring(0, 2000),
             debug: {
               nodeModulesExists: fs.existsSync(nodeModulesPath),
               hardhatPackageExists: fs.existsSync(hardhatPackagePath),
               hardhatBinaryExists: fs.existsSync(hardhatPath),
+              exampleDir,
+              nodeModulesPath,
+              hardhatPackagePath,
             },
           });
         }
