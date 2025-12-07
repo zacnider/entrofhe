@@ -15,7 +15,7 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["./scripts", "./deploy", "./test"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["./scripts", "./deploy", "./test", "./api"],
+  "exclude": ["node_modules", "dist", "examples", "frontend"]
 }
 

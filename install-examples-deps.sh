@@ -25,8 +25,14 @@ for dir in */; do
     }
     # Generate TypeScript types (skip if it fails, not critical for build)
     echo "  Generating TypeScript types..."
-    npx hardhat compile --quiet 2>/dev/null || {
+    # Create types directory if it doesn't exist
+    mkdir -p types 2>/dev/null || true
+    # Run hardhat compile to generate types (with timeout to prevent hanging)
+    timeout 120 npx hardhat compile --quiet 2>/dev/null || {
       echo "  ⚠️  Warning: Failed to generate types for ${dir}, continuing..."
+      # Create a dummy types file to prevent import errors
+      mkdir -p types 2>/dev/null || true
+      echo "// Placeholder types file" > types/index.ts 2>/dev/null || true
     }
     cd ..
   fi
