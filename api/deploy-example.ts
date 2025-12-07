@@ -23,14 +23,10 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { examplePath, network = 'sepolia', privateKey } = req.body;
+  const { examplePath, network = 'sepolia' } = req.body;
 
   if (!examplePath) {
     return res.status(400).json({ error: 'examplePath is required' });
-  }
-
-  if (!privateKey) {
-    return res.status(400).json({ error: 'privateKey is required for deployment' });
   }
 
   // Security: Validate examplePath
@@ -38,40 +34,33 @@ export default async function handler(
     return res.status(400).json({ error: 'Invalid example path' });
   }
 
+  // Backend server URL
+  const BACKEND_URL = process.env.BACKEND_API_URL || 'http://185.169.180.167:3001';
+  const API_KEY = process.env.BACKEND_API_KEY || '';
+
   try {
-    const exampleDir = path.join(process.cwd(), 'examples', examplePath);
-
-    // Set environment variables for deployment
-    const env = {
-      ...process.env,
-      PRIVATE_KEY: privateKey,
-      SEPOLIA_RPC_URL: process.env.SEPOLIA_RPC_URL || 'https://eth-sepolia.g.alchemy.com/v2/c9DvcY4j1bI2_h-vv9HVU',
-    };
-
-    // Deploy contract
-    const { stdout, stderr } = await execAsync(`npm run deploy:${network}`, {
-      cwd: exampleDir,
-      env,
-      timeout: 300000, // 5 minutes timeout
-      maxBuffer: 10 * 1024 * 1024,
+    // Forward request to backend server
+    const response = await fetch(`${BACKEND_URL}/api/deploy`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(API_KEY && { 'X-API-Key': API_KEY }),
+      },
+      body: JSON.stringify({ examplePath, network }),
     });
 
-    // Extract contract address from output
-    const addressMatch = stdout.match(/Contract deployed to: (0x[a-fA-F0-9]{40})/);
-    const contractAddress = addressMatch ? addressMatch[1] : null;
+    const data = await response.json();
 
-    return res.status(200).json({
-      success: true,
-      contractAddress,
-      stdout,
-      stderr,
-    });
+    if (!response.ok) {
+      return res.status(response.status).json(data);
+    }
+
+    return res.status(200).json(data);
   } catch (error: any) {
+    console.error('Error forwarding to backend:', error);
     return res.status(500).json({
       success: false,
-      error: error.message,
-      stdout: error.stdout || '',
-      stderr: error.stderr || '',
+      error: error.message || 'Failed to connect to backend server',
     });
   }
 }

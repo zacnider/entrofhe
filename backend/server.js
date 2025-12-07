@@ -1,0 +1,297 @@
+const express = require('express');
+const cors = require('cors');
+const { exec } = require('child_process');
+const { promisify } = require('util');
+const path = require('path');
+const fs = require('fs');
+
+const execAsync = promisify(exec);
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Test endpoint
+app.post('/api/test', async (req, res) => {
+  const { examplePath } = req.body;
+
+  if (!examplePath) {
+    return res.status(400).json({ error: 'examplePath is required' });
+  }
+
+  // Security: Validate examplePath
+  if (examplePath.includes('..') || examplePath.includes('/')) {
+    return res.status(400).json({ error: 'Invalid example path' });
+  }
+
+  try {
+    // Examples directory path
+    const rootDir = process.env.EXAMPLES_ROOT || '/root';
+    const exampleDir = path.join(rootDir, 'examples', examplePath);
+
+    if (!fs.existsSync(exampleDir)) {
+      return res.status(404).json({ error: `Example not found: ${examplePath}` });
+    }
+
+    // Check if node_modules exists, if not install
+    const nodeModulesPath = path.join(exampleDir, 'node_modules');
+    if (!fs.existsSync(nodeModulesPath)) {
+      console.log(`Installing dependencies for ${examplePath}...`);
+      await execAsync('npm install --legacy-peer-deps', {
+        cwd: exampleDir,
+        timeout: 300000, // 5 minutes
+        maxBuffer: 10 * 1024 * 1024,
+      });
+    }
+
+    // Run Hardhat tests
+    console.log(`Running tests for ${examplePath}...`);
+    const { stdout, stderr } = await execAsync('npx hardhat test', {
+      cwd: exampleDir,
+      env: {
+        ...process.env,
+        TS_NODE_TRANSPILE_ONLY: 'true',
+      },
+      timeout: 120000, // 2 minutes
+      maxBuffer: 10 * 1024 * 1024,
+    });
+
+    return res.json({
+      success: true,
+      stdout,
+      stderr,
+    });
+  } catch (error) {
+    console.error('Test error:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      stdout: error.stdout || '',
+      stderr: error.stderr || '',
+    });
+  }
+});
+
+// Compile endpoint
+app.post('/api/compile', async (req, res) => {
+  const { examplePath, contractName } = req.body;
+
+  if (!examplePath) {
+    return res.status(400).json({ error: 'examplePath is required' });
+  }
+
+  // Security: Validate examplePath
+  if (examplePath.includes('..') || examplePath.includes('/')) {
+    return res.status(400).json({ error: 'Invalid example path' });
+  }
+
+  try {
+    // Examples directory path
+    const rootDir = process.env.EXAMPLES_ROOT || '/root';
+    const exampleDir = path.join(rootDir, 'examples', examplePath);
+
+    if (!fs.existsSync(exampleDir)) {
+      return res.status(404).json({ error: `Example not found: ${examplePath}` });
+    }
+
+    // Check if node_modules exists, if not install
+    const nodeModulesPath = path.join(exampleDir, 'node_modules');
+    if (!fs.existsSync(nodeModulesPath)) {
+      console.log(`Installing dependencies for ${examplePath}...`);
+      await execAsync('npm install --legacy-peer-deps', {
+        cwd: exampleDir,
+        timeout: 300000,
+        maxBuffer: 10 * 1024 * 1024,
+      });
+    }
+
+    // Run Hardhat compile
+    console.log(`Compiling ${examplePath}...`);
+    const { stdout, stderr } = await execAsync('npx hardhat compile', {
+      cwd: exampleDir,
+      env: {
+        ...process.env,
+        TS_NODE_TRANSPILE_ONLY: 'true',
+      },
+      timeout: 120000,
+      maxBuffer: 10 * 1024 * 1024,
+    });
+
+    // Try to find contract artifact if contractName is provided
+    let bytecode = null;
+    let abi = null;
+
+    if (contractName) {
+      const artifactsDir = path.join(exampleDir, 'artifacts', 'contracts');
+      if (fs.existsSync(artifactsDir)) {
+        // Find contract artifact recursively
+        const findArtifact = (dir, name) => {
+          const files = fs.readdirSync(dir, { withFileTypes: true });
+          for (const file of files) {
+            const fullPath = path.join(dir, file.name);
+            if (file.isDirectory()) {
+              const found = findArtifact(fullPath, name);
+              if (found) return found;
+            } else if (file.name === `${name}.json`) {
+              return fullPath;
+            }
+          }
+          return null;
+        };
+
+        const artifactPath = findArtifact(artifactsDir, contractName);
+        if (artifactPath) {
+          const artifact = JSON.parse(fs.readFileSync(artifactPath, 'utf-8'));
+          bytecode = artifact.bytecode;
+          abi = artifact.abi;
+        }
+      }
+    }
+
+    return res.json({
+      success: true,
+      stdout,
+      stderr,
+      bytecode,
+      abi,
+    });
+  } catch (error) {
+    console.error('Compile error:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      stdout: error.stdout || '',
+      stderr: error.stderr || '',
+    });
+  }
+});
+
+// Deploy endpoint
+app.post('/api/deploy', async (req, res) => {
+  const { examplePath, network = 'sepolia' } = req.body;
+
+  if (!examplePath) {
+    return res.status(400).json({ error: 'examplePath is required' });
+  }
+
+  // Security: Validate examplePath
+  if (examplePath.includes('..') || examplePath.includes('/')) {
+    return res.status(400).json({ error: 'Invalid example path' });
+  }
+
+  try {
+    // Examples directory path
+    const rootDir = process.env.EXAMPLES_ROOT || '/root';
+    const exampleDir = path.join(rootDir, 'examples', examplePath);
+
+    if (!fs.existsSync(exampleDir)) {
+      return res.status(404).json({ error: `Example not found: ${examplePath}` });
+    }
+
+    // Check if node_modules exists, if not install
+    const nodeModulesPath = path.join(exampleDir, 'node_modules');
+    if (!fs.existsSync(nodeModulesPath)) {
+      console.log(`Installing dependencies for ${examplePath}...`);
+      await execAsync('npm install --legacy-peer-deps', {
+        cwd: exampleDir,
+        timeout: 300000,
+        maxBuffer: 10 * 1024 * 1024,
+      });
+    }
+
+    // Note: Deployment should be done via frontend using Wagmi
+    // This endpoint is kept for compatibility but returns a message
+    return res.json({
+      success: false,
+      error: 'Deployment should be done via frontend using wallet connection',
+      message: 'Please use the Deploy button in the frontend which uses Wagmi for wallet-based deployment',
+    });
+  } catch (error) {
+    console.error('Deploy error:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      stdout: error.stdout || '',
+      stderr: error.stderr || '',
+    });
+  }
+});
+
+// Verify endpoint
+app.post('/api/verify', async (req, res) => {
+  const { examplePath, contractAddress, network = 'sepolia', constructorArgs = [] } = req.body;
+
+  if (!examplePath || !contractAddress) {
+    return res.status(400).json({ error: 'examplePath and contractAddress are required' });
+  }
+
+  // Security: Validate examplePath
+  if (examplePath.includes('..') || examplePath.includes('/')) {
+    return res.status(400).json({ error: 'Invalid example path' });
+  }
+
+  try {
+    // Examples directory path
+    const rootDir = process.env.EXAMPLES_ROOT || '/root';
+    const exampleDir = path.join(rootDir, 'examples', examplePath);
+
+    if (!fs.existsSync(exampleDir)) {
+      return res.status(404).json({ error: `Example not found: ${examplePath}` });
+    }
+
+    // Check if node_modules exists, if not install
+    const nodeModulesPath = path.join(exampleDir, 'node_modules');
+    if (!fs.existsSync(nodeModulesPath)) {
+      console.log(`Installing dependencies for ${examplePath}...`);
+      await execAsync('npm install --legacy-peer-deps', {
+        cwd: exampleDir,
+        timeout: 300000,
+        maxBuffer: 10 * 1024 * 1024,
+      });
+    }
+
+    // Build verify command
+    let verifyCmd = `npx hardhat verify --network ${network} ${contractAddress}`;
+    if (constructorArgs && constructorArgs.length > 0) {
+      verifyCmd += ` ${constructorArgs.join(' ')}`;
+    }
+
+    console.log(`Verifying ${contractAddress} on ${network}...`);
+    const { stdout, stderr } = await execAsync(verifyCmd, {
+      cwd: exampleDir,
+      env: {
+        ...process.env,
+        TS_NODE_TRANSPILE_ONLY: 'true',
+      },
+      timeout: 120000,
+      maxBuffer: 10 * 1024 * 1024,
+    });
+
+    return res.json({
+      success: true,
+      stdout,
+      stderr,
+    });
+  } catch (error) {
+    console.error('Verify error:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      stdout: error.stdout || '',
+      stderr: error.stderr || '',
+    });
+  }
+});
+
+app.listen(PORT, () => {
+  console.log(`🚀 Backend server running on port ${PORT}`);
+  console.log(`📁 Working directory: ${process.cwd()}`);
+});
+

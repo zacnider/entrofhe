@@ -10,12 +10,6 @@ type VercelResponse = {
   json: (data: any) => VercelResponse;
   send: (data: string) => VercelResponse;
 };
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import * as path from 'path';
-import * as fs from 'fs';
-
-const execAsync = promisify(exec);
 
 export default async function handler(
   req: VercelRequest,
@@ -34,6 +28,36 @@ export default async function handler(
   // Security: Validate examplePath to prevent path traversal
   if (examplePath.includes('..') || examplePath.includes('/')) {
     return res.status(400).json({ error: 'Invalid example path' });
+  }
+
+  // Backend server URL
+  const BACKEND_URL = process.env.BACKEND_API_URL || 'http://185.169.180.167:3001';
+  const API_KEY = process.env.BACKEND_API_KEY || '';
+
+  try {
+    // Forward request to backend server
+    const response = await fetch(`${BACKEND_URL}/api/test`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(API_KEY && { 'X-API-Key': API_KEY }),
+      },
+      body: JSON.stringify({ examplePath }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return res.status(response.status).json(data);
+    }
+
+    return res.status(200).json(data);
+  } catch (error: any) {
+    console.error('Error forwarding to backend:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to connect to backend server',
+    });
   }
 
   let exampleDir: string | null = null;
