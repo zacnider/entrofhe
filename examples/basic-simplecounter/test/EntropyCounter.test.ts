@@ -11,29 +11,48 @@ import { EntropyCounter } from "../types";
 describe("EntropyCounter", function () {
   /**
    * @notice Deploy contracts fixture
-   * @dev Deploys FHEChaosEngine, EntropyOracle, and EntropyCounter
+   * @dev Uses real EntropyOracle on Sepolia if available, otherwise deploys locally
    */
   async function deployContractsFixture() {
     const [owner, user1, user2] = await hre.ethers.getSigners();
     
-    // Deploy FHEChaosEngine
-    const ChaosEngineFactory = await hre.ethers.getContractFactory("FHEChaosEngine");
-    const chaosEngine = await ChaosEngineFactory.deploy(owner.address);
-    await chaosEngine.waitForDeployment();
-    const chaosEngineAddress = await chaosEngine.getAddress();
+    // Check if we're on Sepolia and have real oracle address
+    const network = await hre.ethers.provider.getNetwork();
+    const isSepolia = network.chainId === BigInt(11155111);
+    const realOracleAddress = process.env.ENTROPY_ORACLE_ADDRESS || "0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361";
     
-    // Initialize master seed for FHEChaosEngine
-    const chaosEngineContractAddress = chaosEngineAddress;
-    const masterSeedInput = hre.fhevm.createEncryptedInput(chaosEngineContractAddress, owner.address);
-    masterSeedInput.add64(12345); // Use a test seed value
-    const encryptedMasterSeed = await masterSeedInput.encrypt();
-    await chaosEngine.initializeMasterSeed(encryptedMasterSeed.handles[0], encryptedMasterSeed.inputProof);
+    let oracleAddress: string;
+    let oracle: any;
+    let chaosEngine: any;
     
-    // Deploy EntropyOracle
-    const OracleFactory = await hre.ethers.getContractFactory("EntropyOracle");
-    const oracle = await OracleFactory.deploy(chaosEngineAddress, owner.address, owner.address);
-    await oracle.waitForDeployment();
-    const oracleAddress = await oracle.getAddress();
+    if (isSepolia && realOracleAddress && realOracleAddress !== "0x0000000000000000000000000000000000000000") {
+      // Use real deployed EntropyOracle on Sepolia
+      console.log(`Using real EntropyOracle on Sepolia: ${realOracleAddress}`);
+      oracleAddress = realOracleAddress;
+      const OracleFactory = await hre.ethers.getContractFactory("EntropyOracle");
+      oracle = OracleFactory.attach(oracleAddress);
+    } else {
+      // Deploy locally for testing
+      console.log("Deploying EntropyOracle locally for testing...");
+      
+      // Deploy FHEChaosEngine
+      const ChaosEngineFactory = await hre.ethers.getContractFactory("FHEChaosEngine");
+      chaosEngine = await ChaosEngineFactory.deploy(owner.address);
+      await chaosEngine.waitForDeployment();
+      const chaosEngineAddress = await chaosEngine.getAddress();
+      
+      // Initialize master seed for FHEChaosEngine
+      const masterSeedInput = hre.fhevm.createEncryptedInput(chaosEngineAddress, owner.address);
+      masterSeedInput.add64(12345); // Use a test seed value
+      const encryptedMasterSeed = await masterSeedInput.encrypt();
+      await chaosEngine.initializeMasterSeed(encryptedMasterSeed.handles[0], encryptedMasterSeed.inputProof);
+      
+      // Deploy EntropyOracle
+      const OracleFactory = await hre.ethers.getContractFactory("EntropyOracle");
+      oracle = await OracleFactory.deploy(chaosEngineAddress, owner.address, owner.address);
+      await oracle.waitForDeployment();
+      oracleAddress = await oracle.getAddress();
+    }
     
     // Deploy EntropyCounter
     const ContractFactory = await hre.ethers.getContractFactory("EntropyCounter");
@@ -53,7 +72,7 @@ describe("EntropyCounter", function () {
       contractAddress, 
       oracleAddress,
       oracle,
-      chaosEngine
+      chaosEngine: chaosEngine || null // May be null if using real oracle
     };
   }
 
@@ -176,4 +195,3 @@ describe("EntropyCounter", function () {
     });
   });
 });
-
