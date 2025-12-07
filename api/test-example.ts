@@ -170,7 +170,7 @@ export default async function handler(
     
     // Note: Type generation happens automatically during hardhat test
     // No need to pre-generate types - hardhat compile runs as part of test execution
-    // Run tests using npx to ensure hardhat is found
+    // Use local hardhat installation instead of npx to avoid global installation issues
     // Set environment variables to use /tmp for npm cache and logs
     const env = {
       ...process.env,
@@ -178,7 +178,13 @@ export default async function handler(
       npm_config_cache: '/tmp/.npm',
     };
     
-    const { stdout, stderr } = await execAsync('npx hardhat test', {
+    // Check if hardhat exists in node_modules
+    const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
+    const hardhatCmd = fs.existsSync(hardhatPath) 
+      ? hardhatPath 
+      : 'npx --yes hardhat';
+    
+    const { stdout, stderr } = await execAsync(`${hardhatCmd} test`, {
       cwd: exampleDir,
       env,
       timeout: 60000, // 60 seconds timeout

@@ -135,8 +135,14 @@ export default async function handler(
     // Create /tmp directories for npm if not already created
     fs.mkdirSync('/tmp/.npm', { recursive: true });
     
+    // Check if hardhat exists in node_modules
+    const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
+    const hardhatCmd = fs.existsSync(hardhatPath) 
+      ? hardhatPath 
+      : 'npx --yes hardhat';
+    
     // Build verify command
-    let verifyCmd = `npx hardhat verify --network ${network} ${contractAddress}`;
+    let verifyCmd = `${hardhatCmd} verify --network ${network} ${contractAddress}`;
     if (constructorArgs && constructorArgs.length > 0) {
       verifyCmd += ` ${constructorArgs.join(' ')}`;
     }

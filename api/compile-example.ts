@@ -156,7 +156,7 @@ export default async function handler(
     // Create /tmp directories for npm if not already created
     fs.mkdirSync('/tmp/.npm', { recursive: true });
     
-    // Compile contracts using npx (this also generates types)
+    // Compile contracts using local hardhat installation
     // Set environment variables to use /tmp for npm cache and logs
     const env = {
       ...process.env,
@@ -164,7 +164,13 @@ export default async function handler(
       npm_config_cache: '/tmp/.npm',
     };
     
-    const { stdout, stderr } = await execAsync('npx hardhat compile', {
+    // Check if hardhat exists in node_modules
+    const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
+    const hardhatCmd = fs.existsSync(hardhatPath) 
+      ? hardhatPath 
+      : 'npx --yes hardhat';
+    
+    const { stdout, stderr } = await execAsync(`${hardhatCmd} compile`, {
       cwd: exampleDir,
       env,
       timeout: 120000, // 2 minutes timeout
