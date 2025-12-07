@@ -37,8 +37,27 @@ export default async function handler(
 
   try {
     // Path to example directory (relative to project root)
-    // In Vercel, process.cwd() is the root, so we go to examples directly
-    const exampleDir = path.join(process.cwd(), 'examples', examplePath);
+    // In Vercel, process.cwd() might be /var/task or /vercel/path0
+    const rootDir = process.cwd();
+    const exampleDir = path.join(rootDir, 'examples', examplePath);
+
+    // Debug: Log paths for troubleshooting
+    console.log('Root directory:', rootDir);
+    console.log('Example directory:', exampleDir);
+    console.log('Example path exists:', fs.existsSync(exampleDir));
+
+    // Check if example directory exists
+    if (!fs.existsSync(exampleDir)) {
+      return res.status(404).json({
+        success: false,
+        error: `Example directory not found: ${exampleDir}`,
+        debug: {
+          rootDir,
+          examplePath,
+          exampleDir,
+        },
+      });
+    }
 
     // Install dependencies if not already installed (runtime installation)
     const nodeModulesPath = path.join(exampleDir, 'node_modules');
@@ -86,11 +105,13 @@ export default async function handler(
       stderr,
     });
   } catch (error: any) {
+    console.error('Error in test-example:', error);
     return res.status(500).json({
       success: false,
-      error: error.message,
+      error: error.message || 'Unknown error',
       stdout: error.stdout || '',
       stderr: error.stderr || '',
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
     });
   }
 }
