@@ -7,12 +7,13 @@ type VercelRequest = {
 
 type VercelResponse = {
   status: (code: number) => VercelResponse;
-  json: (data: any) => void;
+  json: (data: any) => VercelResponse;
+  send: (data: string) => VercelResponse;
 };
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import path from 'path';
-import fs from 'fs';
+import * as path from 'path';
+import * as fs from 'fs';
 
 const execAsync = promisify(exec);
 
@@ -164,8 +165,7 @@ export default async function handler(
         // Wait a bit for file system to sync
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // Verify node_modules exists
-        const nodeModulesPath = path.join(exampleDir, 'node_modules');
+        // Verify node_modules exists (nodeModulesPath already defined above)
         if (!fs.existsSync(nodeModulesPath)) {
           return res.status(500).json({
             success: false,
@@ -200,13 +200,13 @@ export default async function handler(
     
     // Check if node_modules exists
     const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
-    const nodeModulesPath = path.join(exampleDir, 'node_modules');
+    const nodeModulesCheckPath = path.join(exampleDir, 'node_modules');
     
     // Use npm run compile if hardhat binary not found (npm run uses local hardhat automatically)
     let compileCmd: string;
     if (fs.existsSync(hardhatPath)) {
       compileCmd = `node "${hardhatPath}" compile`;
-    } else if (fs.existsSync(nodeModulesPath)) {
+    } else if (fs.existsSync(nodeModulesCheckPath)) {
       // Use npm run compile which will use local hardhat from node_modules
       compileCmd = 'npm run compile';
     } else {

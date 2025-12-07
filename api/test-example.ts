@@ -7,12 +7,13 @@ type VercelRequest = {
 
 type VercelResponse = {
   status: (code: number) => VercelResponse;
-  json: (data: any) => void;
+  json: (data: any) => VercelResponse;
+  send: (data: string) => VercelResponse;
 };
 import { exec } from 'child_process';
 import { promisify } from 'util';
-import path from 'path';
-import fs from 'fs';
+import * as path from 'path';
+import * as fs from 'fs';
 
 const execAsync = promisify(exec);
 
