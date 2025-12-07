@@ -51,6 +51,14 @@ app.post('/api/test', async (req, res) => {
       });
     }
 
+    // Clean up Mac OS X resource fork files before running tests
+    try {
+      const { execSync } = require('child_process');
+      execSync('find . -name "._*" -type f -delete', { cwd: exampleDir });
+    } catch (e) {
+      // Ignore cleanup errors
+    }
+
     // Run Hardhat tests
     console.log(`Running tests for ${examplePath}...`);
     const { stdout, stderr } = await execAsync('npx hardhat test', {
@@ -110,6 +118,14 @@ app.post('/api/compile', async (req, res) => {
         timeout: 300000,
         maxBuffer: 10 * 1024 * 1024,
       });
+    }
+
+    // Clean up Mac OS X resource fork files before compiling
+    try {
+      const { execSync } = require('child_process');
+      execSync('find . -name "._*" -type f -delete', { cwd: exampleDir });
+    } catch (e) {
+      // Ignore cleanup errors
     }
 
     // Run Hardhat compile
@@ -263,12 +279,22 @@ app.post('/api/verify', async (req, res) => {
       verifyCmd += ` ${constructorArgs.join(' ')}`;
     }
 
+    // Clean up Mac OS X resource fork files before verifying
+    try {
+      const { execSync } = require('child_process');
+      execSync('find . -name "._*" -type f -delete', { cwd: exampleDir });
+    } catch (e) {
+      // Ignore cleanup errors
+    }
+
     console.log(`Verifying ${contractAddress} on ${network}...`);
     const { stdout, stderr } = await execAsync(verifyCmd, {
       cwd: exampleDir,
       env: {
         ...process.env,
         TS_NODE_TRANSPILE_ONLY: 'true',
+        ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY || '',
+        SEPOLIA_RPC_URL: process.env.SEPOLIA_RPC_URL || '',
       },
       timeout: 120000,
       maxBuffer: 10 * 1024 * 1024,
