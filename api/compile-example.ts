@@ -173,26 +173,32 @@ export default async function handler(
         
         // Check if npm install actually succeeded - be more lenient
         const installOutput = (installResult.stdout || '') + (installResult.stderr || '');
-        const hasErrors = installOutput.includes('npm ERR') || 
-                         (installOutput.includes('Error:') && !installOutput.includes('npm warn'));
+        
+        // Log full output for debugging (first 2000 chars)
+        console.log('npm install full output (first 2000 chars):', installOutput.substring(0, 2000));
+        
+        const hasErrors = installOutput.includes('npm ERR') && 
+                         !installOutput.includes('npm ERR! peer dep missing'); // Ignore peer dep warnings
         
         // Check for success indicators
         const hasSuccess = installOutput.includes('added') || 
                           installOutput.includes('up to date') ||
-                          installOutput.includes('packages in');
+                          installOutput.includes('packages in') ||
+                          installOutput.includes('audited');
         
+        // Only fail if there are actual errors AND no success indicators
         if (hasErrors && !hasSuccess) {
           console.log('npm install appears to have failed');
           return res.status(500).json({
             success: false,
             error: 'npm install failed',
-            stdout: installResult.stdout || '',
-            stderr: installResult.stderr || '',
-            installOutput: installOutput.substring(0, 2000), // Limit output
+            stdout: installResult.stdout?.substring(0, 2000) || '',
+            stderr: installResult.stderr?.substring(0, 2000) || '',
+            installOutput: installOutput.substring(0, 2000),
           });
         }
         
-        console.log('npm install appears successful');
+        console.log('npm install appears successful (hasSuccess:', hasSuccess, ', hasErrors:', hasErrors, ')');
         
         // Wait a bit for file system to sync
         await new Promise(resolve => setTimeout(resolve, 2000)); // Increased wait time
@@ -240,26 +246,47 @@ export default async function handler(
               console.log('All packages in node_modules:', allPackages.slice(0, 30));
               const hardhatRelated = allPackages.filter(p => p.toLowerCase().includes('hardhat'));
               console.log('Hardhat-related packages:', hardhatRelated);
+              
+              // Check if hardhat is installed but in a different location
+              if (hardhatRelated.length > 0) {
+                console.log('Found hardhat-related packages, but not at expected path. Will try npx fallback.');
+                // Don't return error, let npx handle it
+              } else {
+                // No hardhat at all - this is a real problem
+                console.log('No hardhat-related packages found. npm install likely failed silently.');
+                return res.status(500).json({
+                  success: false,
+                  error: 'Hardhat package not found after installation. npm install may have failed.',
+                  stdout: installResult.stdout?.substring(0, 1000) || '',
+                  stderr: installResult.stderr?.substring(0, 1000) || '',
+                  installOutput: installOutput.substring(0, 2000),
+                  debug: {
+                    nodeModulesExists: fs.existsSync(nodeModulesPath),
+                    hardhatPackageExists: fs.existsSync(hardhatPackagePath),
+                    hardhatBinaryExists: fs.existsSync(hardhatPath),
+                    exampleDir,
+                    nodeModulesPath,
+                    hardhatPackagePath,
+                    allPackages: allPackages.slice(0, 20),
+                  },
+                });
+              }
             } catch (e) {
               console.log('Could not list node_modules:', e);
+              // If we can't list, assume it's there and let npx handle it
             }
+          } else {
+            // node_modules doesn't exist - this is a real problem
+            return res.status(500).json({
+              success: false,
+              error: 'node_modules directory not created after installation.',
+              stdout: installResult.stdout?.substring(0, 1000) || '',
+              stderr: installResult.stderr?.substring(0, 1000) || '',
+              installOutput: installOutput.substring(0, 2000),
+            });
           }
-          
-          return res.status(500).json({
-            success: false,
-            error: 'Hardhat package not found after installation. npm install may have failed.',
-            stdout: installResult.stdout?.substring(0, 1000) || '',
-            stderr: installResult.stderr?.substring(0, 1000) || '',
-            installOutput: installOutput.substring(0, 2000),
-            debug: {
-              nodeModulesExists: fs.existsSync(nodeModulesPath),
-              hardhatPackageExists: fs.existsSync(hardhatPackagePath),
-              hardhatBinaryExists: fs.existsSync(hardhatPath),
-              exampleDir,
-              nodeModulesPath,
-              hardhatPackagePath,
-            },
-          });
+        } else {
+          console.log('Hardhat package found at:', hardhatPackagePath);
         }
         
         console.log('Installation successful');
