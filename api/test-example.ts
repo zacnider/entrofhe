@@ -223,7 +223,7 @@ export default async function handler(
       npm_config_cache: '/tmp/.npm',
     };
     
-    // Check if hardhat exists in node_modules (nodeModulesPath already defined above)
+    // Check if hardhat exists in node_modules (nodeModulesPath already defined above at line 104)
     const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
     
     // Use hardhat directly instead of npm run to avoid cross-env dependency
@@ -231,8 +231,19 @@ export default async function handler(
     if (fs.existsSync(hardhatPath)) {
       testCmd = `node "${hardhatPath}" test`;
     } else if (fs.existsSync(nodeModulesPath)) {
-      // Use npm run test which will use local hardhat from node_modules
-      testCmd = 'npm run test';
+      // Try to find hardhat in node_modules/hardhat directly
+      const hardhatPackagePath = path.join(exampleDir, 'node_modules', 'hardhat');
+      if (fs.existsSync(hardhatPackagePath)) {
+        // Use hardhat directly
+        testCmd = 'node node_modules/hardhat/internal/cli/cli.js test';
+      } else {
+        return res.status(500).json({
+          success: false,
+          error: 'Hardhat not found in node_modules. Please install dependencies first.',
+          stdout: '',
+          stderr: '',
+        });
+      }
     } else {
       return res.status(500).json({
         success: false,
