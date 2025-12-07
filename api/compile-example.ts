@@ -282,6 +282,8 @@ export default async function handler(
       ...process.env,
       HOME: '/tmp',
       npm_config_cache: '/tmp/.npm',
+      NODE_PATH: path.join(exampleDir, 'node_modules'), // Add node_modules to NODE_PATH
+      TS_NODE_TRANSPILE_ONLY: 'true', // For TypeScript compilation
     };
     
     // Check if node_modules exists
@@ -290,29 +292,24 @@ export default async function handler(
     
     // Use hardhat directly instead of npm run to avoid cross-env dependency
     let compileCmd: string;
+    const hardhatPackagePath = path.join(exampleDir, 'node_modules', 'hardhat');
+    
     if (fs.existsSync(hardhatPath)) {
+      // Direct binary path - best option
       compileCmd = `node "${hardhatPath}" compile`;
+      console.log('Using hardhat binary:', hardhatPath);
+    } else if (fs.existsSync(hardhatPackagePath)) {
+      // Package exists but binary doesn't - use npx as fallback
+      compileCmd = `npx --yes hardhat compile`;
+      console.log('Using npx hardhat (package exists but binary missing)');
     } else if (fs.existsSync(nodeModulesCheckPath)) {
-      // Try to find hardhat in node_modules/hardhat directly
-      const hardhatPackagePath = path.join(exampleDir, 'node_modules', 'hardhat');
-      if (fs.existsSync(hardhatPackagePath)) {
-        // Use hardhat directly with TS_NODE_TRANSPILE_ONLY env var
-        compileCmd = 'TS_NODE_TRANSPILE_ONLY=true node node_modules/hardhat/internal/cli/cli.js compile';
-      } else {
-        return res.status(500).json({
-          success: false,
-          error: 'Hardhat not found in node_modules. Please install dependencies first.',
-          stdout: '',
-          stderr: '',
-        });
-      }
+      // node_modules exists but hardhat package not found - try npx
+      compileCmd = `npx --yes hardhat compile`;
+      console.log('Using npx hardhat (node_modules exists but hardhat package missing)');
     } else {
-      return res.status(500).json({
-        success: false,
-        error: 'node_modules not found. Please install dependencies first.',
-        stdout: '',
-        stderr: '',
-      });
+      // Last resort: use npx which will download and run hardhat
+      compileCmd = `npx --yes hardhat compile`;
+      console.log('Using npx hardhat (no local installation found)');
     }
     
     console.log('Running compile command:', compileCmd);
