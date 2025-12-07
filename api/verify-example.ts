@@ -42,6 +42,28 @@ export default async function handler(
     const nodeModulesPath = path.join(exampleDir, 'node_modules');
     if (!fs.existsSync(nodeModulesPath)) {
       // Install dependencies on first use
+      
+      // Ensure example directory exists and is writable
+      if (!fs.existsSync(exampleDir)) {
+        return res.status(404).json({
+          success: false,
+          error: `Example directory does not exist: ${exampleDir}`,
+        });
+      }
+      
+      // Create node_modules directory if it doesn't exist
+      try {
+        if (!fs.existsSync(nodeModulesPath)) {
+          fs.mkdirSync(nodeModulesPath, { recursive: true });
+        }
+      } catch (mkdirError: any) {
+        console.error('Failed to create node_modules directory:', mkdirError);
+        return res.status(500).json({
+          success: false,
+          error: `Failed to create node_modules directory: ${mkdirError.message}`,
+        });
+      }
+      
       try {
         // Set environment variables to use /tmp for npm cache and logs
         // Vercel serverless functions have read-only home directories
