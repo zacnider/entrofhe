@@ -50,6 +50,8 @@ export default async function handler(
       });
     }
 
+    // Note: Type generation happens automatically during hardhat test
+    // No need to pre-generate types - hardhat compile runs as part of test execution
     // Run tests using npx to ensure hardhat is found
     const { stdout, stderr } = await execAsync('npx hardhat test', {
       cwd: exampleDir,
