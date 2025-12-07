@@ -36,12 +36,14 @@ export default async function handler(
     return res.status(400).json({ error: 'Invalid example path' });
   }
 
+  let exampleDir: string | null = null;
+  
   try {
     // Always use /tmp for examples in Vercel serverless functions
     // This ensures we have a writable directory
     const tmpExamplesDir = '/tmp/examples';
     const tmpExampleDir = path.join(tmpExamplesDir, examplePath);
-    let exampleDir = tmpExampleDir;
+    exampleDir = tmpExampleDir;
 
     // Check if example already exists in /tmp
     if (!fs.existsSync(tmpExampleDir)) {
@@ -285,6 +287,7 @@ export default async function handler(
           examplePath,
           exampleDir: exampleDir || 'not set',
           nodeModulesExists: exampleDir ? fs.existsSync(path.join(exampleDir, 'node_modules')) : false,
+          errorType: error.name || 'Unknown',
         },
       });
     } catch (jsonError: any) {
