@@ -67,3 +67,12 @@ done
 echo "✅ All placeholder type files created successfully!"
 echo "ℹ️  Dependencies will be installed at runtime (first test/compile call)"
 
+# Copy examples folder to frontend/build for Vercel serverless functions
+# This ensures examples are available in the deployment
+cd ..
+if [ -d "frontend/build" ]; then
+  echo "📁 Copying examples folder to frontend/build for Vercel functions..."
+  cp -r examples frontend/build/examples 2>/dev/null || true
+  echo "✅ Examples folder copied to build output"
+fi
+
