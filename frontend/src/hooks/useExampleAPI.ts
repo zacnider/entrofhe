@@ -29,10 +29,25 @@ export const useExampleAPI = () => {
         body: JSON.stringify(body),
       });
 
-      const data = await response.json();
+      // Check content type before parsing JSON
+      const contentType = response.headers.get('content-type');
+      let data: any;
+      
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        // If not JSON, read as text
+        const text = await response.text();
+        try {
+          data = JSON.parse(text);
+        } catch {
+          // If parsing fails, treat as error message
+          throw new Error(text || 'API request failed');
+        }
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'API request failed');
+        throw new Error(data.error || data.message || 'API request failed');
       }
 
       // Combine stdout and stderr for display

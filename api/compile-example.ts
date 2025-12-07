@@ -254,13 +254,18 @@ export default async function handler(
     });
   } catch (error: any) {
     console.error('Error in compile-example:', error);
-    return res.status(500).json({
-      success: false,
-      error: error.message || 'Unknown error',
-      stdout: error.stdout || '',
-      stderr: error.stderr || '',
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-    });
+    try {
+      return res.status(500).json({
+        success: false,
+        error: error.message || 'Unknown error',
+        stdout: error.stdout || '',
+        stderr: error.stderr || '',
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      });
+    } catch (jsonError: any) {
+      // If JSON response fails, send plain text
+      return res.status(500).send(`Error: ${error.message || 'Unknown error'}`);
+    }
   }
 }
 
