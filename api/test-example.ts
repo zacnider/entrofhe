@@ -244,9 +244,13 @@ export default async function handler(
     }
     
     console.log('Running test command:', testCmd);
+    const testEnv = {
+      ...env,
+      TS_NODE_TRANSPILE_ONLY: 'true', // Add this for TypeScript compilation
+    };
     const { stdout, stderr } = await execAsync(testCmd, {
       cwd: exampleDir,
-      env,
+      env: testEnv,
       timeout: 60000, // 60 seconds timeout
       maxBuffer: 10 * 1024 * 1024, // 10MB buffer
     });

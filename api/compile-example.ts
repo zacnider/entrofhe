@@ -202,13 +202,24 @@ export default async function handler(
     const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
     const nodeModulesCheckPath = path.join(exampleDir, 'node_modules');
     
-    // Use npm run compile if hardhat binary not found (npm run uses local hardhat automatically)
+    // Use hardhat directly instead of npm run to avoid cross-env dependency
     let compileCmd: string;
     if (fs.existsSync(hardhatPath)) {
       compileCmd = `node "${hardhatPath}" compile`;
     } else if (fs.existsSync(nodeModulesCheckPath)) {
-      // Use npm run compile which will use local hardhat from node_modules
-      compileCmd = 'npm run compile';
+      // Try to find hardhat in node_modules/hardhat directly
+      const hardhatPackagePath = path.join(exampleDir, 'node_modules', 'hardhat');
+      if (fs.existsSync(hardhatPackagePath)) {
+        // Use hardhat directly with TS_NODE_TRANSPILE_ONLY env var
+        compileCmd = 'TS_NODE_TRANSPILE_ONLY=true node node_modules/hardhat/internal/cli/cli.js compile';
+      } else {
+        return res.status(500).json({
+          success: false,
+          error: 'Hardhat not found in node_modules. Please install dependencies first.',
+          stdout: '',
+          stderr: '',
+        });
+      }
     } else {
       return res.status(500).json({
         success: false,
@@ -219,9 +230,13 @@ export default async function handler(
     }
     
     console.log('Running compile command:', compileCmd);
+    const compileEnv = {
+      ...env,
+      TS_NODE_TRANSPILE_ONLY: 'true', // Add this for TypeScript compilation
+    };
     const { stdout, stderr } = await execAsync(compileCmd, {
       cwd: exampleDir,
-      env,
+      env: compileEnv,
       timeout: 120000, // 2 minutes timeout
       maxBuffer: 10 * 1024 * 1024,
     });
