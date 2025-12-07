@@ -36,7 +36,7 @@ describe("EntropySwapERC7984ToERC20", function () {
     const contract = await ContractFactory.deploy(
       oracleAddress,
       ERC20_ADDRESS
-    ) as EntropySwapERC7984ToERC20;
+    ) as any;
     await contract.waitForDeployment();
     
     const contractAddress = await contract.getAddress();

@@ -31,7 +31,7 @@ describe("EntropyVestingWallet", function () {
     const oracleAddress = await oracle.getAddress();
     
     const ContractFactory = await hre.ethers.getContractFactory("EntropyVestingWallet");
-    const contract = await ContractFactory.deploy(oracleAddress) as EntropyVestingWallet;
+    const contract = await ContractFactory.deploy(oracleAddress) as any;
     await contract.waitForDeployment();
     
     const contractAddress = await contract.getAddress();

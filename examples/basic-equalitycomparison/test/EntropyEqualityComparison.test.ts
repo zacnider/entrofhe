@@ -32,7 +32,7 @@ describe("EntropyEqualityComparison", function () {
     
     // Deploy EntropyEqualityComparison
     const ContractFactory = await hre.ethers.getContractFactory("EntropyEqualityComparison");
-    const contract = await ContractFactory.deploy(oracleAddress) as EntropyEqualityComparison;
+    const contract = await ContractFactory.deploy(oracleAddress) as any;
     await contract.waitForDeployment();
     const contractAddress = await contract.getAddress();
     

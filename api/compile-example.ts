@@ -48,7 +48,7 @@ export default async function handler(
       });
     }
 
-    // Compile contracts using npx
+    // Compile contracts using npx (this also generates types)
     const { stdout, stderr } = await execAsync('npx hardhat compile', {
       cwd: exampleDir,
       timeout: 120000, // 2 minutes timeout

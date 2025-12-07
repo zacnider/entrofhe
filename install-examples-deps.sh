@@ -27,14 +27,43 @@ for dir in */; do
     # Type generation happens automatically during hardhat test/compile
     # These placeholder files prevent TypeScript errors during Vercel build check
     mkdir -p types 2>/dev/null || true
-    # Create a minimal type file to prevent import errors
+    # Create comprehensive placeholder type files
     # Hardhat will generate real types when test/compile runs
-    cat > types/index.ts << 'EOF'
+    # Get contract name from directory name (e.g., basic-simplecounter -> EntropyCounter)
+    dir_name=$(basename "$dir" | sed 's/[^a-zA-Z0-9]//g')
+    contract_name=$(echo "$dir_name" | sed 's/^basic//; s/^encryption//; s/^userdecryption//; s/^publicdecryption//; s/^accesscontrol//; s/^inputproof//; s/^antipatterns//; s/^handles//; s/^advanced//; s/^openzeppelin//' | sed 's/^./\U&/')
+    
+    # Create index.ts with all possible contract types
+    cat > types/index.ts << EOF
 // Placeholder types - generated automatically by hardhat during test/compile
 // This file prevents TypeScript import errors during build
 // Real types are generated when hardhat compile/test runs
-export type AnyContract = any;
+
 export type BaseContract = any;
+export type Contract = any;
+export type ContractFactory = any;
+
+// Export all possible contract types as any to prevent import errors
+export type EntropyCounter = any;
+export type EntropyArithmetic = any;
+export type EntropyEqualityComparison = any;
+export type EntropyEncryption = any;
+export type EntropyUserDecryption = any;
+export type EntropyPublicDecryption = any;
+export type EntropyAccessControl = any;
+export type EntropyInputProof = any;
+export type EntropyMissingAllowThis = any;
+export type EntropyViewWithEncrypted = any;
+export type EntropyHandleLifecycle = any;
+export type EntropyNFT = any;
+export type RandomNumberGenerator = any;
+export type SimpleLottery = any;
+export type VideoDemo = any;
+export type EntropyERC7984Token = any;
+export type EntropyERC7984ToERC20Wrapper = any;
+export type EntropySwapERC7984ToERC20 = any;
+export type EntropySwapERC7984ToERC7984 = any;
+export type EntropyVestingWallet = any;
 EOF
     cd ..
   fi

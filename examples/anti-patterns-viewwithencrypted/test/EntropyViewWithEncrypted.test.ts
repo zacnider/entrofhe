@@ -16,7 +16,7 @@ describe("EntropyViewWithEncrypted", function () {
     const ORACLE_ADDRESS = process.env.ENTROPY_ORACLE_ADDRESS || "0x1111111111111111111111111111111111111111";
     
     const ContractFactory = await hre.ethers.getContractFactory("EntropyViewWithEncrypted");
-    const contract = await ContractFactory.deploy(ORACLE_ADDRESS) as EntropyViewWithEncrypted;
+    const contract = await ContractFactory.deploy(ORACLE_ADDRESS) as any;
     await contract.waitForDeployment();
     const contractAddress = await contract.getAddress();
     

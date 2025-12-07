@@ -32,7 +32,7 @@ describe("EntropyHandleLifecycle", function () {
     
     // Deploy EntropyHandleLifecycle
     const ContractFactory = await hre.ethers.getContractFactory("EntropyHandleLifecycle");
-    const contract = await ContractFactory.deploy(oracleAddress) as EntropyHandleLifecycle;
+    const contract = await ContractFactory.deploy(oracleAddress) as any;
     await contract.waitForDeployment();
     const contractAddress = await contract.getAddress();
     

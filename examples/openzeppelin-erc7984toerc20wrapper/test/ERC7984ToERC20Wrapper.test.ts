@@ -36,7 +36,7 @@ describe("EntropyERC7984ToERC20Wrapper", function () {
       oracleAddress,
       "Wrapped Token",
       "WPT"
-    ) as EntropyERC7984ToERC20Wrapper;
+    ) as any;
     await contract.waitForDeployment();
     
     const contractAddress = await contract.getAddress();

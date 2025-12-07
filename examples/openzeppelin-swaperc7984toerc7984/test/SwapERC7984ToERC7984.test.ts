@@ -38,7 +38,7 @@ describe("EntropySwapERC7984ToERC7984", function () {
       oracleAddress,
       TOKEN_A,
       TOKEN_B
-    ) as EntropySwapERC7984ToERC7984;
+    ) as any;
     await contract.waitForDeployment();
     
     const contractAddress = await contract.getAddress();

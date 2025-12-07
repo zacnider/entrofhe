@@ -40,7 +40,7 @@ describe("EntropyERC7984Token", function () {
       oracleAddress,
       "Test Token",
       "TEST"
-    ) as EntropyERC7984Token;
+    ) as any;
     await contract.waitForDeployment();
     
     const contractAddress = await contract.getAddress();

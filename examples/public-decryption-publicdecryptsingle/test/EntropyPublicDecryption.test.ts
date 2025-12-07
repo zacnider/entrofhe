@@ -32,7 +32,7 @@ describe("EntropyPublicDecryption", function () {
     
     // Deploy EntropyPublicDecryption
     const ContractFactory = await hre.ethers.getContractFactory("EntropyPublicDecryption");
-    const contract = await ContractFactory.deploy(oracleAddress) as EntropyPublicDecryption;
+    const contract = await ContractFactory.deploy(oracleAddress) as any;
     await contract.waitForDeployment();
     const contractAddress = await contract.getAddress();
     

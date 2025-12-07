@@ -37,7 +37,7 @@ describe("EntropyCounter", function () {
     
     // Deploy EntropyCounter
     const ContractFactory = await hre.ethers.getContractFactory("EntropyCounter");
-    const contract = await ContractFactory.deploy(oracleAddress) as EntropyCounter;
+    const contract = await ContractFactory.deploy(oracleAddress) as any;
     await contract.waitForDeployment();
     
     const contractAddress = await contract.getAddress();

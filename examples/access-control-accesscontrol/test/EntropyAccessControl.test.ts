@@ -32,7 +32,7 @@ describe("EntropyAccessControl", function () {
     
     // Deploy EntropyAccessControl
     const ContractFactory = await hre.ethers.getContractFactory("EntropyAccessControl");
-    const contract = await ContractFactory.deploy(oracleAddress) as EntropyAccessControl;
+    const contract = await ContractFactory.deploy(oracleAddress) as any;
     await contract.waitForDeployment();
     const contractAddress = await contract.getAddress();
     
