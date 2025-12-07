@@ -5,7 +5,8 @@
   "framework": "create-react-app",
   "functions": {
     "api/**/*.ts": {
-      "maxDuration": 300
+      "maxDuration": 300,
+      "memory": 3008
     }
   }
 }

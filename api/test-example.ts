@@ -30,13 +30,15 @@ export default async function handler(
     // In Vercel, process.cwd() is the root, so we go to examples directly
     const exampleDir = path.join(process.cwd(), 'examples', examplePath);
 
-    // Check if node_modules exists, if not install dependencies
+    // Dependencies should be pre-installed during build
+    // This is just a fallback check
     const nodeModulesPath = path.join(exampleDir, 'node_modules');
     if (!fs.existsSync(nodeModulesPath)) {
-      // Install dependencies (only once, cached by Vercel)
+      // Fallback: Install if somehow missing (shouldn't happen if build script ran)
+      console.warn(`⚠️  node_modules not found for ${examplePath}, installing...`);
       await execAsync('npm install --legacy-peer-deps', {
         cwd: exampleDir,
-        timeout: 180000, // 3 minutes for install
+        timeout: 300000, // 5 minutes for install
         maxBuffer: 10 * 1024 * 1024,
       });
     }

@@ -27,22 +27,17 @@ export default async function handler(
   try {
     const exampleDir = path.join(process.cwd(), 'examples', examplePath);
 
-    // Dependencies should be installed during build
-    // If not, try to install (fallback)
+    // Dependencies should be pre-installed during build
+    // This is just a fallback check
     const nodeModulesPath = path.join(exampleDir, 'node_modules');
     if (!fs.existsSync(nodeModulesPath)) {
-      try {
-        await execAsync('npm install --legacy-peer-deps', {
-          cwd: exampleDir,
-          timeout: 180000, // 3 minutes for install
-          maxBuffer: 10 * 1024 * 1024,
-        });
-      } catch (installError: any) {
-        return res.status(500).json({
-          success: false,
-          error: `Dependencies not installed. Please ensure example dependencies are installed during build. ${installError.message}`,
-        });
-      }
+      // Fallback: Install if somehow missing (shouldn't happen if build script ran)
+      console.warn(`⚠️  node_modules not found for ${examplePath}, installing...`);
+      await execAsync('npm install --legacy-peer-deps', {
+        cwd: exampleDir,
+        timeout: 300000, // 5 minutes for install
+        maxBuffer: 10 * 1024 * 1024,
+      });
     }
 
     // Build verify command
