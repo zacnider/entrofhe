@@ -35,7 +35,7 @@ export default async function handler(
   }
 
   // Backend server URL
-  const BACKEND_URL = process.env.BACKEND_API_URL || 'http://185.169.180.167:3001';
+  const BACKEND_URL = process.env.BACKEND_API_URL || 'http://185.169.180.167:3002';
   const API_KEY = process.env.BACKEND_API_KEY || '';
 
   try {
