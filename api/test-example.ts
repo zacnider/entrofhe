@@ -44,7 +44,10 @@ export default async function handler(
       path.join(rootDir, 'examples', examplePath), // Root level
       path.join(rootDir, '..', 'examples', examplePath), // One level up
       path.join(rootDir, '../..', 'examples', examplePath), // Two levels up
+      path.join(rootDir, 'frontend', 'build', 'examples', examplePath), // Build output (if copied)
+      path.join(rootDir, '..', 'frontend', 'build', 'examples', examplePath), // One level up from build
       path.join('/var/task', 'examples', examplePath), // Vercel default
+      path.join('/var/task', 'frontend', 'build', 'examples', examplePath), // Vercel build output
       path.join('/vercel/path0', 'examples', examplePath), // Vercel build path
     ];
 

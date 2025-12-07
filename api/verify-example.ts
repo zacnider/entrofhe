@@ -36,7 +36,47 @@ export default async function handler(
   }
 
   try {
-    const exampleDir = path.join(process.cwd(), 'examples', examplePath);
+    // Path to example directory (relative to project root)
+    // In Vercel, process.cwd() might be /var/task or /vercel/path0
+    // When outputDirectory is used, we need to check multiple possible locations
+    const rootDir = process.cwd();
+    const possiblePaths = [
+      path.join(rootDir, 'examples', examplePath), // Root level
+      path.join(rootDir, '..', 'examples', examplePath), // One level up
+      path.join(rootDir, '../..', 'examples', examplePath), // Two levels up
+      path.join(rootDir, 'frontend', 'build', 'examples', examplePath), // Build output (if copied)
+      path.join(rootDir, '..', 'frontend', 'build', 'examples', examplePath), // One level up from build
+      path.join('/var/task', 'examples', examplePath), // Vercel default
+      path.join('/var/task', 'frontend', 'build', 'examples', examplePath), // Vercel build output
+      path.join('/vercel/path0', 'examples', examplePath), // Vercel build path
+    ];
+
+    let exampleDir = null;
+    for (const possiblePath of possiblePaths) {
+      if (fs.existsSync(possiblePath)) {
+        exampleDir = possiblePath;
+        break;
+      }
+    }
+
+    // Debug: Log paths for troubleshooting
+    console.log('Root directory:', rootDir);
+    console.log('Possible paths checked:', possiblePaths);
+    console.log('Example directory found:', exampleDir);
+
+    // Check if example directory exists
+    if (!exampleDir || !fs.existsSync(exampleDir)) {
+      return res.status(404).json({
+        success: false,
+        error: `Example directory not found: ${examplePath}`,
+        debug: {
+          rootDir,
+          examplePath,
+          possiblePaths,
+          exampleDir,
+        },
+      });
+    }
 
     // Install dependencies if not already installed (runtime installation)
     const nodeModulesPath = path.join(exampleDir, 'node_modules');
