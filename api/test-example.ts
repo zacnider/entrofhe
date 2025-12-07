@@ -150,12 +150,46 @@ export default async function handler(
         
         // Verify hardhat is installed locally
         const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
-        if (!fs.existsSync(hardhatPath)) {
+        const nodeModulesPath = path.join(exampleDir, 'node_modules');
+        const hardhatPackagePath = path.join(exampleDir, 'node_modules', 'hardhat');
+        
+        console.log('Checking installation...');
+        console.log('node_modules exists:', fs.existsSync(nodeModulesPath));
+        console.log('hardhat package exists:', fs.existsSync(hardhatPackagePath));
+        console.log('hardhat binary exists:', fs.existsSync(hardhatPath));
+        
+        if (!fs.existsSync(nodeModulesPath)) {
           return res.status(500).json({
             success: false,
-            error: 'Hardhat not found in node_modules after installation',
+            error: 'node_modules directory not created after installation',
             stdout: installResult.stdout || '',
             stderr: installResult.stderr || '',
+          });
+        }
+        
+        if (!fs.existsSync(hardhatPath)) {
+          // Try to list what's in node_modules/.bin
+          const binDir = path.join(exampleDir, 'node_modules', '.bin');
+          let binContents = 'Directory does not exist';
+          if (fs.existsSync(binDir)) {
+            try {
+              binContents = fs.readdirSync(binDir).join(', ');
+            } catch (e) {
+              binContents = `Error reading directory: ${e}`;
+            }
+          }
+          
+          return res.status(500).json({
+            success: false,
+            error: `Hardhat not found in node_modules/.bin after installation. Contents: ${binContents}`,
+            stdout: installResult.stdout || '',
+            stderr: installResult.stderr || '',
+            debug: {
+              nodeModulesExists: fs.existsSync(nodeModulesPath),
+              hardhatPackageExists: fs.existsSync(hardhatPackagePath),
+              hardhatBinaryExists: fs.existsSync(hardhatPath),
+              binContents,
+            },
           });
         }
         
