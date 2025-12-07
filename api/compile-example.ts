@@ -30,9 +30,16 @@ export default async function handler(
     return res.status(400).json({ error: 'Invalid example path' });
   }
 
-  // Backend server URL
-  const BACKEND_URL = process.env.BACKEND_API_URL || 'http://185.169.180.167:3002';
+  // Backend server URL - must be set in Vercel environment variables
+  const BACKEND_URL = process.env.BACKEND_API_URL;
   const API_KEY = process.env.BACKEND_API_KEY || '';
+  
+  if (!BACKEND_URL) {
+    return res.status(500).json({
+      success: false,
+      error: 'Backend server URL not configured. Please set BACKEND_API_URL environment variable.',
+    });
+  }
 
   try {
     // Forward request to backend server
