@@ -107,7 +107,6 @@ export default async function handler(
       try {
         // Create /tmp directories for npm
         fs.mkdirSync('/tmp/.npm', { recursive: true });
-        fs.mkdirSync('/tmp/.npm-global', { recursive: true });
         
         // Set environment variables to use /tmp for npm cache and logs
         // Vercel serverless functions have read-only home directories
@@ -115,7 +114,6 @@ export default async function handler(
           ...process.env,
           HOME: '/tmp',
           npm_config_cache: '/tmp/.npm',
-          npm_config_prefix: '/tmp/.npm-global',
         };
         
         await execAsync('npm install --legacy-peer-deps --cache /tmp/.npm', {
@@ -136,7 +134,6 @@ export default async function handler(
 
     // Create /tmp directories for npm if not already created
     fs.mkdirSync('/tmp/.npm', { recursive: true });
-    fs.mkdirSync('/tmp/.npm-global', { recursive: true });
     
     // Build verify command
     let verifyCmd = `npx hardhat verify --network ${network} ${contractAddress}`;
@@ -149,7 +146,6 @@ export default async function handler(
       ...process.env,
       HOME: '/tmp',
       npm_config_cache: '/tmp/.npm',
-      npm_config_prefix: '/tmp/.npm-global',
     };
 
     const { stdout, stderr } = await execAsync(verifyCmd, {
