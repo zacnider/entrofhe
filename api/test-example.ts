@@ -154,14 +154,14 @@ export default async function handler(
         console.log('Install stderr length:', (installResult.stderr || '').length);
         
         // Check if npm install actually succeeded
-        const installOutput = (installResult.stdout || '') + (installResult.stderr || '');
-        if (installOutput.includes('npm ERR') || installOutput.includes('Error:')) {
+        const installOutputCheck = (installResult.stdout || '') + (installResult.stderr || '');
+        if (installOutputCheck.includes('npm ERR') || installOutputCheck.includes('Error:')) {
           return res.status(500).json({
             success: false,
             error: 'npm install failed',
             stdout: installResult.stdout || '',
             stderr: installResult.stderr || '',
-            installOutput,
+            installOutput: installOutputCheck,
           });
         }
         
@@ -183,7 +183,7 @@ export default async function handler(
             error: 'node_modules directory not created after installation',
             stdout: installResult.stdout || '',
             stderr: installResult.stderr || '',
-            installOutput,
+            installOutput: installOutputCheck,
           });
         }
         
@@ -223,11 +223,10 @@ export default async function handler(
       npm_config_cache: '/tmp/.npm',
     };
     
-    // Check if hardhat exists in node_modules
+    // Check if hardhat exists in node_modules (nodeModulesPath already defined above)
     const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
-    const nodeModulesPath = path.join(exampleDir, 'node_modules');
     
-    // Use npm run test if hardhat binary not found (npm run uses local hardhat automatically)
+    // Use hardhat directly instead of npm run to avoid cross-env dependency
     let testCmd: string;
     if (fs.existsSync(hardhatPath)) {
       testCmd = `node "${hardhatPath}" test`;
