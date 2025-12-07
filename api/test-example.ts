@@ -40,14 +40,26 @@ export default async function handler(
     // In Vercel, process.cwd() is the root, so we go to examples directly
     const exampleDir = path.join(process.cwd(), 'examples', examplePath);
 
-    // Dependencies should be pre-installed during build
-    // If node_modules is missing, return an error (shouldn't happen if build script ran)
+    // Install dependencies if not already installed (runtime installation)
     const nodeModulesPath = path.join(exampleDir, 'node_modules');
     if (!fs.existsSync(nodeModulesPath)) {
-      return res.status(500).json({
-        success: false,
-        error: `Dependencies not found for ${examplePath}. Please ensure build completed successfully.`,
-      });
+      // Install dependencies on first use
+      setOutput('Installing dependencies for this example... This may take 2-3 minutes on first use.\n');
+      try {
+        await execAsync('npm install --legacy-peer-deps', {
+          cwd: exampleDir,
+          timeout: 300000, // 5 minutes for install
+          maxBuffer: 10 * 1024 * 1024,
+        });
+        setOutput('Dependencies installed successfully. Running tests...\n');
+      } catch (installError: any) {
+        return res.status(500).json({
+          success: false,
+          error: `Failed to install dependencies: ${installError.message}`,
+          stdout: installError.stdout || '',
+          stderr: installError.stderr || '',
+        });
+      }
     }
 
     // Note: Type generation happens automatically during hardhat test

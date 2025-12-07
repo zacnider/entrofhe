@@ -1,11 +1,11 @@
 #!/bin/bash
-# Install dependencies for all examples
-# This runs during Vercel build to pre-install dependencies
-# This ensures fast runtime performance for users
+# Create placeholder type files for all examples
+# Dependencies will be installed at runtime (first test/compile call)
+# This prevents build timeout (reduces build time from 45+ min to ~5 min)
 
 set -e  # Exit on error
 
-echo "📦 Installing dependencies for all examples..."
+echo "📦 Creating placeholder type files for all examples..."
 
 cd examples
 
@@ -16,13 +16,8 @@ current=0
 for dir in */; do
   if [ -f "${dir}package.json" ]; then
     current=$((current + 1))
-    echo "[$current/$total] Installing dependencies for ${dir}..."
+    echo "[$current/$total] Creating placeholder types for ${dir}..."
     cd "${dir}"
-    npm install --legacy-peer-deps --silent || {
-      echo "⚠️  Warning: Failed to install dependencies for ${dir}, continuing..."
-      cd ..
-      continue
-    }
     # Create placeholder types directory to prevent import errors
     # Type generation happens automatically during hardhat test/compile
     # These placeholder files prevent TypeScript errors during Vercel build check
@@ -69,5 +64,6 @@ EOF
   fi
 done
 
-echo "✅ All example dependencies installed successfully!"
+echo "✅ All placeholder type files created successfully!"
+echo "ℹ️  Dependencies will be installed at runtime (first test/compile call)"
 
