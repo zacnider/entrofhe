@@ -29,8 +29,19 @@ export default async function handler(
     // In Vercel, process.cwd() is the root, so we go to examples directly
     const exampleDir = path.join(process.cwd(), 'examples', examplePath);
 
-    // Run tests
-    const { stdout, stderr } = await execAsync('npm test', {
+    // Check if node_modules exists, if not install dependencies
+    const nodeModulesPath = path.join(exampleDir, 'node_modules');
+    if (!fs.existsSync(nodeModulesPath)) {
+      // Install dependencies (only once, cached by Vercel)
+      await execAsync('npm install --legacy-peer-deps', {
+        cwd: exampleDir,
+        timeout: 180000, // 3 minutes for install
+        maxBuffer: 10 * 1024 * 1024,
+      });
+    }
+
+    // Run tests using npx to ensure hardhat is found
+    const { stdout, stderr } = await execAsync('npx hardhat test', {
       cwd: exampleDir,
       timeout: 60000, // 60 seconds timeout
       maxBuffer: 10 * 1024 * 1024, // 10MB buffer

@@ -2,5 +2,10 @@
   "buildCommand": "cd frontend && npm install --legacy-peer-deps && npm run build",
   "outputDirectory": "frontend/build",
   "installCommand": "cd frontend && npm install --legacy-peer-deps",
-  "framework": "create-react-app"
+  "framework": "create-react-app",
+  "functions": {
+    "api/**/*.ts": {
+      "maxDuration": 300
+    }
+  }
 }

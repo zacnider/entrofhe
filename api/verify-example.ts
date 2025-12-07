@@ -27,6 +27,17 @@ export default async function handler(
   try {
     const exampleDir = path.join(process.cwd(), 'examples', examplePath);
 
+    // Check if node_modules exists, if not install dependencies
+    const nodeModulesPath = path.join(exampleDir, 'node_modules');
+    if (!fs.existsSync(nodeModulesPath)) {
+      // Install dependencies (only once, cached by Vercel)
+      await execAsync('npm install --legacy-peer-deps', {
+        cwd: exampleDir,
+        timeout: 180000, // 3 minutes for install
+        maxBuffer: 10 * 1024 * 1024,
+      });
+    }
+
     // Build verify command
     let verifyCmd = `npx hardhat verify --network ${network} ${contractAddress}`;
     if (constructorArgs && constructorArgs.length > 0) {
