@@ -28,15 +28,22 @@ export default async function handler(
   try {
     const exampleDir = path.join(process.cwd(), 'examples', examplePath);
 
-    // Check if node_modules exists, if not install dependencies
+    // Dependencies should be installed during build
+    // If not, try to install (fallback)
     const nodeModulesPath = path.join(exampleDir, 'node_modules');
     if (!fs.existsSync(nodeModulesPath)) {
-      // Install dependencies (only once, cached by Vercel)
-      await execAsync('npm install --legacy-peer-deps', {
-        cwd: exampleDir,
-        timeout: 180000, // 3 minutes for install
-        maxBuffer: 10 * 1024 * 1024,
-      });
+      try {
+        await execAsync('npm install --legacy-peer-deps', {
+          cwd: exampleDir,
+          timeout: 180000, // 3 minutes for install
+          maxBuffer: 10 * 1024 * 1024,
+        });
+      } catch (installError: any) {
+        return res.status(500).json({
+          success: false,
+          error: `Dependencies not installed. Please ensure example dependencies are installed during build. ${installError.message}`,
+        });
+      }
     }
 
     // Compile contracts using npx
