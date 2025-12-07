@@ -168,7 +168,7 @@ export default async function handler(
         }
         
         // Wait a bit for file system to sync
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Increased wait time
         
         // Verify hardhat is installed locally (nodeModulesPath already defined above)
         const hardhatPackagePath = path.join(exampleDir, 'node_modules', 'hardhat');
@@ -178,6 +178,16 @@ export default async function handler(
         console.log('node_modules exists:', fs.existsSync(nodeModulesPath));
         console.log('hardhat package exists:', fs.existsSync(hardhatPackagePath));
         console.log('hardhat binary exists:', fs.existsSync(hardhatPath));
+        
+        // List node_modules contents for debugging
+        if (fs.existsSync(nodeModulesPath)) {
+          try {
+            const nodeModulesContents = fs.readdirSync(nodeModulesPath).slice(0, 20); // First 20 items
+            console.log('node_modules contents (first 20):', nodeModulesContents);
+          } catch (e) {
+            console.log('Could not read node_modules directory:', e);
+          }
+        }
         
         if (!fs.existsSync(nodeModulesPath)) {
           return res.status(500).json({
@@ -189,10 +199,26 @@ export default async function handler(
           });
         }
         
-        // If hardhat binary doesn't exist, try using npm run test instead
+        // Check if hardhat package exists (even if binary doesn't)
+        if (!fs.existsSync(hardhatPackagePath)) {
+          console.log('Hardhat package not found in node_modules. Installation may have failed.');
+          return res.status(500).json({
+            success: false,
+            error: 'Hardhat package not found after installation. npm install may have failed.',
+            stdout: installResult.stdout || '',
+            stderr: installResult.stderr || '',
+            installOutput: installOutputCheck,
+            debug: {
+              nodeModulesExists: fs.existsSync(nodeModulesPath),
+              hardhatPackageExists: fs.existsSync(hardhatPackagePath),
+              hardhatBinaryExists: fs.existsSync(hardhatPath),
+            },
+          });
+        }
+        
+        // If hardhat binary doesn't exist, we'll use the package directly
         if (!fs.existsSync(hardhatPath)) {
-          console.log('Hardhat binary not found, but node_modules exists. Will use npm run test instead.');
-          // Don't return error, continue with npm run test
+          console.log('Hardhat binary not found in .bin, but package exists. Will use package directly.');
         }
         
         // Include install output in response
