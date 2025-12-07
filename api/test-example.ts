@@ -131,7 +131,6 @@ export default async function handler(
       try {
         // Create /tmp directories for npm
         fs.mkdirSync('/tmp/.npm', { recursive: true });
-        fs.mkdirSync('/tmp/.npm-global/lib', { recursive: true });
         
         // Set environment variables to use /tmp for npm cache and logs
         // Vercel serverless functions have read-only home directories
