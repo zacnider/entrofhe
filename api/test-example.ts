@@ -36,46 +36,67 @@ export default async function handler(
   }
 
   try {
-    // Path to example directory (relative to project root)
-    // In Vercel, process.cwd() might be /var/task or /vercel/path0
-    // When outputDirectory is used, we need to check multiple possible locations
-    const rootDir = process.cwd();
-    const possiblePaths = [
-      path.join(rootDir, 'examples', examplePath), // Root level
-      path.join(rootDir, '..', 'examples', examplePath), // One level up
-      path.join(rootDir, '../..', 'examples', examplePath), // Two levels up
-      path.join(rootDir, 'frontend', 'build', 'examples', examplePath), // Build output (if copied)
-      path.join(rootDir, '..', 'frontend', 'build', 'examples', examplePath), // One level up from build
-      path.join('/var/task', 'examples', examplePath), // Vercel default
-      path.join('/var/task', 'frontend', 'build', 'examples', examplePath), // Vercel build output
-      path.join('/vercel/path0', 'examples', examplePath), // Vercel build path
-    ];
+    // Always use /tmp for examples in Vercel serverless functions
+    // This ensures we have a writable directory
+    const tmpExamplesDir = '/tmp/examples';
+    const tmpExampleDir = path.join(tmpExamplesDir, examplePath);
+    let exampleDir = tmpExampleDir;
 
-    let exampleDir = null;
-    for (const possiblePath of possiblePaths) {
-      if (fs.existsSync(possiblePath)) {
-        exampleDir = possiblePath;
-        break;
+    // Check if example already exists in /tmp
+    if (!fs.existsSync(tmpExampleDir)) {
+      // Try to find the source examples folder
+      const rootDir = process.cwd();
+      const sourcePaths = [
+        path.join(rootDir, 'examples', examplePath),
+        path.join(rootDir, '..', 'examples', examplePath),
+        path.join(rootDir, '../..', 'examples', examplePath),
+        path.join(rootDir, 'frontend', 'build', 'examples', examplePath),
+        path.join('/var/task', 'examples', examplePath),
+        path.join('/var/task', 'frontend', 'build', 'examples', examplePath),
+        path.join('/vercel/path0', 'examples', examplePath),
+      ];
+
+      let sourceExampleDir = null;
+      for (const sourcePath of sourcePaths) {
+        if (fs.existsSync(sourcePath)) {
+          sourceExampleDir = sourcePath;
+          break;
+        }
       }
-    }
 
-    // Debug: Log paths for troubleshooting
-    console.log('Root directory:', rootDir);
-    console.log('Possible paths checked:', possiblePaths);
-    console.log('Example directory found:', exampleDir);
+      if (!sourceExampleDir) {
+        return res.status(404).json({
+          success: false,
+          error: `Example directory not found: ${examplePath}`,
+          debug: {
+            rootDir,
+            examplePath,
+            sourcePaths,
+          },
+        });
+      }
 
-    // Check if example directory exists
-    if (!exampleDir || !fs.existsSync(exampleDir)) {
-      return res.status(404).json({
-        success: false,
-        error: `Example directory not found: ${examplePath}`,
-        debug: {
-          rootDir,
-          examplePath,
-          possiblePaths,
-          exampleDir,
-        },
-      });
+      // Copy example to /tmp
+      console.log(`Copying example from ${sourceExampleDir} to ${tmpExampleDir}...`);
+      try {
+        // Create /tmp/examples directory
+        fs.mkdirSync(tmpExamplesDir, { recursive: true });
+        
+        // Copy the example directory recursively
+        await execAsync(`cp -r "${sourceExampleDir}" "${tmpExampleDir}"`, {
+          timeout: 30000,
+          maxBuffer: 10 * 1024 * 1024,
+        });
+        console.log('Example copied to /tmp successfully');
+      } catch (copyError: any) {
+        console.error('Failed to copy example to /tmp:', copyError);
+        return res.status(500).json({
+          success: false,
+          error: `Failed to copy example folder: ${copyError.message}`,
+        });
+      }
+    } else {
+      console.log('Example already exists in /tmp, using cached version');
     }
 
     // Install dependencies if not already installed (runtime installation)
