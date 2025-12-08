@@ -332,7 +332,9 @@ interface TutorialExampleCardProps {
 }
 
 const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, description, category, path, icon }) => {
-  const githubUrl = `https://github.com/zacnider/entrofhe/tree/main/examples/${path}`;
+  const githubUrl = path === 'basic-simplecounter'
+    ? 'https://github.com/zacnider/fhevm-example-basic-simplecounter'
+    : `https://github.com/zacnider/entrofhe/tree/main/examples/${path}`;
   const { address, isConnected } = useAccount();
   const { loading, output, error, testExample, compileExample, verifyExample, clearOutput, setOutput } = useExampleAPI();
   const { sendTransaction, isPending: isDeploying, data: deployHash } = useSendTransaction();

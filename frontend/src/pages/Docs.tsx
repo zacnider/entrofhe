@@ -947,7 +947,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/basic-simplecounter</code>
           </p>
           <p className="text-sm">
-            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/basic-simplecounter" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+            <a href="https://github.com/zacnider/fhevm-example-basic-simplecounter" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
               📦 View on GitHub
             </a>
           </p>
@@ -2204,7 +2204,7 @@ const EntropyCounterTutorial: React.FC = () => (
           View the complete source code and tests:
         </p>
         <a 
-          href="https://github.com/zacnider/entrofhe/tree/main/examples/basic-simplecounter" 
+          href="https://github.com/zacnider/fhevm-example-basic-simplecounter" 
           target="_blank" 
           rel="noopener noreferrer"
           className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold"
@@ -2419,7 +2419,9 @@ const GenericTutorial: React.FC<{
       <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
         <p className="text-gray-700 dark:text-slate-300 mb-3">View the complete source code and tests:</p>
         <a
-          href={`https://github.com/zacnider/entrofhe/tree/main/examples/${exampleId}`}
+          href={exampleId === 'basic-simplecounter' 
+            ? 'https://github.com/zacnider/fhevm-example-basic-simplecounter'
+            : `https://github.com/zacnider/entrofhe/tree/main/examples/${exampleId}`}
           target="_blank"
           rel="noopener noreferrer"
           className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold"
