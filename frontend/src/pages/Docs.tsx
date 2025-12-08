@@ -2573,13 +2573,78 @@ const EntropyEncryptionTutorial: React.FC = () => (
     name="EntropyEncryption"
     exampleId="encryption-encryptsingle"
     category="Encryption"
-    description="Learn how to encrypt and store values using EntropyOracle for enhanced security."
-    whatTeaches={["How to encrypt values", "How to store encrypted values", "Entropy-enhanced encryption patterns"]}
-    whyMatters={["Encryption is fundamental to FHE", "Entropy adds randomness to encryption"]}
-    contractLogic={[{ title: "Encrypt Value", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
-    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
-    expectedOutputs="Coming soon"
-    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+    description="Learn how to encrypt and store values using EntropyOracle for enhanced security. This example demonstrates basic encryption patterns and entropy-enhanced encryption."
+    whatTeaches={[
+      "How to encrypt values off-chain and send to contract",
+      "How to store encrypted values on-chain",
+      "How to enhance encryption with entropy using XOR",
+      "How to update encrypted values",
+      "The importance of FHE.allowThis() for stored values"
+    ]}
+    whyMatters={[
+      "Encryption is fundamental to FHEVM",
+      "Entropy adds randomness to encrypted values",
+      "Enhanced encryption provides better security",
+      "Learn the foundation for more complex encryption patterns"
+    ]}
+    contractLogic={[
+      {
+        title: "1. Encrypt and Store",
+        code: `function encryptAndStore(
+    externalEuint64 encryptedInput,
+    bytes calldata inputProof
+) external {
+    euint64 internalValue = FHE.fromExternal(encryptedInput, inputProof);
+    FHE.allowThis(internalValue);
+    encryptedValue = internalValue;
+    initialized = true;
+}`,
+        explanation: "Converts external encrypted input to internal format, grants permission, and stores it. User encrypts value off-chain using FHEVM SDK."
+      },
+      {
+        title: "2. Encrypt with Entropy",
+        code: `function encryptAndStoreWithEntropy(
+    externalEuint64 encryptedInput,
+    bytes calldata inputProof,
+    uint256 requestId
+) external {
+    euint64 internalValue = FHE.fromExternal(encryptedInput, inputProof);
+    FHE.allowThis(internalValue);
+    
+    euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+    FHE.allowThis(entropy);
+    
+    euint64 enhancedValue = FHE.xor(internalValue, entropy);
+    FHE.allowThis(enhancedValue);
+    encryptedValue = enhancedValue;
+}`,
+        explanation: "Combines user-encrypted value with entropy using XOR. This creates entropy-enhanced encryption with added randomness."
+      }
+    ]}
+    testSteps={[
+      { step: 1, title: "Deploy Contracts", description: "Test fixture automatically deploys FHEChaosEngine, EntropyOracle, and EntropyEncryption." },
+      { step: 2, title: "Encrypt and Store", description: "Create encrypted input (e.g., value 42), encrypt it, and call encryptAndStore() with handle and proof." },
+      { step: 3, title: "Request Entropy", description: "Call requestEntropy() with a unique tag and fee for entropy-enhanced encryption." },
+      { step: 4, title: "Wait for Fulfillment", description: "Check isRequestFulfilled() until true." },
+      { step: 5, title: "Encrypt with Entropy", description: "Call encryptAndStoreWithEntropy() with encrypted input, proof, and requestId." }
+    ]}
+    expectedOutputs={`✓ Should deploy successfully
+✓ Should encrypt and store value
+✓ Should update encrypted value
+✓ Should request entropy
+✓ Should encrypt and store with entropy enhancement`}
+    commonErrors={[
+      {
+        error: "SenderNotAllowed()",
+        cause: "Missing FHE.allowThis() call on encrypted value.",
+        solution: "Always call FHE.allowThis() on all encrypted values before using them."
+      },
+      {
+        error: "Entropy not ready",
+        cause: "Calling encryptAndStoreWithEntropy() before entropy is fulfilled.",
+        solution: "Always check isRequestFulfilled() before using entropy."
+      }
+    ]}
   />
 );
 
@@ -2588,13 +2653,83 @@ const EntropyUserDecryptionTutorial: React.FC = () => (
     name="EntropyUserDecryption"
     exampleId="user-decryption-userdecryptsingle"
     category="Decryption"
-    description="Learn how to allow specific users to decrypt encrypted values using FHE.allow()."
-    whatTeaches={["How to use FHE.allow()", "User-specific decryption", "Permission management"]}
-    whyMatters={["Selective decryption maintains privacy", "FHE.allow() enables user-specific access"]}
-    contractLogic={[{ title: "Allow User", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
-    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
-    expectedOutputs="Coming soon"
-    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+    description="Learn how to allow specific users to decrypt encrypted values using FHE.allow(). This example demonstrates user-specific access control with entropy enhancement."
+    whatTeaches={[
+      "How to use FHE.allow() for user-specific decryption",
+      "How to grant decryption permissions to specific users",
+      "How to enhance user decryption with entropy",
+      "The difference between FHE.allow() and FHE.allowThis()",
+      "User-specific access control patterns"
+    ]}
+    whyMatters={[
+      "Selective decryption maintains privacy",
+      "FHE.allow() enables fine-grained access control",
+      "Only authorized users can decrypt values",
+      "Entropy adds randomness to decryption patterns"
+    ]}
+    contractLogic={[
+      {
+        title: "1. Store and Allow User",
+        code: `function storeAndAllow(
+    externalEuint64 encryptedInput,
+    bytes calldata inputProof,
+    address user
+) external {
+    euint64 internalValue = FHE.fromExternal(encryptedInput, inputProof);
+    FHE.allowThis(internalValue);  // Contract can use
+    FHE.allow(internalValue, user); // User can decrypt
+    encryptedValue = internalValue;
+    allowedUser = user;
+}`,
+        explanation: "Stores encrypted value and grants specific user permission to decrypt. FHE.allow() enables user to decrypt off-chain using FHEVM SDK."
+      },
+      {
+        title: "2. Store with Entropy and Allow",
+        code: `function storeAndAllowWithEntropy(
+    externalEuint64 encryptedInput,
+    bytes calldata inputProof,
+    address user,
+    uint256 requestId
+) external {
+    euint64 internalValue = FHE.fromExternal(encryptedInput, inputProof);
+    FHE.allowThis(internalValue);
+    
+    euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+    FHE.allowThis(entropy);
+    
+    euint64 enhancedValue = FHE.xor(internalValue, entropy);
+    FHE.allowThis(enhancedValue);
+    FHE.allow(enhancedValue, user); // User can decrypt enhanced value
+    encryptedValue = enhancedValue;
+}`,
+        explanation: "Combines value with entropy, then grants user permission to decrypt the enhanced value. User can decrypt off-chain to see entropy-enhanced result."
+      }
+    ]}
+    testSteps={[
+      { step: 1, title: "Deploy Contracts", description: "Test fixture deploys all required contracts." },
+      { step: 2, title: "Store and Allow", description: "Create encrypted input, encrypt it, and call storeAndAllow() with user address." },
+      { step: 3, title: "Request Entropy", description: "Call requestEntropy() for entropy-enhanced storage." },
+      { step: 4, title: "Wait for Fulfillment", description: "Check isRequestFulfilled() until true." },
+      { step: 5, title: "Store with Entropy", description: "Call storeAndAllowWithEntropy() with encrypted input, proof, user address, and requestId." },
+      { step: 6, title: "Decrypt Off-Chain", description: "Allowed user can decrypt the value off-chain using FHEVM SDK with their private key." }
+    ]}
+    expectedOutputs={`✓ Should deploy successfully
+✓ Should store and allow user to decrypt
+✓ Should have correct allowed user address
+✓ Should request entropy
+✓ Should store with entropy and allow user`}
+    commonErrors={[
+      {
+        error: "SenderNotAllowed()",
+        cause: "Missing FHE.allowThis() or FHE.allow() call.",
+        solution: "Call FHE.allowThis() for contract use, and FHE.allow() for user decryption."
+      },
+      {
+        error: "Invalid user address",
+        cause: "Zero address passed as user parameter.",
+        solution: "Always pass a valid user address (not address(0))."
+      }
+    ]}
   />
 );
 
