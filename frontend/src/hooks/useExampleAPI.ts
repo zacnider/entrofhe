@@ -20,8 +20,12 @@ export const useExampleAPI = () => {
     setError(null);
     setOutput('');
 
+    // Use backend server if available, otherwise fallback to Vercel serverless functions
+    const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || '';
+    const apiUrl = API_BASE_URL ? `${API_BASE_URL}/api/${endpoint}` : `/api/${endpoint}`;
+
     try {
-      const response = await fetch(`/api/${endpoint}`, {
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,6 +97,8 @@ export const useExampleAPI = () => {
     compileExample,
     deployExample,
     verifyExample,
+    // Expose setter so callers (e.g., wallet deploy flow) can push log lines
+    setOutput,
     clearOutput: () => {
       setOutput('');
       setError(null);

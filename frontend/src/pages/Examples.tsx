@@ -334,7 +334,7 @@ interface TutorialExampleCardProps {
 const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, description, category, path, icon }) => {
   const githubUrl = `https://github.com/zacnider/entrofhe/tree/main/examples/${path}`;
   const { address, isConnected } = useAccount();
-  const { loading, output, error, testExample, compileExample, verifyExample, clearOutput } = useExampleAPI();
+  const { loading, output, error, testExample, compileExample, verifyExample, clearOutput, setOutput } = useExampleAPI();
   const { sendTransaction, isPending: isDeploying, data: deployHash } = useSendTransaction();
   const { isLoading: isConfirming, isSuccess: isDeployed, data: receipt } = useWaitForTransactionReceipt({
     hash: deployHash,
@@ -427,6 +427,7 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
     setTerminalAction('deploy');
     setShowTerminal(true);
     clearOutput();
+    setOutput('Sending transaction...');
 
     try {
       // Parse constructor arguments if provided
@@ -466,11 +467,15 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
       const deployData = compiledBytecode + encodedArgs.slice(2);
 
       // Deploy using wagmi (contract creation - no 'to' field)
-      sendTransaction({
+      const hash = await sendTransaction({
         data: deployData as `0x${string}`,
       } as any);
+      if (hash) {
+        setOutput(`Transaction sent: ${hash}`);
+      }
     } catch (err: any) {
       toast.error(`Deployment failed: ${err.message}`);
+      setOutput(err?.message || 'Deployment failed');
     }
   };
 
@@ -482,20 +487,36 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
       if (contractAddress) {
         setDeployedAddress(contractAddress);
         toast.success(`Contract deployed to ${contractAddress}`);
+        setOutput((prev) => `${prev ? `${prev}\n` : ''}Deployed at ${contractAddress}`);
       }
     }
   }, [isDeployed, receipt]);
 
   const handleVerify = async () => {
-    if (!deployedAddress) {
-      toast.error('Please deploy the contract first');
-      return;
-    }
     setTerminalAction('verify');
     setShowTerminal(true);
     clearOutput();
     try {
-      await verifyExample(path, deployedAddress, 'sepolia');
+      // Parse constructor args if provided
+      let parsedConstructorArgs: string[] | undefined;
+      if (constructorArgs && constructorArgs.trim()) {
+        try {
+          // Try parsing as JSON array first
+          parsedConstructorArgs = JSON.parse(constructorArgs);
+        } catch {
+          // If not JSON, try comma-separated values
+          parsedConstructorArgs = constructorArgs.split(',').map(arg => arg.trim()).filter(Boolean);
+        }
+      } else {
+        // Default to EntropyOracle address for tutorial examples
+        parsedConstructorArgs = [ENTROPY_ORACLE_ADDRESS];
+      }
+
+      if (!deployedAddress) {
+        toast.info('Please enter the contract address to verify');
+        return;
+      }
+      await verifyExample(path, deployedAddress, 'sepolia', parsedConstructorArgs);
       toast.success('Contract verified successfully!');
     } catch (err) {
       toast.error('Verification failed. Check terminal for details.');
@@ -537,16 +558,14 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
             <RocketLaunchIcon className="w-4 h-4" />
             <span>{isDeploying || isConfirming ? 'Deploying...' : 'Deploy'}</span>
           </button>
-          {deployedAddress && (
-            <button
-              onClick={handleVerify}
-              disabled={loading}
-              className="flex items-center space-x-1 px-3 py-1.5 text-xs font-medium bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 rounded-lg hover:bg-orange-200 dark:hover:bg-orange-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              <CheckCircleIcon className="w-4 h-4" />
-              <span>Verify</span>
-            </button>
-          )}
+          <button
+            onClick={handleVerify}
+            disabled={loading}
+            className="flex items-center space-x-1 px-3 py-1.5 text-xs font-medium bg-orange-100 dark:bg-orange-900 text-orange-700 dark:text-orange-300 rounded-lg hover:bg-orange-200 dark:hover:bg-orange-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <CheckCircleIcon className="w-4 h-4" />
+            <span>Verify</span>
+          </button>
         </div>
 
         {/* Deploy Input - Constructor Args */}
@@ -565,6 +584,41 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
             <p className="text-xs text-primary-500 dark:text-slate-400 mt-1">
               Leave empty to use default EntropyOracle address
             </p>
+          </div>
+        )}
+        {/* Verify Input - Contract Address and Constructor Args */}
+        {terminalAction === 'verify' && (
+          <div className="mb-4 space-y-3">
+            <div>
+              <label className="block text-xs font-medium text-primary-700 dark:text-slate-300 mb-1">
+                Contract Address *
+              </label>
+              <input
+                type="text"
+                value={deployedAddress}
+                onChange={(e) => setDeployedAddress(e.target.value)}
+                placeholder="0x..."
+                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-primary-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              />
+              <p className="text-xs text-primary-500 dark:text-slate-400 mt-1">
+                Enter the deployed contract address to verify
+              </p>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-primary-700 dark:text-slate-300 mb-1">
+                Constructor Arguments (if used during deployment)
+              </label>
+              <input
+                type="text"
+                value={constructorArgs}
+                onChange={(e) => setConstructorArgs(e.target.value)}
+                placeholder={`Example: ["${ENTROPY_ORACLE_ADDRESS}"] or comma-separated values`}
+                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-primary-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              />
+              <p className="text-xs text-primary-500 dark:text-slate-400 mt-1">
+                Leave empty if no constructor arguments were used
+              </p>
+            </div>
           </div>
         )}
 
