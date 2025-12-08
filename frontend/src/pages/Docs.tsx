@@ -1980,16 +1980,24 @@ const ExampleTutorials: React.FC = () => {
       {/* Selected Example Tutorial */}
       <div className="mt-6">
         {selectedExample === 'basic-simplecounter' && <EntropyCounterTutorial />}
-        {/* Add more example tutorials here as needed */}
-        {selectedExample !== 'basic-simplecounter' && (
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
-            <p className="text-blue-800 dark:text-blue-200">
-              <strong>📚 Coming Soon:</strong> Detailed tutorial for <strong>{selectedExampleData?.name}</strong> is being prepared. 
-              For now, check the <a href={`/examples`} className="underline font-semibold">Examples page</a> or the 
-              <a href={`https://github.com/zacnider/entrofhe/tree/main/examples/${selectedExample}`} target="_blank" rel="noopener noreferrer" className="underline font-semibold ml-1">GitHub repository</a>.
-            </p>
-          </div>
-        )}
+        {selectedExample === 'basic-arithmetic' && <EntropyArithmeticTutorial />}
+        {selectedExample === 'basic-equalitycomparison' && <EntropyEqualityComparisonTutorial />}
+        {selectedExample === 'encryption-encryptsingle' && <EntropyEncryptionTutorial />}
+        {selectedExample === 'user-decryption-userdecryptsingle' && <EntropyUserDecryptionTutorial />}
+        {selectedExample === 'public-decryption-publicdecryptsingle' && <EntropyPublicDecryptionTutorial />}
+        {selectedExample === 'access-control-accesscontrol' && <EntropyAccessControlTutorial />}
+        {selectedExample === 'input-proof-inputproofexplanation' && <EntropyInputProofTutorial />}
+        {selectedExample === 'anti-patterns-missingallowthis' && <EntropyMissingAllowThisTutorial />}
+        {selectedExample === 'anti-patterns-viewwithencrypted' && <EntropyViewWithEncryptedTutorial />}
+        {selectedExample === 'handles-handlelifecycle' && <EntropyHandleLifecycleTutorial />}
+        {selectedExample === 'advanced-simplelottery' && <SimpleLotteryTutorial />}
+        {selectedExample === 'advanced-randomnumbergenerator' && <RandomNumberGeneratorTutorial />}
+        {selectedExample === 'advanced-entropynft' && <EntropyNFTTutorial />}
+        {selectedExample === 'openzeppelin-erc7984token' && <EntropyERC7984TokenTutorial />}
+        {selectedExample === 'openzeppelin-erc7984toerc20wrapper' && <EntropyERC7984ToERC20WrapperTutorial />}
+        {selectedExample === 'openzeppelin-swaperc7984toerc20' && <EntropySwapERC7984ToERC20Tutorial />}
+        {selectedExample === 'openzeppelin-swaperc7984toerc7984' && <EntropySwapERC7984ToERC7984Tutorial />}
+        {selectedExample === 'openzeppelin-vestingwallet' && <EntropyVestingWalletTutorial />}
       </div>
     </div>
   );
@@ -2298,6 +2306,506 @@ const FAQ: React.FC = () => (
       </div>
     </div>
   </div>
+);
+
+// Generic Tutorial Template Component
+const GenericTutorial: React.FC<{
+  name: string;
+  exampleId: string;
+  category: string;
+  description: string;
+  whatTeaches: string[];
+  whyMatters: string[];
+  contractLogic: { title: string; code: string; explanation: string }[];
+  testSteps: { step: number; title: string; description: string }[];
+  expectedOutputs: string;
+  commonErrors: { error: string; cause: string; solution: string }[];
+}> = ({ name, exampleId, category, description, whatTeaches, whyMatters, contractLogic, testSteps, expectedOutputs, commonErrors }) => (
+  <div className="space-y-8 mt-6">
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">{name}: Complete Tutorial</h3>
+      <p className="text-gray-700 dark:text-slate-300">{description}</p>
+    </section>
+
+    <section className="space-y-4">
+      <h4 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">What This Example Teaches</h4>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-3">
+        <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-slate-300 ml-4">
+          {whatTeaches.map((item, idx) => (
+            <li key={idx}>{item}</li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h4 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Why This Matters</h4>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-3">
+        <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-slate-300 ml-4">
+          {whyMatters.map((item, idx) => (
+            <li key={idx}>{item}</li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h4 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Contract Logic Explained</h4>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        {contractLogic.map((logic, idx) => (
+          <div key={idx}>
+            <h5 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">{logic.title}</h5>
+            <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-sm">
+              {logic.code}
+            </pre>
+            <p className="text-sm text-gray-600 dark:text-slate-400 mt-2">{logic.explanation}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h4 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Step-by-Step Testing</h4>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <div className="space-y-3">
+          {testSteps.map((step) => (
+            <div key={step.step} className="flex items-start space-x-3">
+              <div className="flex-shrink-0 w-6 h-6 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                {step.step}
+              </div>
+              <div>
+                <p className="font-semibold text-primary-900 dark:text-slate-100">{step.title}</p>
+                <p className="text-sm text-gray-600 dark:text-slate-400">{step.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h4 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Expected Outputs</h4>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-3">
+        <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-xs">
+          {expectedOutputs}
+        </pre>
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-4">
+          <p className="text-blue-800 dark:text-blue-200 text-sm">
+            <strong>💡 Note:</strong> Encrypted values appear as handles in test output. Decrypt off-chain to see actual values.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h4 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Common Errors & Solutions</h4>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        {commonErrors.map((error, idx) => (
+          <div key={idx} className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+            <h5 className="font-semibold text-red-800 dark:text-red-200 mb-2">Error: {error.error}</h5>
+            <p className="text-red-700 dark:text-red-300 text-sm mb-2">
+              <strong>Cause:</strong> {error.cause}
+            </p>
+            <p className="text-red-700 dark:text-red-300 text-sm">
+              <strong>Solution:</strong> {error.solution}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h4 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">GitHub Resources</h4>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
+        <p className="text-gray-700 dark:text-slate-300 mb-3">View the complete source code and tests:</p>
+        <a
+          href={`https://github.com/zacnider/entrofhe/tree/main/examples/${exampleId}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold"
+        >
+          📦 View on GitHub →
+        </a>
+      </div>
+    </section>
+  </div>
+);
+
+// Placeholder tutorials - will be expanded with detailed content
+const EntropyArithmeticTutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropyArithmetic"
+    exampleId="basic-arithmetic"
+    category="Basic"
+    description="Learn how to perform FHE arithmetic operations (add, subtract, multiply) enhanced with encrypted randomness from EntropyOracle."
+    whatTeaches={[
+      "How to perform arithmetic operations on encrypted values",
+      "How to enhance arithmetic operations with entropy",
+      "How to handle multiple external encrypted inputs",
+      "The importance of FHE.allowThis() for each encrypted value"
+    ]}
+    whyMatters={[
+      "Arithmetic operations are fundamental to FHEVM",
+      "Entropy enhancement adds randomness to calculations",
+      "Multiple inputs require multiple input proofs"
+    ]}
+    contractLogic={[
+      {
+        title: "1. Initialize Two Values",
+        code: `function initialize(
+    externalEuint64 encryptedValue1,
+    externalEuint64 encryptedValue2,
+    bytes calldata inputProof1,
+    bytes calldata inputProof2
+) external {
+    euint64 internalValue1 = FHE.fromExternal(encryptedValue1, inputProof1);
+    euint64 internalValue2 = FHE.fromExternal(encryptedValue2, inputProof2);
+    FHE.allowThis(internalValue1);
+    FHE.allowThis(internalValue2);
+    value1 = internalValue1;
+    value2 = internalValue2;
+}`,
+        explanation: "Converts two external encrypted inputs to internal format. Each input requires its own input proof."
+      },
+      {
+        title: "2. Add with Entropy",
+        code: `function addWithEntropy(uint256 requestId) external {
+    euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+    FHE.allowThis(entropy);
+    euint64 sum = FHE.add(value1, value2);
+    FHE.allowThis(sum);
+    result = FHE.xor(sum, entropy);
+}`,
+        explanation: "Adds two values, then mixes result with entropy using XOR for randomness."
+      }
+    ]}
+    testSteps={[
+      { step: 1, title: "Deploy Contracts", description: "Test fixture automatically deploys FHEChaosEngine, EntropyOracle, and EntropyArithmetic." },
+      { step: 2, title: "Initialize Values", description: "Create two encrypted inputs (e.g., 5 and 3), encrypt them, and call initialize() with both handles and proofs." },
+      { step: 3, title: "Request Entropy", description: "Call requestEntropy() with a unique tag and fee." },
+      { step: 4, title: "Wait for Fulfillment", description: "Check isRequestFulfilled() until true." },
+      { step: 5, title: "Perform Operations", description: "Call addWithEntropy(), subtractWithEntropy(), or multiplyWithEntropy() with the requestId." }
+    ]}
+    expectedOutputs={`✓ Should deploy successfully
+✓ Should initialize with two encrypted values
+✓ Should perform addition
+✓ Should perform subtraction
+✓ Should perform multiplication
+✓ Should perform entropy-enhanced operations`}
+    commonErrors={[
+      {
+        error: "SenderNotAllowed()",
+        cause: "Missing FHE.allowThis() call on encrypted value.",
+        solution: "Always call FHE.allowThis() on all encrypted values before using them."
+      },
+      {
+        error: "Incorrect number of arguments",
+        cause: "Wrong number of input proofs passed to initialize().",
+        solution: "Each externalEuint64 parameter requires its own inputProof. For two inputs, pass two proofs."
+      }
+    ]}
+  />
+);
+
+const EntropyEqualityComparisonTutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropyEqualityComparison"
+    exampleId="basic-equalitycomparison"
+    category="Basic"
+    description="Learn how to compare encrypted values for equality using FHE operations enhanced with EntropyOracle."
+    whatTeaches={[
+      "How to compare encrypted values for equality",
+      "How to use ebool (encrypted boolean) results",
+      "How to enhance comparisons with entropy",
+      "Understanding FHE.eq() operation"
+    ]}
+    whyMatters={[
+      "Equality checks are essential for conditional logic",
+      "ebool results can be used in encrypted conditionals",
+      "Entropy adds randomness to comparison results"
+    ]}
+    contractLogic={[
+      {
+        title: "1. Compare Values",
+        code: `function compare() external returns (ebool result) {
+    result = FHE.eq(value1, value2);
+    FHE.allowThis(result);
+    return result;
+}`,
+        explanation: "Compares two encrypted values for equality. Returns encrypted boolean (ebool)."
+      },
+      {
+        title: "2. Compare with Entropy",
+        code: `function compareWithEntropy(uint256 requestId) external {
+    euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+    FHE.allowThis(entropy);
+    euint64 mixed1 = FHE.xor(value1, entropy);
+    euint64 mixed2 = FHE.xor(value2, entropy);
+    result = FHE.eq(mixed1, mixed2);
+}`,
+        explanation: "Mixes values with entropy before comparison, adding randomness to the result."
+      }
+    ]}
+    testSteps={[
+      { step: 1, title: "Deploy Contracts", description: "Test fixture deploys all required contracts." },
+      { step: 2, title: "Initialize Values", description: "Initialize with two encrypted values (can be same or different)." },
+      { step: 3, title: "Request Entropy", description: "Request entropy for entropy-enhanced comparison." },
+      { step: 4, title: "Perform Comparison", description: "Call compare() or compareWithEntropy() to get encrypted boolean result." }
+    ]}
+    expectedOutputs={`✓ Should deploy successfully
+✓ Should initialize with two encrypted values
+✓ Should perform equality comparison
+✓ Should return encrypted boolean result
+✓ Should perform entropy-enhanced comparison`}
+    commonErrors={[
+      {
+        error: "SenderNotAllowed()",
+        cause: "Missing FHE.allowThis() on encrypted values or result.",
+        solution: "Call FHE.allowThis() on all encrypted values before operations."
+      }
+    ]}
+  />
+);
+
+// Placeholder components for remaining examples - will be expanded
+const EntropyEncryptionTutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropyEncryption"
+    exampleId="encryption-encryptsingle"
+    category="Encryption"
+    description="Learn how to encrypt and store values using EntropyOracle for enhanced security."
+    whatTeaches={["How to encrypt values", "How to store encrypted values", "Entropy-enhanced encryption patterns"]}
+    whyMatters={["Encryption is fundamental to FHE", "Entropy adds randomness to encryption"]}
+    contractLogic={[{ title: "Encrypt Value", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
+    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
+    expectedOutputs="Coming soon"
+    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+  />
+);
+
+const EntropyUserDecryptionTutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropyUserDecryption"
+    exampleId="user-decryption-userdecryptsingle"
+    category="Decryption"
+    description="Learn how to allow specific users to decrypt encrypted values using FHE.allow()."
+    whatTeaches={["How to use FHE.allow()", "User-specific decryption", "Permission management"]}
+    whyMatters={["Selective decryption maintains privacy", "FHE.allow() enables user-specific access"]}
+    contractLogic={[{ title: "Allow User", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
+    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
+    expectedOutputs="Coming soon"
+    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+  />
+);
+
+const EntropyPublicDecryptionTutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropyPublicDecryption"
+    exampleId="public-decryption-publicdecryptsingle"
+    category="Decryption"
+    description="Learn how to make encrypted values publicly decryptable using FHE.makePubliclyDecryptable()."
+    whatTeaches={["How to use FHE.makePubliclyDecryptable()", "Public decryption patterns", "When to use public decryption"]}
+    whyMatters={["Public decryption removes privacy", "Use with caution"]}
+    contractLogic={[{ title: "Make Public", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
+    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
+    expectedOutputs="Coming soon"
+    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+  />
+);
+
+const EntropyAccessControlTutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropyAccessControl"
+    exampleId="access-control-accesscontrol"
+    category="Access Control"
+    description="Learn how to implement access control with FHE using FHE.allow() and FHE.allowTransient()."
+    whatTeaches={["Access control with FHE", "FHE.allow() vs FHE.allowTransient()", "Permission management"]}
+    whyMatters={["Access control is essential for security", "FHE permissions enable fine-grained control"]}
+    contractLogic={[{ title: "Access Control", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
+    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
+    expectedOutputs="Coming soon"
+    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+  />
+);
+
+const EntropyInputProofTutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropyInputProof"
+    exampleId="input-proof-inputproofexplanation"
+    category="Input Proof"
+    description="Learn how input proofs work and why they're required for external encrypted inputs."
+    whatTeaches={["What are input proofs", "Why input proofs are needed", "How to generate input proofs"]}
+    whyMatters={["Input proofs validate encrypted inputs", "Security mechanism against tampering"]}
+    contractLogic={[{ title: "Input Proof", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
+    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
+    expectedOutputs="Coming soon"
+    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+  />
+);
+
+const EntropyMissingAllowThisTutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropyMissingAllowThis"
+    exampleId="anti-patterns-missingallowthis"
+    category="Anti-Patterns"
+    description="Learn the common mistake of forgetting FHE.allowThis() and how to avoid it."
+    whatTeaches={["Common mistake: missing FHE.allowThis()", "Why FHE.allowThis() is required", "How to fix the error"]}
+    whyMatters={["This is the most common FHE error", "Understanding prevents frustration"]}
+    contractLogic={[{ title: "Missing AllowThis", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
+    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
+    expectedOutputs="Coming soon"
+    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+  />
+);
+
+const EntropyViewWithEncryptedTutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropyViewWithEncrypted"
+    exampleId="anti-patterns-viewwithencrypted"
+    category="Anti-Patterns"
+    description="Learn why FHE operations cannot be used in view or pure functions."
+    whatTeaches={["Why view/pure functions can't use FHE", "Limitations of view functions", "How to work around this"]}
+    whyMatters={["Understanding limitations prevents errors", "FHE operations modify state symbolically"]}
+    contractLogic={[{ title: "View Function", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
+    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
+    expectedOutputs="Coming soon"
+    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+  />
+);
+
+const EntropyHandleLifecycleTutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropyHandleLifecycle"
+    exampleId="handles-handlelifecycle"
+    category="Handles"
+    description="Learn about handles, symbolic execution, and the lifecycle of encrypted values in FHEVM."
+    whatTeaches={["What are handles", "Symbolic execution in FHEVM", "Handle lifecycle and permissions"]}
+    whyMatters={["Handles are fundamental to FHEVM", "Understanding handles helps debug issues"]}
+    contractLogic={[{ title: "Handle Lifecycle", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
+    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
+    expectedOutputs="Coming soon"
+    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+  />
+);
+
+const SimpleLotteryTutorial: React.FC = () => (
+  <GenericTutorial
+    name="SimpleLottery"
+    exampleId="advanced-simplelottery"
+    category="Advanced"
+    description="Learn how to build a fair lottery system using EntropyOracle for random winner selection."
+    whatTeaches={["Building lottery systems", "Fair randomness with entropy", "Participant management"]}
+    whyMatters={["Lotteries need fair randomness", "EntropyOracle provides cryptographic randomness"]}
+    contractLogic={[{ title: "Lottery", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
+    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
+    expectedOutputs="Coming soon"
+    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+  />
+);
+
+const RandomNumberGeneratorTutorial: React.FC = () => (
+  <GenericTutorial
+    name="RandomNumberGenerator"
+    exampleId="advanced-randomnumbergenerator"
+    category="Advanced"
+    description="Learn how to generate encrypted random numbers using EntropyOracle."
+    whatTeaches={["Random number generation", "Storing encrypted randomness", "Request management"]}
+    whyMatters={["Random numbers are essential for many dApps", "Encrypted randomness maintains privacy"]}
+    contractLogic={[{ title: "Random Number", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
+    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
+    expectedOutputs="Coming soon"
+    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+  />
+);
+
+const EntropyNFTTutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropyNFT"
+    exampleId="advanced-entropynft"
+    category="Advanced"
+    description="Learn how to mint ERC721 NFTs with trait selection using EntropyOracle for randomness."
+    whatTeaches={["ERC721 NFT minting", "Trait selection with entropy", "IPFS metadata integration"]}
+    whyMatters={["NFTs need random trait selection", "EntropyOracle provides fair randomness"]}
+    contractLogic={[{ title: "NFT Minting", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
+    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
+    expectedOutputs="Coming soon"
+    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+  />
+);
+
+const EntropyERC7984TokenTutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropyERC7984Token"
+    exampleId="openzeppelin-erc7984token"
+    category="OpenZeppelin"
+    description="Learn how to implement ERC7984 confidential tokens with EntropyOracle integration."
+    whatTeaches={["ERC7984 standard", "Confidential token balances", "Encrypted transfers"]}
+    whyMatters={["ERC7984 enables private token transfers", "EntropyOracle adds randomness to operations"]}
+    contractLogic={[{ title: "ERC7984 Token", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
+    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
+    expectedOutputs="Coming soon"
+    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+  />
+);
+
+const EntropyERC7984ToERC20WrapperTutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropyERC7984ToERC20Wrapper"
+    exampleId="openzeppelin-erc7984toerc20wrapper"
+    category="OpenZeppelin"
+    description="Learn how to wrap ERC7984 confidential tokens into ERC20 tokens with EntropyOracle."
+    whatTeaches={["Token wrapping", "ERC7984 to ERC20 conversion", "Bridge patterns"]}
+    whyMatters={["Wrapping enables interoperability", "Bridges confidential and public tokens"]}
+    contractLogic={[{ title: "Wrapper", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
+    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
+    expectedOutputs="Coming soon"
+    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+  />
+);
+
+const EntropySwapERC7984ToERC20Tutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropySwapERC7984ToERC20"
+    exampleId="openzeppelin-swaperc7984toerc20"
+    category="OpenZeppelin"
+    description="Learn how to swap ERC7984 confidential tokens for ERC20 tokens with EntropyOracle."
+    whatTeaches={["Token swapping", "ERC7984 to ERC20 swaps", "Swap mechanics"]}
+    whyMatters={["Swaps enable token conversion", "EntropyOracle adds randomness to swaps"]}
+    contractLogic={[{ title: "Swap", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
+    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
+    expectedOutputs="Coming soon"
+    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+  />
+);
+
+const EntropySwapERC7984ToERC7984Tutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropySwapERC7984ToERC7984"
+    exampleId="openzeppelin-swaperc7984toerc7984"
+    category="OpenZeppelin"
+    description="Learn how to swap between two ERC7984 confidential tokens with EntropyOracle."
+    whatTeaches={["Cross-token swaps", "ERC7984 to ERC7984 swaps", "Encrypted amount calculations"]}
+    whyMatters={["Cross-token swaps are essential", "EntropyOracle adds randomness to swap calculations"]}
+    contractLogic={[{ title: "Cross-Token Swap", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
+    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
+    expectedOutputs="Coming soon"
+    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+  />
+);
+
+const EntropyVestingWalletTutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropyVestingWallet"
+    exampleId="openzeppelin-vestingwallet"
+    category="OpenZeppelin"
+    description="Learn how to implement a vesting wallet with encrypted amounts and EntropyOracle integration."
+    whatTeaches={["Vesting mechanics", "Time-based vesting", "Encrypted vesting amounts"]}
+    whyMatters={["Vesting is common in DeFi", "Encrypted amounts maintain privacy"]}
+    contractLogic={[{ title: "Vesting Wallet", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
+    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
+    expectedOutputs="Coming soon"
+    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+  />
 );
 
 export default Docs;
