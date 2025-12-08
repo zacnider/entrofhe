@@ -1929,6 +1929,17 @@ const ExampleTutorials: React.FC = () => {
     { id: 'openzeppelin-vestingwallet', name: 'EntropyVestingWallet', category: 'OpenZeppelin' },
   ];
 
+  // Group examples by category
+  const examplesByCategory = examples.reduce((acc, example) => {
+    if (!acc[example.category]) {
+      acc[example.category] = [];
+    }
+    acc[example.category].push(example);
+    return acc;
+  }, {} as Record<string, typeof examples>);
+
+  const selectedExampleData = examples.find(e => e.id === selectedExample);
+
   return (
     <div className="space-y-6">
       <div>
@@ -1938,25 +1949,48 @@ const ExampleTutorials: React.FC = () => {
         </p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
-        {examples.map((example) => (
-          <button
-            key={example.id}
-            onClick={() => setSelectedExample(example.id)}
-            className={`p-4 rounded-lg border-2 text-left transition-all ${
-              selectedExample === example.id
-                ? 'border-primary-500 dark:border-cyan-500 bg-primary-50 dark:bg-cyan-900/20'
-                : 'border-gray-200 dark:border-slate-700 hover:border-primary-300 dark:hover:border-cyan-700'
-            }`}
-          >
-            <div className="font-semibold text-primary-900 dark:text-slate-100">{example.name}</div>
-            <div className="text-sm text-gray-600 dark:text-slate-400">{example.category}</div>
-          </button>
-        ))}
+      {/* Dropdown Menu */}
+      <div className="space-y-2">
+        <label htmlFor="example-select" className="block text-sm font-medium text-gray-700 dark:text-slate-300">
+          Select Example:
+        </label>
+        <select
+          id="example-select"
+          value={selectedExample}
+          onChange={(e) => setSelectedExample(e.target.value)}
+          className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-cyan-500 focus:border-primary-500 dark:focus:border-cyan-500 transition-all"
+        >
+          {Object.entries(examplesByCategory).map(([category, categoryExamples]) => (
+            <optgroup key={category} label={category}>
+              {categoryExamples.map((example) => (
+                <option key={example.id} value={example.id}>
+                  {example.name}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </select>
+        {selectedExampleData && (
+          <p className="text-sm text-gray-600 dark:text-slate-400 mt-1">
+            <span className="font-semibold">Category:</span> {selectedExampleData.category}
+          </p>
+        )}
       </div>
 
-      {selectedExample === 'basic-simplecounter' && <EntropyCounterTutorial />}
-      {/* Add more example tutorials here as needed */}
+      {/* Selected Example Tutorial */}
+      <div className="mt-6">
+        {selectedExample === 'basic-simplecounter' && <EntropyCounterTutorial />}
+        {/* Add more example tutorials here as needed */}
+        {selectedExample !== 'basic-simplecounter' && (
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+            <p className="text-blue-800 dark:text-blue-200">
+              <strong>📚 Coming Soon:</strong> Detailed tutorial for <strong>{selectedExampleData?.name}</strong> is being prepared. 
+              For now, check the <a href={`/examples`} className="underline font-semibold">Examples page</a> or the 
+              <a href={`https://github.com/zacnider/entrofhe/tree/main/examples/${selectedExample}`} target="_blank" rel="noopener noreferrer" className="underline font-semibold ml-1">GitHub repository</a>.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
