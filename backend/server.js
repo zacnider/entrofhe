@@ -137,13 +137,36 @@ app.post('/api/compile', async (req, res) => {
 
     // Check if node_modules exists, if not install
     const nodeModulesPath = path.join(exampleDir, 'node_modules');
-    if (!fs.existsSync(nodeModulesPath)) {
+    const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
+    
+    if (!fs.existsSync(nodeModulesPath) || !fs.existsSync(hardhatPath)) {
       console.log(`Installing dependencies for ${examplePath}...`);
-      await execAsync('npm install --legacy-peer-deps', {
-        cwd: exampleDir,
-        timeout: 300000,
-        maxBuffer: 10 * 1024 * 1024,
-      });
+      try {
+        const installResult = await execAsync('npm install --legacy-peer-deps', {
+          cwd: exampleDir,
+          timeout: 300000,
+          maxBuffer: 10 * 1024 * 1024,
+        });
+        console.log(`Install output for ${examplePath}:`, installResult.stdout.substring(0, 200));
+      } catch (installError) {
+        console.error(`Install error for ${examplePath}:`, installError.message);
+        return res.status(500).json({
+          success: false,
+          error: `Failed to install dependencies for ${examplePath}`,
+          message: installError.message,
+          stdout: installError.stdout || '',
+          stderr: installError.stderr || '',
+        });
+      }
+      
+      // Verify Hardhat binary exists after install
+      if (!fs.existsSync(hardhatPath)) {
+        return res.status(500).json({
+          success: false,
+          error: 'Hardhat binary not found after installation',
+          message: `Hardhat binary should be at ${hardhatPath} but it does not exist. The npm install may have failed silently.`,
+        });
+      }
     }
 
     // Clean up Mac OS X resource fork files before compiling
@@ -156,15 +179,6 @@ app.post('/api/compile', async (req, res) => {
 
     // Run Hardhat compile - use local binary only
     console.log(`Compiling ${examplePath}...`);
-    const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
-    
-    if (!fs.existsSync(hardhatPath)) {
-      return res.status(500).json({
-        success: false,
-        error: 'Hardhat not found in node_modules. Please install dependencies first.',
-        message: 'The example dependencies may not be installed. Please try again.',
-      });
-    }
     
     const compileCmd = `node "${hardhatPath}" compile`;
     
