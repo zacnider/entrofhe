@@ -467,12 +467,10 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
       const deployData = compiledBytecode + encodedArgs.slice(2);
 
       // Deploy using wagmi (contract creation - no 'to' field)
-      const hash = await sendTransaction({
+      await sendTransaction({
         data: deployData as `0x${string}`,
       } as any);
-      if (hash) {
-        setOutput(`Transaction sent: ${hash}`);
-      }
+      setOutput('Transaction sent. Waiting for confirmation...');
     } catch (err: any) {
       toast.error(`Deployment failed: ${err.message}`);
       setOutput(err?.message || 'Deployment failed');
