@@ -7,7 +7,8 @@ import {
   CpuChipIcon,
   ShieldCheckIcon,
   DocumentTextIcon,
-  LightBulbIcon
+  LightBulbIcon,
+  AcademicCapIcon
 } from '@heroicons/react/24/outline';
 
 const Docs: React.FC = () => {
@@ -19,6 +20,7 @@ const Docs: React.FC = () => {
     { id: 'integration', title: 'Integration Guide', icon: CodeBracketIcon },
     { id: 'api-reference', title: 'API Reference', icon: DocumentTextIcon },
     { id: 'examples', title: 'Code Examples', icon: LightBulbIcon },
+    { id: 'tutorial-track', title: 'Full Tutorial Track', icon: AcademicCapIcon },
     { id: 'faq', title: 'FAQ', icon: QuestionMarkCircleIcon },
   ];
 
@@ -34,6 +36,8 @@ const Docs: React.FC = () => {
         return <APIReference />;
       case 'examples':
         return <CodeExamples />;
+      case 'tutorial-track':
+        return <FullTutorialTrack />;
       case 'faq':
         return <FAQ />;
       default:
@@ -1228,6 +1232,947 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
       </div>
     );
 };
+
+// Full Tutorial Track Section
+const FullTutorialTrack: React.FC = () => {
+  const [activeSubSection, setActiveSubSection] = useState<string>('quick-start');
+
+  const subSections = [
+    { id: 'quick-start', title: 'Quick Start' },
+    { id: 'solidity-guides', title: 'Solidity Guides' },
+    { id: 'frontend-integration', title: 'Frontend Integration' },
+    { id: 'architecture', title: 'Architecture' },
+    { id: 'example-tutorials', title: 'Example Tutorials' },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-4xl font-bold text-primary-900 dark:text-slate-100 mb-4">
+          Full Tutorial Track
+        </h1>
+        <p className="text-lg text-gray-600 dark:text-slate-400">
+          Complete step-by-step guide to building with Zama FHEVM and EntropyOracle. Learn from scratch how to create confidential smart contracts that use encrypted randomness.
+        </p>
+      </div>
+
+      {/* Sub-navigation */}
+      <div className="border-b border-gray-200 dark:border-slate-700">
+        <nav className="-mb-px flex space-x-8 overflow-x-auto">
+          {subSections.map((section) => (
+            <button
+              key={section.id}
+              onClick={() => setActiveSubSection(section.id)}
+              className={`py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap ${
+                activeSubSection === section.id
+                  ? 'border-primary-500 dark:border-cyan-500 text-primary-600 dark:text-cyan-400'
+                  : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-600'
+              }`}
+            >
+              {section.title}
+            </button>
+          ))}
+        </nav>
+      </div>
+
+      {/* Content */}
+      {activeSubSection === 'quick-start' && <QuickStartTutorial />}
+      {activeSubSection === 'solidity-guides' && <SolidityGuidesTutorial />}
+      {activeSubSection === 'frontend-integration' && <FrontendIntegrationTutorial />}
+      {activeSubSection === 'architecture' && <ArchitectureTutorial />}
+      {activeSubSection === 'example-tutorials' && <ExampleTutorials />}
+    </div>
+  );
+};
+
+// Quick Start Tutorial
+const QuickStartTutorial: React.FC = () => (
+  <div className="space-y-8">
+    <section className="space-y-4">
+      <h2 className="text-3xl font-bold text-primary-900 dark:text-slate-100">Quick Start</h2>
+      <p className="text-lg text-gray-600 dark:text-slate-400">
+        Build your first confidential smart contract with EntropyOracle in 5 minutes.
+      </p>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Prerequisites</h3>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-3">
+        <div className="flex items-start space-x-3">
+          <div className="flex-shrink-0 w-6 h-6 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">1</div>
+          <div>
+            <p className="font-semibold text-primary-900 dark:text-slate-100">Node.js 18+</p>
+            <p className="text-gray-600 dark:text-slate-400 text-sm">Install from <a href="https://nodejs.org" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 underline">nodejs.org</a></p>
+          </div>
+        </div>
+        <div className="flex items-start space-x-3">
+          <div className="flex-shrink-0 w-6 h-6 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">2</div>
+          <div>
+            <p className="font-semibold text-primary-900 dark:text-slate-100">Sepolia Testnet Access</p>
+            <p className="text-gray-600 dark:text-slate-400 text-sm">Get Sepolia ETH from a faucet. We'll use Alchemy RPC.</p>
+          </div>
+        </div>
+        <div className="flex items-start space-x-3">
+          <div className="flex-shrink-0 w-6 h-6 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">3</div>
+          <div>
+            <p className="font-semibold text-primary-900 dark:text-slate-100">Wallet (MetaMask or similar)</p>
+            <p className="text-gray-600 dark:text-slate-400 text-sm">Connect to Sepolia testnet</p>
+          </div>
+        </div>
+        <div className="flex items-start space-x-3">
+          <div className="flex-shrink-0 w-6 h-6 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">4</div>
+          <div>
+            <p className="font-semibold text-primary-900 dark:text-slate-100">EntropyOracle Address</p>
+            <p className="text-gray-600 dark:text-slate-400 text-sm">Fixed address: <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361</code></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Step 1: Clone and Setup</h3>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
+        <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
+{`# Clone the repository
+git clone https://github.com/zacnider/entrofhe.git
+cd entrofhe
+
+# Navigate to an example
+cd examples/basic-simplecounter
+
+# Install dependencies
+npm install --legacy-peer-deps`}
+        </pre>
+        <p className="text-sm text-gray-600 dark:text-slate-400 mt-3">
+          <strong>Note:</strong> We use <code className="bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">--legacy-peer-deps</code> to resolve dependency conflicts with FHEVM packages.
+        </p>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Step 2: Configure Environment</h3>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <p className="text-gray-700 dark:text-slate-300">
+          Create a <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">.env</code> file in the example directory:
+        </p>
+        <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
+{`SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_API_KEY
+PRIVATE_KEY=your_private_key_here
+ETHERSCAN_API_KEY=your_etherscan_api_key
+ENTROPY_ORACLE_ADDRESS=0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361`}
+        </pre>
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+          <p className="text-yellow-800 dark:text-yellow-200 text-sm">
+            <strong>⚠️ Security:</strong> Never commit your <code className="bg-yellow-100 dark:bg-yellow-900 px-1 py-0.5 rounded">.env</code> file or private keys to version control.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Step 3: Compile Contracts</h3>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
+        <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
+{`npx hardhat compile`}
+        </pre>
+        <p className="text-sm text-gray-600 dark:text-slate-400 mt-3">
+          This generates contract artifacts and TypeScript types in the <code className="bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">artifacts/</code> and <code className="bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">types/</code> directories.
+        </p>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Step 4: Run Tests</h3>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
+{`npx hardhat test`}
+        </pre>
+        <p className="text-gray-700 dark:text-slate-300">
+          Tests automatically deploy a local FHEChaosEngine and EntropyOracle on the Hardhat network. This means:
+        </p>
+        <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-slate-300 ml-4">
+          <li>No Sepolia network required for testing</li>
+          <li>Fast execution (local network)</li>
+          <li>Full FHE functionality with local coprocessor</li>
+          <li>Isolated test environment</li>
+        </ul>
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-4">
+          <p className="text-blue-800 dark:text-blue-200 text-sm">
+            <strong>💡 Tip:</strong> Test output shows encrypted values as handles. Decrypt off-chain using FHEVM SDK.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Step 5: Deploy to Sepolia</h3>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <p className="text-gray-700 dark:text-slate-300">
+          You can deploy in two ways:
+        </p>
+        <div className="space-y-3">
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-slate-700">
+            <h4 className="font-semibold text-primary-800 dark:text-cyan-300 mb-2">Option 1: Frontend (Recommended)</h4>
+            <p className="text-sm text-gray-600 dark:text-slate-400 mb-2">
+              Use the <a href="/examples" className="text-primary-600 dark:text-cyan-400 underline">Examples page</a> Deploy button. Your wallet will prompt for transaction approval.
+            </p>
+            <ul className="list-disc list-inside text-sm text-gray-600 dark:text-slate-400 ml-4 space-y-1">
+              <li>Constructor argument (EntropyOracle address) is automatically included</li>
+              <li>No manual ABI encoding needed</li>
+              <li>Transaction status shown in real-time</li>
+            </ul>
+          </div>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-slate-700">
+            <h4 className="font-semibold text-primary-800 dark:text-cyan-300 mb-2">Option 2: CLI</h4>
+            <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-xs mt-2">
+{`npx hardhat run scripts/deploy.ts --network sepolia`}
+            </pre>
+            <p className="text-xs text-gray-600 dark:text-slate-400 mt-2">
+              Ensure your deploy script passes <code className="bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361</code> as constructor argument.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Step 6: Verify on Etherscan</h3>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <p className="text-gray-700 dark:text-slate-300">
+          After deployment, verify your contract:
+        </p>
+        <div className="space-y-3">
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-slate-700">
+            <h4 className="font-semibold text-primary-800 dark:text-cyan-300 mb-2">Option 1: Frontend</h4>
+            <p className="text-sm text-gray-600 dark:text-slate-400 mb-2">
+              Click the "Verify" button on the <a href="/examples" className="text-primary-600 dark:text-cyan-400 underline">Examples page</a> after deployment.
+            </p>
+          </div>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-slate-700">
+            <h4 className="font-semibold text-primary-800 dark:text-cyan-300 mb-2">Option 2: CLI</h4>
+            <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-xs mt-2">
+{`npx hardhat verify --network sepolia <CONTRACT_ADDRESS> 0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361`}
+            </pre>
+            <p className="text-xs text-gray-600 dark:text-slate-400 mt-2">
+              Replace <code className="bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">&lt;CONTRACT_ADDRESS&gt;</code> with your deployed contract address.
+            </p>
+          </div>
+        </div>
+        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mt-4">
+          <p className="text-green-800 dark:text-green-200 text-sm">
+            <strong>✅ Success:</strong> Once verified, your contract source code will be visible on Etherscan, and users can interact with it directly.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">What's Next?</h3>
+      <div className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 rounded-lg p-6">
+        <p className="text-gray-700 dark:text-slate-300 mb-4">
+          Now that you've deployed your first contract, explore:
+        </p>
+        <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-slate-300 ml-4">
+          <li><strong>Solidity Guides:</strong> Learn FHE types, permissions, and EntropyOracle patterns</li>
+          <li><strong>Frontend Integration:</strong> Build dApps that interact with your contracts</li>
+          <li><strong>Example Tutorials:</strong> Deep dive into each of our 19 tutorial examples</li>
+          <li><strong>Architecture:</strong> Understand how FHEVM and EntropyOracle work under the hood</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+);
+
+// Solidity Guides Tutorial
+const SolidityGuidesTutorial: React.FC = () => (
+  <div className="space-y-8">
+    <section className="space-y-4">
+      <h2 className="text-3xl font-bold text-primary-900 dark:text-slate-100">Solidity Guides</h2>
+      <p className="text-lg text-gray-600 dark:text-slate-400">
+        Learn how to write Solidity contracts that compute on encrypted data using Zama FHEVM and EntropyOracle.
+      </p>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">FHE Types</h3>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <div>
+          <h4 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">euint64</h4>
+          <p className="text-gray-700 dark:text-slate-300 mb-2">
+            Encrypted unsigned 64-bit integer. This is the primary type for encrypted values in FHEVM.
+          </p>
+          <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-sm">
+{`euint64 private encryptedValue;
+
+// Create from plain value
+euint64 value = FHE.asEuint64(42);
+
+// Operations
+euint64 sum = FHE.add(value1, value2);
+euint64 product = FHE.mul(value1, value2);
+ebool isEqual = FHE.eq(value1, value2);`}
+          </pre>
+        </div>
+        <div>
+          <h4 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">externalEuint64</h4>
+          <p className="text-gray-700 dark:text-slate-300 mb-2">
+            Encrypted value from external source (frontend). Requires an input proof for validation.
+          </p>
+          <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-sm">
+{`function initialize(externalEuint64 encryptedValue, bytes calldata inputProof) external {
+    // Convert external to internal
+    euint64 internalValue = FHE.fromExternal(encryptedValue, inputProof);
+    
+    // Grant permission
+    FHE.allowThis(internalValue);
+    
+    // Now you can use it
+    storedValue = internalValue;
+}`}
+          </pre>
+        </div>
+        <div>
+          <h4 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">ebool</h4>
+          <p className="text-gray-700 dark:text-slate-300 mb-2">
+            Encrypted boolean. Result of comparison operations.
+          </p>
+          <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-sm">
+{`ebool isGreater = FHE.gt(value1, value2);
+ebool isEqual = FHE.eq(value1, value2);
+ebool isLess = FHE.lt(value1, value2);`}
+          </pre>
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Permissions: FHE.allow and FHE.allowThis</h3>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <p className="text-gray-700 dark:text-slate-300">
+          FHEVM uses an Access Control List (ACL) to manage who can use encrypted values. This is a security feature to prevent unauthorized access.
+        </p>
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">FHE.allowThis()</h4>
+            <p className="text-gray-700 dark:text-slate-300 mb-2">
+              Grants the current contract permission to use an encrypted value. <strong>Required before using any encrypted value in FHE operations.</strong>
+            </p>
+            <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-sm">
+{`euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+FHE.allowThis(entropy); // Required!
+
+// Now you can use entropy
+euint64 result = FHE.add(counter, entropy);`}
+            </pre>
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 mt-2">
+              <p className="text-red-800 dark:text-red-200 text-sm">
+                <strong>⚠️ Common Error:</strong> Forgetting <code className="bg-red-100 dark:bg-red-900 px-1 py-0.5 rounded">FHE.allowThis()</code> results in <code className="bg-red-100 dark:bg-red-900 px-1 py-0.5 rounded">SenderNotAllowed()</code> error.
+              </p>
+            </div>
+          </div>
+          <div>
+            <h4 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">FHE.allow()</h4>
+            <p className="text-gray-700 dark:text-slate-300 mb-2">
+              Grants a specific user permission to decrypt an encrypted value. Used for user-specific decryption.
+            </p>
+            <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-sm">
+{`euint64 secretValue = ...;
+FHE.allow(secretValue, userAddress);
+
+// Now user can decrypt this value off-chain using FHEVM SDK`}
+            </pre>
+          </div>
+          <div>
+            <h4 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">FHE.makePubliclyDecryptable()</h4>
+            <p className="text-gray-700 dark:text-slate-300 mb-2">
+              Makes an encrypted value publicly decryptable. <strong>Use with caution!</strong> This removes privacy.
+            </p>
+            <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-sm">
+{`euint64 result = FHE.add(value1, value2);
+FHE.makePubliclyDecryptable(result);
+
+// Now anyone can decrypt this value`}
+            </pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Input Proofs</h3>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <p className="text-gray-700 dark:text-slate-300">
+          When accepting encrypted values from external sources (frontend), you must validate them using input proofs. This ensures the encrypted value is valid and hasn't been tampered with.
+        </p>
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+          <p className="text-blue-800 dark:text-blue-200 text-sm">
+            <strong>💡 How it works:</strong> The frontend generates an input proof when encrypting a value. The contract validates this proof before accepting the encrypted value.
+          </p>
+        </div>
+        <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-sm">
+{`// Frontend (TypeScript)
+const input = hre.fhevm.createEncryptedInput(contractAddress, userAddress);
+input.add64(42);
+const encrypted = await input.encrypt();
+
+// Send to contract
+await contract.initialize(encrypted.handles[0], encrypted.inputProof);
+
+// Contract (Solidity)
+function initialize(externalEuint64 value, bytes calldata inputProof) external {
+    euint64 internal = FHE.fromExternal(value, inputProof);
+    // inputProof is validated here
+    FHE.allowThis(internal);
+    storedValue = internal;
+}`}
+        </pre>
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mt-4">
+          <p className="text-yellow-800 dark:text-yellow-200 text-sm">
+            <strong>⚠️ Important:</strong> Each <code className="bg-yellow-100 dark:bg-yellow-900 px-1 py-0.5 rounded">externalEuint64</code> parameter requires its own <code className="bg-yellow-100 dark:bg-yellow-900 px-1 py-0.5 rounded">inputProof</code>. If you have 2 external inputs, you need 2 proofs.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">EntropyOracle Integration Pattern</h3>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <p className="text-gray-700 dark:text-slate-300">
+          The standard pattern for using EntropyOracle in your contracts:
+        </p>
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">1. Import and Declare</h4>
+            <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-sm">
+{`import {FHE, euint64} from "@fhevm/solidity/lib/FHE.sol";
+import "./IEntropyOracle.sol";
+
+contract MyContract {
+    IEntropyOracle public constant ENTROPY_ORACLE = 
+        IEntropyOracle(0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361);
+    uint256 public constant FEE_AMOUNT = 0.00001 ether;
+}`}
+            </pre>
+          </div>
+          <div>
+            <h4 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">2. Request Entropy</h4>
+            <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-sm">
+{`function useRandomness(bytes32 tag) external payable {
+    require(msg.value >= FEE_AMOUNT, "Insufficient fee");
+    
+    // Request entropy
+    uint256 requestId = ENTROPY_ORACLE.requestEntropy{value: FEE_AMOUNT}(tag);
+    
+    // Store requestId for later use
+    pendingRequests[requestId] = true;
+}`}
+            </pre>
+          </div>
+          <div>
+            <h4 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">3. Get and Use Entropy</h4>
+            <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-sm">
+{`function completeWithEntropy(uint256 requestId) external {
+    require(ENTROPY_ORACLE.isRequestFulfilled(requestId), "Not ready");
+    
+    // Get encrypted entropy
+    euint64 entropy = ENTROPY_ORACLE.getEncryptedEntropy(requestId);
+    
+    // CRITICAL: Grant permission
+    FHE.allowThis(entropy);
+    
+    // Use entropy in FHE operations
+    euint64 result = FHE.xor(storedValue, entropy);
+    FHE.allowThis(result);
+    
+    storedValue = result;
+}`}
+            </pre>
+          </div>
+        </div>
+        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mt-4">
+          <p className="text-green-800 dark:text-green-200 text-sm">
+            <strong>✅ Best Practice:</strong> Always check <code className="bg-green-100 dark:bg-green-900 px-1 py-0.5 rounded">isRequestFulfilled()</code> before using entropy. The oracle needs time to generate entropy.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Common FHE Operations</h3>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <h4 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">Arithmetic</h4>
+            <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-xs">
+{`FHE.add(a, b)    // Addition
+FHE.sub(a, b)    // Subtraction
+FHE.mul(a, b)    // Multiplication
+FHE.div(a, b)    // Division
+FHE.mod(a, b)    // Modulo`}
+            </pre>
+          </div>
+          <div>
+            <h4 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">Bitwise</h4>
+            <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-xs">
+{`FHE.xor(a, b)   // XOR
+FHE.and(a, b)    // AND
+FHE.or(a, b)     // OR`}
+            </pre>
+          </div>
+          <div>
+            <h4 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">Comparison</h4>
+            <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-xs">
+{`FHE.eq(a, b)    // Equal
+FHE.ne(a, b)     // Not equal
+FHE.lt(a, b)     // Less than
+FHE.le(a, b)     // Less or equal
+FHE.gt(a, b)     // Greater than
+FHE.ge(a, b)     // Greater or equal`}
+            </pre>
+          </div>
+          <div>
+            <h4 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">Type Conversion</h4>
+            <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-xs">
+{`FHE.asEuint64(uint64)  // Plain to encrypted
+FHE.fromExternal(...)    // External to internal`}
+            </pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Anti-Patterns to Avoid</h3>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <h4 className="font-semibold text-red-800 dark:text-red-200 mb-2">❌ Using FHE in view/pure functions</h4>
+          <p className="text-red-700 dark:text-red-300 text-sm">
+            FHE operations modify state symbolically and cannot be used in <code className="bg-red-100 dark:bg-red-900 px-1 py-0.5 rounded">view</code> or <code className="bg-red-100 dark:bg-red-900 px-1 py-0.5 rounded">pure</code> functions.
+          </p>
+        </div>
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <h4 className="font-semibold text-red-800 dark:text-red-200 mb-2">❌ Forgetting FHE.allowThis()</h4>
+          <p className="text-red-700 dark:text-red-300 text-sm">
+            Always call <code className="bg-red-100 dark:bg-red-900 px-1 py-0.5 rounded">FHE.allowThis()</code> on encrypted values (including entropy) before using them in operations.
+          </p>
+        </div>
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <h4 className="font-semibold text-red-800 dark:text-red-200 mb-2">❌ Wrong number of input proofs</h4>
+          <p className="text-red-700 dark:text-red-300 text-sm">
+            Each <code className="bg-red-100 dark:bg-red-900 px-1 py-0.5 rounded">externalEuint64</code> parameter requires its own <code className="bg-red-100 dark:bg-red-900 px-1 py-0.5 rounded">inputProof</code>.
+          </p>
+        </div>
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <h4 className="font-semibold text-red-800 dark:text-red-200 mb-2">❌ Using wrong constructor argument</h4>
+          <p className="text-red-700 dark:text-red-300 text-sm">
+            Always use <code className="bg-red-100 dark:bg-red-900 px-1 py-0.5 rounded">0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361</code> as the EntropyOracle address in constructor and verification.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+);
+
+// Frontend Integration Tutorial
+const FrontendIntegrationTutorial: React.FC = () => (
+  <div className="space-y-8">
+    <section className="space-y-4">
+      <h2 className="text-3xl font-bold text-primary-900 dark:text-slate-100">Frontend Integration</h2>
+      <p className="text-lg text-gray-600 dark:text-slate-400">
+        Learn how to build frontends that interact with FHEVM contracts and EntropyOracle.
+      </p>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Using Our Frontend Tools</h3>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <p className="text-gray-700 dark:text-slate-300">
+          Our frontend provides built-in tools for testing, compiling, deploying, and verifying contracts:
+        </p>
+        <div className="space-y-3">
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-slate-700">
+            <h4 className="font-semibold text-primary-800 dark:text-cyan-300 mb-2">Test Button</h4>
+            <p className="text-sm text-gray-600 dark:text-slate-400">
+              Runs <code className="bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">npx hardhat test</code> on the backend. Shows test results in a terminal window.
+            </p>
+          </div>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-slate-700">
+            <h4 className="font-semibold text-primary-800 dark:text-cyan-300 mb-2">Compile Button</h4>
+            <p className="text-sm text-gray-600 dark:text-slate-400">
+              Compiles contracts and shows compilation status. Generates artifacts and TypeScript types.
+            </p>
+          </div>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-slate-700">
+            <h4 className="font-semibold text-primary-800 dark:text-cyan-300 mb-2">Deploy Button</h4>
+            <p className="text-sm text-gray-600 dark:text-slate-400">
+              Connects to your wallet and deploys the contract. Constructor argument (EntropyOracle address) is automatically included.
+            </p>
+          </div>
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-slate-700">
+            <h4 className="font-semibold text-primary-800 dark:text-cyan-300 mb-2">Verify Button</h4>
+            <p className="text-sm text-gray-600 dark:text-slate-400">
+              Verifies your contract on Etherscan. Constructor arguments are automatically passed.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Building Your Own Frontend</h3>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <p className="text-gray-700 dark:text-slate-300">
+          To build a custom frontend, you'll need:
+        </p>
+        <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-slate-300 ml-4">
+          <li><strong>Wagmi</strong> - React Hooks for Ethereum</li>
+          <li><strong>RainbowKit</strong> - Wallet connection UI</li>
+          <li><strong>FHEVM SDK</strong> - For encrypting values and generating input proofs</li>
+          <li><strong>Viem</strong> - TypeScript Ethereum library</li>
+        </ul>
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-4">
+          <p className="text-blue-800 dark:text-blue-200 text-sm">
+            <strong>💡 Tip:</strong> Check our <a href="https://github.com/zacnider/entrofhe" target="_blank" rel="noopener noreferrer" className="underline">GitHub repository</a> for frontend implementation examples.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+);
+
+// Architecture Tutorial
+const ArchitectureTutorial: React.FC = () => (
+  <div className="space-y-8">
+    <section className="space-y-4">
+      <h2 className="text-3xl font-bold text-primary-900 dark:text-slate-100">Architecture</h2>
+      <p className="text-lg text-gray-600 dark:text-slate-400">
+        Deep dive into how FHEVM and EntropyOracle work together.
+      </p>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">FHEVM Overview</h3>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <p className="text-gray-700 dark:text-slate-300">
+          FHEVM (Fully Homomorphic Encryption Virtual Machine) enables computation on encrypted data without decryption. Key components:
+        </p>
+        <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-slate-300 ml-4">
+          <li><strong>Coprocessor:</strong> Off-chain service that performs FHE operations</li>
+          <li><strong>Symbolic Execution:</strong> Tracks encrypted values as handles</li>
+          <li><strong>ACL (Access Control List):</strong> Manages permissions for encrypted values</li>
+          <li><strong>Relayer:</strong> Handles encryption/decryption in frontend</li>
+        </ul>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">EntropyOracle Flow</h3>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <div className="space-y-3">
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0 w-8 h-8 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
+            <div>
+              <p className="font-semibold text-primary-900 dark:text-slate-100">Request Entropy</p>
+              <p className="text-gray-600 dark:text-slate-400 text-sm">User calls <code className="bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">requestEntropy()</code> with a unique tag and pays fee.</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0 w-8 h-8 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold">2</div>
+            <div>
+              <p className="font-semibold text-primary-900 dark:text-slate-100">Seed Collection</p>
+              <p className="text-gray-600 dark:text-slate-400 text-sm">FHEChaosEngine collects on-chain data (timestamp, prevrandao, blockhash) and combines with master seed.</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0 w-8 h-8 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold">3</div>
+            <div>
+              <p className="font-semibold text-primary-900 dark:text-slate-100">Chaos Generation</p>
+              <p className="text-gray-600 dark:text-slate-400 text-sm">Logistic map function iterates on combined seeds to generate entropy (all encrypted).</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0 w-8 h-8 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold">4</div>
+            <div>
+              <p className="font-semibold text-primary-900 dark:text-slate-100">Return Encrypted Entropy</p>
+              <p className="text-gray-600 dark:text-slate-400 text-sm">Encrypted entropy (euint64) is returned and can be used in FHE operations.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+);
+
+// Example Tutorials - Will be expanded with detailed per-example content
+const ExampleTutorials: React.FC = () => {
+  const [selectedExample, setSelectedExample] = useState<string>('basic-simplecounter');
+
+  const examples = [
+    { id: 'basic-simplecounter', name: 'EntropyCounter', category: 'Basic' },
+    { id: 'basic-arithmetic', name: 'EntropyArithmetic', category: 'Basic' },
+    { id: 'basic-equalitycomparison', name: 'EntropyEqualityComparison', category: 'Basic' },
+    { id: 'encryption-encryptsingle', name: 'EntropyEncryption', category: 'Encryption' },
+    { id: 'user-decryption-userdecryptsingle', name: 'EntropyUserDecryption', category: 'Decryption' },
+    { id: 'public-decryption-publicdecryptsingle', name: 'EntropyPublicDecryption', category: 'Decryption' },
+    { id: 'access-control-accesscontrol', name: 'EntropyAccessControl', category: 'Access Control' },
+    { id: 'input-proof-inputproofexplanation', name: 'EntropyInputProof', category: 'Input Proof' },
+    { id: 'anti-patterns-missingallowthis', name: 'EntropyMissingAllowThis', category: 'Anti-Patterns' },
+    { id: 'anti-patterns-viewwithencrypted', name: 'EntropyViewWithEncrypted', category: 'Anti-Patterns' },
+    { id: 'handles-handlelifecycle', name: 'EntropyHandleLifecycle', category: 'Handles' },
+    { id: 'advanced-simplelottery', name: 'SimpleLottery', category: 'Advanced' },
+    { id: 'advanced-randomnumbergenerator', name: 'RandomNumberGenerator', category: 'Advanced' },
+    { id: 'advanced-entropynft', name: 'EntropyNFT', category: 'Advanced' },
+    { id: 'openzeppelin-erc7984token', name: 'EntropyERC7984Token', category: 'OpenZeppelin' },
+    { id: 'openzeppelin-erc7984toerc20wrapper', name: 'EntropyERC7984ToERC20Wrapper', category: 'OpenZeppelin' },
+    { id: 'openzeppelin-swaperc7984toerc20', name: 'EntropySwapERC7984ToERC20', category: 'OpenZeppelin' },
+    { id: 'openzeppelin-swaperc7984toerc7984', name: 'EntropySwapERC7984ToERC7984', category: 'OpenZeppelin' },
+    { id: 'openzeppelin-vestingwallet', name: 'EntropyVestingWallet', category: 'OpenZeppelin' },
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-3xl font-bold text-primary-900 dark:text-slate-100 mb-4">Example Tutorials</h2>
+        <p className="text-lg text-gray-600 dark:text-slate-400">
+          Deep dive into each of our 19 tutorial examples. Learn the what, why, and how of each pattern.
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-4">
+        {examples.map((example) => (
+          <button
+            key={example.id}
+            onClick={() => setSelectedExample(example.id)}
+            className={`p-4 rounded-lg border-2 text-left transition-all ${
+              selectedExample === example.id
+                ? 'border-primary-500 dark:border-cyan-500 bg-primary-50 dark:bg-cyan-900/20'
+                : 'border-gray-200 dark:border-slate-700 hover:border-primary-300 dark:hover:border-cyan-700'
+            }`}
+          >
+            <div className="font-semibold text-primary-900 dark:text-slate-100">{example.name}</div>
+            <div className="text-sm text-gray-600 dark:text-slate-400">{example.category}</div>
+          </button>
+        ))}
+      </div>
+
+      {selectedExample === 'basic-simplecounter' && <EntropyCounterTutorial />}
+      {/* Add more example tutorials here as needed */}
+    </div>
+  );
+};
+
+// Detailed EntropyCounter Tutorial (example)
+const EntropyCounterTutorial: React.FC = () => (
+  <div className="space-y-8 mt-6">
+    <section className="space-y-4">
+      <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">EntropyCounter: Complete Tutorial</h3>
+      <p className="text-gray-700 dark:text-slate-300">
+        Learn how to build a counter that uses encrypted randomness from EntropyOracle for entropy-enhanced increments.
+      </p>
+    </section>
+
+    <section className="space-y-4">
+      <h4 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">What This Example Teaches</h4>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-3">
+        <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-slate-300 ml-4">
+          <li>How to integrate EntropyOracle into your contract</li>
+          <li>How to request and use encrypted entropy</li>
+          <li>How to combine entropy with encrypted values using FHE operations</li>
+          <li>How to handle external encrypted inputs with input proofs</li>
+          <li>The importance of <code className="bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">FHE.allowThis()</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h4 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Contract Logic Explained</h4>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <div>
+          <h5 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">1. Constructor</h5>
+          <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-sm">
+{`constructor(address _entropyOracle) {
+    require(_entropyOracle != address(0), "Invalid oracle address");
+    entropyOracle = IEntropyOracle(_entropyOracle);
+}`}
+          </pre>
+          <p className="text-sm text-gray-600 dark:text-slate-400 mt-2">
+            Stores the EntropyOracle address. Always use <code className="bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361</code>.
+          </p>
+        </div>
+        <div>
+          <h5 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">2. Initialize</h5>
+          <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-sm">
+{`function initialize(externalEuint64 encryptedValue, bytes calldata inputProof) external {
+    require(!initialized, "Counter already initialized");
+    
+    euint64 internalValue = FHE.fromExternal(encryptedValue, inputProof);
+    FHE.allowThis(internalValue); // Required!
+    counter = internalValue;
+    initialized = true;
+}`}
+          </pre>
+          <p className="text-sm text-gray-600 dark:text-slate-400 mt-2">
+            Converts external encrypted input to internal, grants permission, and stores it. Can only be called once.
+          </p>
+        </div>
+        <div>
+          <h5 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">3. Request Entropy</h5>
+          <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-sm">
+{`function requestIncrement(bytes32 tag) external payable returns (uint256 requestId) {
+    require(initialized, "Counter not initialized");
+    require(msg.value >= entropyOracle.getFee(), "Insufficient fee");
+    
+    requestId = entropyOracle.requestEntropy{value: msg.value}(tag);
+    incrementRequests[requestId] = true;
+    return requestId;
+}`}
+          </pre>
+          <p className="text-sm text-gray-600 dark:text-slate-400 mt-2">
+            Requests entropy from oracle. Requires 0.00001 ETH fee. Returns requestId for later use.
+          </p>
+        </div>
+        <div>
+          <h5 className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">4. Increment with Entropy</h5>
+          <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-sm">
+{`function incrementWithEntropy(uint256 requestId) external {
+    require(entropyOracle.isRequestFulfilled(requestId), "Entropy not ready");
+    
+    euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+    FHE.allowThis(entropy); // CRITICAL!
+    
+    euint64 mixed = FHE.xor(counter, entropy);
+    FHE.allowThis(mixed);
+    
+    euint64 one = FHE.asEuint64(1);
+    FHE.allowThis(one);
+    counter = FHE.add(mixed, one);
+}`}
+          </pre>
+          <p className="text-sm text-gray-600 dark:text-slate-400 mt-2">
+            Gets entropy, grants permission, combines with counter using XOR, then adds 1. This creates entropy-enhanced increments.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h4 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Step-by-Step Testing</h4>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <div className="space-y-3">
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0 w-6 h-6 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">1</div>
+            <div>
+              <p className="font-semibold text-primary-900 dark:text-slate-100">Deploy Contracts</p>
+              <p className="text-sm text-gray-600 dark:text-slate-400">Test fixture automatically deploys FHEChaosEngine, EntropyOracle, and EntropyCounter on local Hardhat network.</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0 w-6 h-6 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">2</div>
+            <div>
+              <p className="font-semibold text-primary-900 dark:text-slate-100">Initialize Counter</p>
+              <p className="text-sm text-gray-600 dark:text-slate-400">Create encrypted input (value 0), encrypt it, and call <code className="bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">initialize()</code>.</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0 w-6 h-6 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">3</div>
+            <div>
+              <p className="font-semibold text-primary-900 dark:text-slate-100">Request Entropy</p>
+              <p className="text-sm text-gray-600 dark:text-slate-400">Call <code className="bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">requestIncrement()</code> with a unique tag and fee.</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0 w-6 h-6 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">4</div>
+            <div>
+              <p className="font-semibold text-primary-900 dark:text-slate-100">Wait for Fulfillment</p>
+              <p className="text-sm text-gray-600 dark:text-slate-400">Check <code className="bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">isRequestFulfilled()</code> until true.</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0 w-6 h-6 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold text-sm">5</div>
+            <div>
+              <p className="font-semibold text-primary-900 dark:text-slate-100">Increment with Entropy</p>
+              <p className="text-sm text-gray-600 dark:text-slate-400">Call <code className="bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">incrementWithEntropy()</code> with the requestId.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h4 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Expected Outputs</h4>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-3">
+        <div>
+          <p className="font-semibold text-primary-700 dark:text-cyan-300 mb-2">Test Results</p>
+          <pre className="bg-gray-900 dark:bg-black text-green-400 p-3 rounded-lg overflow-x-auto text-xs">
+{`✓ Should deploy successfully
+✓ Should not be initialized by default
+✓ Should have EntropyOracle address set
+✓ Should initialize with encrypted value
+✓ Should not allow double initialization
+✓ Should increment encrypted counter without entropy
+✓ Should request entropy for increment
+✓ Should track increment count`}
+          </pre>
+        </div>
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-4">
+          <p className="text-blue-800 dark:text-blue-200 text-sm">
+            <strong>💡 Note:</strong> Encrypted values appear as handles in test output. Decrypt off-chain to see actual values.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h4 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Common Errors & Solutions</h4>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <h5 className="font-semibold text-red-800 dark:text-red-200 mb-2">Error: SenderNotAllowed()</h5>
+          <p className="text-red-700 dark:text-red-300 text-sm mb-2">
+            <strong>Cause:</strong> Missing <code className="bg-red-100 dark:bg-red-900 px-1 py-0.5 rounded">FHE.allowThis()</code> call.
+          </p>
+          <p className="text-red-700 dark:text-red-300 text-sm">
+            <strong>Solution:</strong> Always call <code className="bg-red-100 dark:bg-red-900 px-1 py-0.5 rounded">FHE.allowThis()</code> on encrypted values (including entropy) before using them.
+          </p>
+        </div>
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <h5 className="font-semibold text-red-800 dark:text-red-200 mb-2">Error: Entropy not ready</h5>
+          <p className="text-red-700 dark:text-red-300 text-sm mb-2">
+            <strong>Cause:</strong> Calling <code className="bg-red-100 dark:bg-red-900 px-1 py-0.5 rounded">incrementWithEntropy()</code> before entropy is fulfilled.
+          </p>
+          <p className="text-red-700 dark:text-red-300 text-sm">
+            <strong>Solution:</strong> Check <code className="bg-red-100 dark:bg-red-900 px-1 py-0.5 rounded">isRequestFulfilled()</code> and wait if needed.
+          </p>
+        </div>
+        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+          <h5 className="font-semibold text-red-800 dark:text-red-200 mb-2">Error: Invalid oracle address</h5>
+          <p className="text-red-700 dark:text-red-300 text-sm mb-2">
+            <strong>Cause:</strong> Wrong or zero address passed to constructor.
+          </p>
+          <p className="text-red-700 dark:text-red-300 text-sm">
+            <strong>Solution:</strong> Always use <code className="bg-red-100 dark:bg-red-900 px-1 py-0.5 rounded">0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361</code>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h4 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">GitHub Resources</h4>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
+        <p className="text-gray-700 dark:text-slate-300 mb-3">
+          View the complete source code and tests:
+        </p>
+        <a 
+          href="https://github.com/zacnider/entrofhe/tree/main/examples/basic-simplecounter" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold"
+        >
+          📦 View on GitHub →
+        </a>
+      </div>
+    </section>
+  </div>
+);
 
 // FAQ Section
 const FAQ: React.FC = () => (
