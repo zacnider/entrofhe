@@ -59,12 +59,19 @@ app.post('/api/test', async (req, res) => {
       // Ignore cleanup errors
     }
 
-    // Run Hardhat tests - use local binary
+    // Run Hardhat tests - use local binary only
     console.log(`Running tests for ${examplePath}...`);
     const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
-    const testCmd = fs.existsSync(hardhatPath) 
-      ? `node "${hardhatPath}" test`
-      : 'npm run test';
+    
+    if (!fs.existsSync(hardhatPath)) {
+      return res.status(500).json({
+        success: false,
+        error: 'Hardhat not found in node_modules. Please install dependencies first.',
+        message: 'The example dependencies may not be installed. Please try again.',
+      });
+    }
+    
+    const testCmd = `node "${hardhatPath}" test`;
     
     const { stdout, stderr } = await execAsync(testCmd, {
       cwd: exampleDir,
@@ -133,12 +140,19 @@ app.post('/api/compile', async (req, res) => {
       // Ignore cleanup errors
     }
 
-    // Run Hardhat compile - use local binary
+    // Run Hardhat compile - use local binary only
     console.log(`Compiling ${examplePath}...`);
     const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
-    const compileCmd = fs.existsSync(hardhatPath)
-      ? `node "${hardhatPath}" compile`
-      : 'npm run compile';
+    
+    if (!fs.existsSync(hardhatPath)) {
+      return res.status(500).json({
+        success: false,
+        error: 'Hardhat not found in node_modules. Please install dependencies first.',
+        message: 'The example dependencies may not be installed. Please try again.',
+      });
+    }
+    
+    const compileCmd = `node "${hardhatPath}" compile`;
     
     const { stdout, stderr } = await execAsync(compileCmd, {
       cwd: exampleDir,
@@ -291,14 +305,18 @@ app.post('/api/verify', async (req, res) => {
       // Ignore cleanup errors
     }
 
-    // Build verify command - use local binary
+    // Build verify command - use local binary only
     const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
-    let verifyCmd;
-    if (fs.existsSync(hardhatPath)) {
-      verifyCmd = `node "${hardhatPath}" verify --network ${network} ${contractAddress}`;
-    } else {
-      verifyCmd = `npm run verify -- --network ${network} ${contractAddress}`;
+    
+    if (!fs.existsSync(hardhatPath)) {
+      return res.status(500).json({
+        success: false,
+        error: 'Hardhat not found in node_modules. Please install dependencies first.',
+        message: 'The example dependencies may not be installed. Please try again.',
+      });
     }
+    
+    let verifyCmd = `node "${hardhatPath}" verify --network ${network} ${contractAddress}`;
     
     if (constructorArgs && constructorArgs.length > 0) {
       verifyCmd += ` ${constructorArgs.join(' ')}`;
