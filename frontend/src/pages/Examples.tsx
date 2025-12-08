@@ -331,10 +331,35 @@ interface TutorialExampleCardProps {
   icon: React.ReactNode;
 }
 
+// GitHub repo mapping for submodules
+const getExampleRepoUrl = (examplePath: string): string => {
+  const repoMap: Record<string, string> = {
+    'basic-simplecounter': 'fhevm-example-basic-simplecounter',
+    'basic-arithmetic': 'fhevm-example-basic-arithmetic',
+    'basic-equalitycomparison': 'fhevm-example-basic-equalitycomparison',
+    'encryption-encryptsingle': 'fhevm-example-encryption-encryptsingle',
+    'user-decryption-userdecryptsingle': 'fhevm-example-user-decryption-userdecryptsingle',
+    'public-decryption-publicdecryptsingle': 'fhevm-example-public-decryption-publicdecryptsingle',
+    'access-control-accesscontrol': 'fhevm-example-access-control-accesscontrol',
+    'input-proof-inputproofexplanation': 'fhevm-example-input-proof-inputproofexplanation',
+    'anti-patterns-viewwithencrypted': 'fhevm-example-anti-patterns-viewwithencrypted',
+    'anti-patterns-missingallowthis': 'fhevm-example-anti-patterns-missingallowthis',
+    'handles-handlelifecycle': 'fhevm-example-handles-handlelifecycle',
+    'advanced-simplelottery': 'fhevm-example-advanced-simplelottery',
+    'advanced-randomnumbergenerator': 'fhevm-example-advanced-randomnumbergenerator',
+    'advanced-entropynft': 'fhevm-example-advanced-entropynft',
+    'openzeppelin-erc7984token': 'fhevm-example-openzeppelin-erc7984token',
+    'openzeppelin-erc7984toerc20wrapper': 'fhevm-example-openzeppelin-erc7984toerc20wrapper',
+    'openzeppelin-swaperc7984toerc20': 'fhevm-example-openzeppelin-swaperc7984toerc20',
+    'openzeppelin-swaperc7984toerc7984': 'fhevm-example-openzeppelin-swaperc7984toerc7984',
+    'openzeppelin-vestingwallet': 'fhevm-example-openzeppelin-vestingwallet',
+  };
+  const repoName = repoMap[examplePath] || `entrofhe/tree/main/examples/${examplePath}`;
+  return `https://github.com/zacnider/${repoName}`;
+};
+
 const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, description, category, path, icon }) => {
-  const githubUrl = path === 'basic-simplecounter'
-    ? 'https://github.com/zacnider/fhevm-example-basic-simplecounter'
-    : `https://github.com/zacnider/entrofhe/tree/main/examples/${path}`;
+  const githubUrl = getExampleRepoUrl(path);
   const { address, isConnected } = useAccount();
   const { loading, output, error, testExample, compileExample, verifyExample, clearOutput, setOutput } = useExampleAPI();
   const { sendTransaction, isPending: isDeploying, data: deployHash } = useSendTransaction();

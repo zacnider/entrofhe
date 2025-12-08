@@ -744,7 +744,7 @@ contract SimpleLottery {
           <strong>💡 Live Example:</strong> Test this contract on the <a href="/examples" className="underline font-semibold">Examples page</a> (Simple Lottery).
         </p>
         <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">
-          <strong>📦 GitHub:</strong> <a href="https://github.com/zacnider/entrofhe/tree/main/examples/advanced-simplelottery" target="_blank" rel="noopener noreferrer" className="underline font-semibold">View source code</a>
+                <strong>📦 GitHub:</strong> <a href="https://github.com/zacnider/fhevm-example-advanced-simplelottery" target="_blank" rel="noopener noreferrer" className="underline font-semibold">View source code</a>
         </p>
       </div>
     </section>
@@ -807,7 +807,7 @@ contract RandomNumberGenerator {
           <strong>💡 Live Example:</strong> Test this contract on the <a href="/examples" className="underline font-semibold">Examples page</a> (Random Number Generator).
         </p>
         <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">
-          <strong>📦 GitHub:</strong> <a href="https://github.com/zacnider/entrofhe/tree/main/examples/advanced-randomnumbergenerator" target="_blank" rel="noopener noreferrer" className="underline font-semibold">View source code</a>
+                <strong>📦 GitHub:</strong> <a href="https://github.com/zacnider/fhevm-example-advanced-randomnumbergenerator" target="_blank" rel="noopener noreferrer" className="underline font-semibold">View source code</a>
         </p>
       </div>
     </section>
@@ -908,7 +908,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
                 <strong>💡 Live Example:</strong> Test this contract on the <a href="/examples" className="underline font-semibold">Examples page</a> (EntropyNFT). Mint real NFTs with IPFS metadata!
               </p>
               <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">
-                <strong>📦 GitHub:</strong> <a href="https://github.com/zacnider/entrofhe/tree/main/examples/advanced-entropynft" target="_blank" rel="noopener noreferrer" className="underline font-semibold">View source code</a>
+                <strong>📦 GitHub:</strong> <a href="https://github.com/zacnider/fhevm-example-advanced-entropynft" target="_blank" rel="noopener noreferrer" className="underline font-semibold">View source code</a>
               </p>
             </div>
           </section>
@@ -962,7 +962,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/basic-arithmetic</code>
           </p>
           <p className="text-sm">
-            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/basic-arithmetic" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+            <a href="https://github.com/zacnider/fhevm-example-basic-arithmetic" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
               📦 View on GitHub
             </a>
           </p>
@@ -977,7 +977,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/basic-equalitycomparison</code>
           </p>
           <p className="text-sm">
-            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/basic-equalitycomparison" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+            <a href="https://github.com/zacnider/fhevm-example-basic-equalitycomparison" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
               📦 View on GitHub
             </a>
           </p>
@@ -999,7 +999,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/encryption-encryptsingle</code>
           </p>
           <p className="text-sm">
-            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/encryption-encryptsingle" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+            <a href="https://github.com/zacnider/fhevm-example-encryption-encryptsingle" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
               📦 View on GitHub
             </a>
           </p>
@@ -1021,7 +1021,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/user-decryption-userdecryptsingle</code>
           </p>
           <p className="text-sm">
-            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/user-decryption-userdecryptsingle" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+            <a href="https://github.com/zacnider/fhevm-example-user-decryption-userdecryptsingle" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
               📦 View on GitHub
             </a>
           </p>
@@ -1036,7 +1036,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/public-decryption-publicdecryptsingle</code>
           </p>
           <p className="text-sm">
-            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/public-decryption-publicdecryptsingle" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+            <a href="https://github.com/zacnider/fhevm-example-public-decryption-publicdecryptsingle" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
               📦 View on GitHub
             </a>
           </p>
@@ -1058,7 +1058,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/access-control-accesscontrol</code>
           </p>
           <p className="text-sm">
-            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/access-control-accesscontrol" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+            <a href="https://github.com/zacnider/fhevm-example-access-control-accesscontrol" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
               📦 View on GitHub
             </a>
           </p>
@@ -1080,7 +1080,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/input-proof-inputproofexplanation</code>
           </p>
           <p className="text-sm">
-            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/input-proof-inputproofexplanation" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+            <a href="https://github.com/zacnider/fhevm-example-input-proof-inputproofexplanation" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
               📦 View on GitHub
             </a>
           </p>
@@ -1102,7 +1102,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/anti-patterns-missingallowthis</code>
           </p>
           <p className="text-sm">
-            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/anti-patterns-missingallowthis" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+            <a href="https://github.com/zacnider/fhevm-example-anti-patterns-missingallowthis" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
               📦 View on GitHub
             </a>
           </p>
@@ -1117,7 +1117,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
             <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/anti-patterns-viewwithencrypted</code>
           </p>
           <p className="text-sm">
-            <a href="https://github.com/zacnider/entrofhe/tree/main/examples/anti-patterns-viewwithencrypted" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+            <a href="https://github.com/zacnider/fhevm-example-anti-patterns-viewwithencrypted" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
               📦 View on GitHub
             </a>
           </p>
@@ -1139,7 +1139,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
                   <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/handles-handlelifecycle</code>
                 </p>
                 <p className="text-sm">
-                  <a href="https://github.com/zacnider/entrofhe/tree/main/examples/handles-handlelifecycle" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+                  <a href="https://github.com/zacnider/fhevm-example-handles-handlelifecycle" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
                     📦 View on GitHub
                   </a>
                 </p>
@@ -1161,7 +1161,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
                   <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/openzeppelin-erc7984token</code>
                 </p>
                 <p className="text-sm">
-                  <a href="https://github.com/zacnider/entrofhe/tree/main/examples/openzeppelin-erc7984token" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+                  <a href="https://github.com/zacnider/fhevm-example-openzeppelin-erc7984token" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
                     📦 View on GitHub
                   </a>
                 </p>
@@ -1176,7 +1176,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
                   <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/openzeppelin-erc7984toerc20wrapper</code>
                 </p>
                 <p className="text-sm">
-                  <a href="https://github.com/zacnider/entrofhe/tree/main/examples/openzeppelin-erc7984toerc20wrapper" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+                  <a href="https://github.com/zacnider/fhevm-example-openzeppelin-erc7984toerc20wrapper" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
                     📦 View on GitHub
                   </a>
                 </p>
@@ -1191,7 +1191,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
                   <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/openzeppelin-swaperc7984toerc20</code>
                 </p>
                 <p className="text-sm">
-                  <a href="https://github.com/zacnider/entrofhe/tree/main/examples/openzeppelin-swaperc7984toerc20" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+                  <a href="https://github.com/zacnider/fhevm-example-openzeppelin-swaperc7984toerc20" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
                     📦 View on GitHub
                   </a>
                 </p>
@@ -1206,7 +1206,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
                   <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/openzeppelin-swaperc7984toerc7984</code>
                 </p>
                 <p className="text-sm">
-                  <a href="https://github.com/zacnider/entrofhe/tree/main/examples/openzeppelin-swaperc7984toerc7984" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+                  <a href="https://github.com/zacnider/fhevm-example-openzeppelin-swaperc7984toerc7984" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
                     📦 View on GitHub
                   </a>
                 </p>
@@ -1221,7 +1221,7 @@ contract EntropyNFT is ERC721, ERC721URIStorage {
                   <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/openzeppelin-vestingwallet</code>
                 </p>
                 <p className="text-sm">
-                  <a href="https://github.com/zacnider/entrofhe/tree/main/examples/openzeppelin-vestingwallet" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
+                  <a href="https://github.com/zacnider/fhevm-example-openzeppelin-vestingwallet" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
                     📦 View on GitHub
                   </a>
                 </p>
@@ -2308,6 +2308,33 @@ const FAQ: React.FC = () => (
   </div>
 );
 
+// GitHub repo mapping for submodules
+const getExampleRepoUrl = (exampleId: string): string => {
+  const repoMap: Record<string, string> = {
+    'basic-simplecounter': 'fhevm-example-basic-simplecounter',
+    'basic-arithmetic': 'fhevm-example-basic-arithmetic',
+    'basic-equalitycomparison': 'fhevm-example-basic-equalitycomparison',
+    'encryption-encryptsingle': 'fhevm-example-encryption-encryptsingle',
+    'user-decryption-userdecryptsingle': 'fhevm-example-user-decryption-userdecryptsingle',
+    'public-decryption-publicdecryptsingle': 'fhevm-example-public-decryption-publicdecryptsingle',
+    'access-control-accesscontrol': 'fhevm-example-access-control-accesscontrol',
+    'input-proof-inputproofexplanation': 'fhevm-example-input-proof-inputproofexplanation',
+    'anti-patterns-viewwithencrypted': 'fhevm-example-anti-patterns-viewwithencrypted',
+    'anti-patterns-missingallowthis': 'fhevm-example-anti-patterns-missingallowthis',
+    'handles-handlelifecycle': 'fhevm-example-handles-handlelifecycle',
+    'advanced-simplelottery': 'fhevm-example-advanced-simplelottery',
+    'advanced-randomnumbergenerator': 'fhevm-example-advanced-randomnumbergenerator',
+    'advanced-entropynft': 'fhevm-example-advanced-entropynft',
+    'openzeppelin-erc7984token': 'fhevm-example-openzeppelin-erc7984token',
+    'openzeppelin-erc7984toerc20wrapper': 'fhevm-example-openzeppelin-erc7984toerc20wrapper',
+    'openzeppelin-swaperc7984toerc20': 'fhevm-example-openzeppelin-swaperc7984toerc20',
+    'openzeppelin-swaperc7984toerc7984': 'fhevm-example-openzeppelin-swaperc7984toerc7984',
+    'openzeppelin-vestingwallet': 'fhevm-example-openzeppelin-vestingwallet',
+  };
+  const repoName = repoMap[exampleId] || `entrofhe/tree/main/examples/${exampleId}`;
+  return `https://github.com/zacnider/${repoName}`;
+};
+
 // Generic Tutorial Template Component
 const GenericTutorial: React.FC<{
   name: string;
@@ -2419,9 +2446,7 @@ const GenericTutorial: React.FC<{
       <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
         <p className="text-gray-700 dark:text-slate-300 mb-3">View the complete source code and tests:</p>
         <a
-          href={exampleId === 'basic-simplecounter' 
-            ? 'https://github.com/zacnider/fhevm-example-basic-simplecounter'
-            : `https://github.com/zacnider/entrofhe/tree/main/examples/${exampleId}`}
+          href={getExampleRepoUrl(exampleId)}
           target="_blank"
           rel="noopener noreferrer"
           className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold"
