@@ -2738,13 +2738,81 @@ const EntropyPublicDecryptionTutorial: React.FC = () => (
     name="EntropyPublicDecryption"
     exampleId="public-decryption-publicdecryptsingle"
     category="Decryption"
-    description="Learn how to make encrypted values publicly decryptable using FHE.makePubliclyDecryptable()."
-    whatTeaches={["How to use FHE.makePubliclyDecryptable()", "Public decryption patterns", "When to use public decryption"]}
-    whyMatters={["Public decryption removes privacy", "Use with caution"]}
-    contractLogic={[{ title: "Make Public", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
-    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
-    expectedOutputs="Coming soon"
-    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+    description="Learn how to make encrypted values publicly decryptable using FHE.makePubliclyDecryptable(). This example demonstrates public decryption patterns with entropy enhancement."
+    whatTeaches={[
+      "How to use FHE.makePubliclyDecryptable()",
+      "Public decryption patterns",
+      "When to use public decryption",
+      "How to enhance public decryption with entropy",
+      "The trade-off between privacy and accessibility"
+    ]}
+    whyMatters={[
+      "Public decryption enables anyone to decrypt values",
+      "Useful for transparent systems where values should be public",
+      "Entropy adds randomness even to public values",
+      "Use with caution - removes privacy"
+    ]}
+    contractLogic={[
+      {
+        title: "1. Store and Make Public",
+        code: `function storeAndMakePublic(
+    externalEuint64 encryptedInput,
+    bytes calldata inputProof
+) external {
+    euint64 internalValue = FHE.fromExternal(encryptedInput, inputProof);
+    FHE.allowThis(internalValue);
+    
+    // Make publicly decryptable (anyone can decrypt)
+    encryptedValue = FHE.makePubliclyDecryptable(internalValue);
+}`,
+        explanation: "Stores encrypted value and makes it publicly decryptable. Anyone can decrypt this value off-chain using FHEVM SDK."
+      },
+      {
+        title: "2. Store with Entropy and Make Public",
+        code: `function storeAndMakePublicWithEntropy(
+    externalEuint64 encryptedInput,
+    bytes calldata inputProof,
+    uint256 requestId
+) external {
+    euint64 internalValue = FHE.fromExternal(encryptedInput, inputProof);
+    FHE.allowThis(internalValue);
+    
+    euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+    FHE.allowThis(entropy);
+    
+    euint64 enhancedValue = FHE.xor(internalValue, entropy);
+    FHE.allowThis(enhancedValue);
+    
+    // Make enhanced value publicly decryptable
+    encryptedValue = FHE.makePubliclyDecryptable(enhancedValue);
+}`,
+        explanation: "Combines value with entropy, then makes it publicly decryptable. Anyone can decrypt the entropy-enhanced value."
+      }
+    ]}
+    testSteps={[
+      { step: 1, title: "Deploy Contracts", description: "Test fixture deploys all required contracts." },
+      { step: 2, title: "Store and Make Public", description: "Create encrypted input, encrypt it, and call storeAndMakePublic() with handle and proof." },
+      { step: 3, title: "Request Entropy", description: "Call requestEntropy() for entropy-enhanced storage." },
+      { step: 4, title: "Wait for Fulfillment", description: "Check isRequestFulfilled() until true." },
+      { step: 5, title: "Store with Entropy", description: "Call storeAndMakePublicWithEntropy() with encrypted input, proof, and requestId." },
+      { step: 6, title: "Decrypt Off-Chain", description: "Anyone can decrypt the value off-chain using FHEVM SDK (no permission needed)." }
+    ]}
+    expectedOutputs={`✓ Should deploy successfully
+✓ Should store and make value publicly decryptable
+✓ Should request entropy
+✓ Should store with entropy and make publicly decryptable`}
+    commonErrors={[
+      {
+        error: "SenderNotAllowed()",
+        cause: "Missing FHE.allowThis() call on encrypted value.",
+        solution: "Always call FHE.allowThis() on all encrypted values before using them."
+      },
+      {
+        error: "Privacy Warning",
+        cause: "Using FHE.makePubliclyDecryptable() removes privacy.",
+        solution: "Only use when values should be publicly accessible. Consider FHE.allow() for selective access instead."
+      }
+    ]}
   />
 );
 
@@ -2753,13 +2821,84 @@ const EntropyAccessControlTutorial: React.FC = () => (
     name="EntropyAccessControl"
     exampleId="access-control-accesscontrol"
     category="Access Control"
-    description="Learn how to implement access control with FHE using FHE.allow() and FHE.allowTransient()."
-    whatTeaches={["Access control with FHE", "FHE.allow() vs FHE.allowTransient()", "Permission management"]}
-    whyMatters={["Access control is essential for security", "FHE permissions enable fine-grained control"]}
-    contractLogic={[{ title: "Access Control", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
-    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
-    expectedOutputs="Coming soon"
-    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+    description="Learn how to implement access control with FHE using FHE.allow() and FHE.allowTransient(). This example demonstrates fine-grained permission management with entropy enhancement."
+    whatTeaches={[
+      "Access control with FHE",
+      "FHE.allow() vs FHE.allowTransient()",
+      "Permission management patterns",
+      "How to grant and revoke user access",
+      "Entropy-enhanced access control"
+    ]}
+    whyMatters={[
+      "Access control is essential for security",
+      "FHE permissions enable fine-grained control",
+      "FHE.allow() grants permanent access",
+      "FHE.allowTransient() grants temporary access for single operation"
+    ]}
+    contractLogic={[
+      {
+        title: "1. Allow User (Permanent)",
+        code: `function allowUser(address user) external {
+    require(!allowedUsers[user], "User already allowed");
+    
+    // Grant permanent decryption rights
+    FHE.allow(encryptedValue, user);
+    allowedUsers[user] = true;
+}`,
+        explanation: "Grants user permanent permission to decrypt the encrypted value. User can decrypt off-chain anytime."
+      },
+      {
+        title: "2. Transient Operation (Temporary)",
+        code: `function performTransientOperation() external {
+    // Grant temporary access for this operation only
+    FHE.allowTransient(encryptedValue, msg.sender);
+    
+    // Use value in operation
+    euint64 result = FHE.add(encryptedValue, someOtherValue);
+    
+    // Access automatically revoked after operation
+}`,
+        explanation: "Grants temporary permission for a single operation. Access is automatically revoked after the operation completes."
+      },
+      {
+        title: "3. Entropy-Enhanced Access",
+        code: `function grantEntropyAccess(address user, uint256 requestId) external {
+    euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+    FHE.allowThis(entropy);
+    
+    euint64 enhancedValue = FHE.xor(encryptedValue, entropy);
+    FHE.allowThis(enhancedValue);
+    FHE.allow(enhancedValue, user);
+}`,
+        explanation: "Combines value with entropy, then grants user access to decrypt the enhanced value."
+      }
+    ]}
+    testSteps={[
+      { step: 1, title: "Deploy Contracts", description: "Test fixture deploys all required contracts." },
+      { step: 2, title: "Initialize Value", description: "Create encrypted input, encrypt it, and call initialize() with handle and proof." },
+      { step: 3, title: "Allow User", description: "Call allowUser() with user address to grant permanent access." },
+      { step: 4, title: "Request Entropy", description: "Call requestEntropy() for entropy-enhanced access." },
+      { step: 5, title: "Grant Entropy Access", description: "Call grantEntropyAccess() with user address and requestId." },
+      { step: 6, title: "Perform Transient Operation", description: "Call performTransientOperation() to use value temporarily." }
+    ]}
+    expectedOutputs={`✓ Should deploy successfully
+✓ Should initialize with encrypted value
+✓ Should allow user to decrypt
+✓ Should perform transient operation
+✓ Should request entropy
+✓ Should grant entropy-enhanced access`}
+    commonErrors={[
+      {
+        error: "SenderNotAllowed()",
+        cause: "Missing FHE.allow() or FHE.allowTransient() call.",
+        solution: "Call FHE.allow() for permanent access or FHE.allowTransient() for temporary access."
+      },
+      {
+        error: "User already allowed",
+        cause: "Trying to allow the same user twice.",
+        solution: "Check if user is already allowed before calling allowUser()."
+      }
+    ]}
   />
 );
 
@@ -2783,13 +2922,109 @@ const EntropyMissingAllowThisTutorial: React.FC = () => (
     name="EntropyMissingAllowThis"
     exampleId="anti-patterns-missingallowthis"
     category="Anti-Patterns"
-    description="Learn the common mistake of forgetting FHE.allowThis() and how to avoid it."
-    whatTeaches={["Common mistake: missing FHE.allowThis()", "Why FHE.allowThis() is required", "How to fix the error"]}
-    whyMatters={["This is the most common FHE error", "Understanding prevents frustration"]}
-    contractLogic={[{ title: "Missing AllowThis", code: "// Coming soon", explanation: "Detailed explanation coming soon" }]}
-    testSteps={[{ step: 1, title: "Coming Soon", description: "Detailed test steps coming soon" }]}
-    expectedOutputs="Coming soon"
-    commonErrors={[{ error: "Coming Soon", cause: "Coming soon", solution: "Coming soon" }]}
+    description="Learn the common mistake of forgetting FHE.allowThis() and how to avoid it. This example demonstrates the WRONG way (that fails) and the CORRECT way (that works)."
+    whatTeaches={[
+      "Common mistake: missing FHE.allowThis()",
+      "Why FHE.allowThis() is required",
+      "How to fix the error",
+      "When to call FHE.allowThis()",
+      "The difference between wrong and correct patterns"
+    ]}
+    whyMatters={[
+      "This is the most common FHE error",
+      "Understanding prevents frustration",
+      "Learning from mistakes helps avoid them",
+      "Shows both wrong and correct patterns"
+    ]}
+    contractLogic={[
+      {
+        title: "❌ WRONG: Missing FHE.allowThis()",
+        code: `function initializeWrong(
+    externalEuint64 encryptedInput1,
+    externalEuint64 encryptedInput2,
+    bytes calldata inputProof1,
+    bytes calldata inputProof2
+) external {
+    euint64 internalValue1 = FHE.fromExternal(encryptedInput1, inputProof1);
+    euint64 internalValue2 = FHE.fromExternal(encryptedInput2, inputProof2);
+    
+    // ❌ MISSING: FHE.allowThis(internalValue1);
+    // ❌ MISSING: FHE.allowThis(internalValue2);
+    
+    value1 = internalValue1;
+    value2 = internalValue2;
+    
+    // This will FAIL when trying to use value1 or value2!
+}`,
+        explanation: "This will fail with SenderNotAllowed() error when trying to use value1 or value2 in FHE operations. Missing FHE.allowThis() calls."
+      },
+      {
+        title: "✅ CORRECT: Using FHE.allowThis()",
+        code: `function initializeCorrect(
+    externalEuint64 encryptedInput1,
+    externalEuint64 encryptedInput2,
+    bytes calldata inputProof1,
+    bytes calldata inputProof2
+) external {
+    euint64 internalValue1 = FHE.fromExternal(encryptedInput1, inputProof1);
+    euint64 internalValue2 = FHE.fromExternal(encryptedInput2, inputProof2);
+    
+    // ✅ REQUIRED: Grant contract permission
+    FHE.allowThis(internalValue1);
+    FHE.allowThis(internalValue2);
+    
+    value1 = internalValue1;
+    value2 = internalValue2;
+    
+    // Now value1 and value2 can be used in FHE operations!
+}`,
+        explanation: "This works correctly. FHE.allowThis() grants contract permission to use the encrypted values in FHE operations."
+      },
+      {
+        title: "❌ WRONG: Missing FHE.allowThis() on Entropy",
+        code: `function useEntropyWrong(uint256 requestId) external {
+    euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+    // ❌ MISSING: FHE.allowThis(entropy);
+    
+    euint64 result = FHE.xor(value1, entropy); // ❌ FAILS!
+}`,
+        explanation: "This will fail because entropy is not allowed. Must call FHE.allowThis(entropy) before using it."
+      },
+      {
+        title: "✅ CORRECT: Using FHE.allowThis() on Entropy",
+        code: `function useEntropyCorrect(uint256 requestId) external {
+    euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+    FHE.allowThis(entropy); // ✅ REQUIRED!
+    
+    euint64 result = FHE.xor(value1, entropy); // ✅ WORKS!
+}`,
+        explanation: "This works correctly. FHE.allowThis(entropy) grants permission to use entropy in FHE operations."
+      }
+    ]}
+    testSteps={[
+      { step: 1, title: "Deploy Contracts", description: "Test fixture deploys all required contracts." },
+      { step: 2, title: "Test Wrong Pattern", description: "Call initializeWrong() - this will fail when trying to use values." },
+      { step: 3, title: "Test Correct Pattern", description: "Call initializeCorrect() - this works because FHE.allowThis() is called." },
+      { step: 4, title: "Request Entropy", description: "Call requestEntropy() for entropy operations." },
+      { step: 5, title: "Test Wrong Entropy Usage", description: "Call useEntropyWrong() - this will fail." },
+      { step: 6, title: "Test Correct Entropy Usage", description: "Call useEntropyCorrect() - this works because FHE.allowThis(entropy) is called." }
+    ]}
+    expectedOutputs={`✓ Should deploy successfully
+✓ Should fail when missing FHE.allowThis() (wrong pattern)
+✓ Should succeed when using FHE.allowThis() (correct pattern)
+✓ Should demonstrate the difference between wrong and correct`}
+    commonErrors={[
+      {
+        error: "SenderNotAllowed()",
+        cause: "Missing FHE.allowThis() call on encrypted value or entropy.",
+        solution: "Always call FHE.allowThis() on all encrypted values (including entropy) before using them in FHE operations."
+      },
+      {
+        error: "Permission denied",
+        cause: "Trying to use encrypted value without permission.",
+        solution: "Call FHE.allowThis() immediately after FHE.fromExternal() or after getting entropy from oracle."
+      }
+    ]}
   />
 );
 
