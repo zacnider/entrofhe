@@ -291,7 +291,7 @@ npx hardhat test
 
 ### Option 1: Frontend (Recommended)
 
-1. Navigate to [Examples page](/examples)
+1. Navigate to [Examples page](https://entrofhe.vercel.app/examples)
 2. Find "EntropyNFT" in Tutorial Examples
 3. Click **"Deploy"** button
 4. Approve transaction in wallet
