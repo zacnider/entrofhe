@@ -59,9 +59,14 @@ app.post('/api/test', async (req, res) => {
       // Ignore cleanup errors
     }
 
-    // Run Hardhat tests
+    // Run Hardhat tests - use local binary
     console.log(`Running tests for ${examplePath}...`);
-    const { stdout, stderr } = await execAsync('npx hardhat test', {
+    const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
+    const testCmd = fs.existsSync(hardhatPath) 
+      ? `node "${hardhatPath}" test`
+      : 'npm run test';
+    
+    const { stdout, stderr } = await execAsync(testCmd, {
       cwd: exampleDir,
       env: {
         ...process.env,
