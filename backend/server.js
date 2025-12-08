@@ -133,9 +133,14 @@ app.post('/api/compile', async (req, res) => {
       // Ignore cleanup errors
     }
 
-    // Run Hardhat compile
+    // Run Hardhat compile - use local binary
     console.log(`Compiling ${examplePath}...`);
-    const { stdout, stderr } = await execAsync('npx hardhat compile', {
+    const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
+    const compileCmd = fs.existsSync(hardhatPath)
+      ? `node "${hardhatPath}" compile`
+      : 'npm run compile';
+    
+    const { stdout, stderr } = await execAsync(compileCmd, {
       cwd: exampleDir,
       env: {
         ...process.env,
@@ -278,18 +283,25 @@ app.post('/api/verify', async (req, res) => {
       });
     }
 
-    // Build verify command
-    let verifyCmd = `npx hardhat verify --network ${network} ${contractAddress}`;
-    if (constructorArgs && constructorArgs.length > 0) {
-      verifyCmd += ` ${constructorArgs.join(' ')}`;
-    }
-
     // Clean up Mac OS X resource fork files before verifying
     try {
       const { execSync } = require('child_process');
       execSync('find . -name "._*" -type f -delete', { cwd: exampleDir });
     } catch (e) {
       // Ignore cleanup errors
+    }
+
+    // Build verify command - use local binary
+    const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
+    let verifyCmd;
+    if (fs.existsSync(hardhatPath)) {
+      verifyCmd = `node "${hardhatPath}" verify --network ${network} ${contractAddress}`;
+    } else {
+      verifyCmd = `npm run verify -- --network ${network} ${contractAddress}`;
+    }
+    
+    if (constructorArgs && constructorArgs.length > 0) {
+      verifyCmd += ` ${constructorArgs.join(' ')}`;
     }
 
     console.log(`Verifying ${contractAddress} on ${network}...`);
