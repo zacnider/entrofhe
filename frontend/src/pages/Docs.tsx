@@ -576,6 +576,20 @@ const CodeExamples: React.FC = () => {
         </p>
       </div>
 
+      {/* Tutorial Playbook */}
+      <div className="bg-blue-50 dark:bg-slate-900 border border-blue-200 dark:border-slate-700 rounded-lg p-4 space-y-2">
+        <h3 className="text-lg font-semibold text-primary-800 dark:text-cyan-300">Tutorial Playbook (all 19 examples)</h3>
+        <p className="text-sm text-primary-700 dark:text-slate-300">Oracle arg is fixed to our EntropyOracle address: <code className="bg-blue-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361</code></p>
+        <ul className="list-decimal list-inside text-sm space-y-1 text-primary-700 dark:text-slate-300">
+          <li>Install deps (first run per example): <code className="bg-gray-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">npm install --legacy-peer-deps</code></li>
+          <li>Compile: <code className="bg-gray-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">npx hardhat compile</code></li>
+          <li>Test (local FHE + local oracle/chaos engine auto-deployed): <code className="bg-gray-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">npx hardhat test</code></li>
+          <li>Deploy (frontend “Deploy” button): wallet tx uses the fixed oracle arg automatically.</li>
+          <li>Verify (frontend “Verify” button or CLI): <code className="bg-gray-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">npx hardhat verify --network sepolia &lt;contractAddress&gt; 0x75b9...5361</code></li>
+        </ul>
+        <p className="text-xs text-primary-600 dark:text-slate-400">Tip: Frontend Test/Compile/Verify buttons call the backend API which installs deps on first run and uses local Hardhat binaries.</p>
+      </div>
+
       {/* Tabs */}
       <div className="mb-8">
         <div className="border-b border-gray-200 dark:border-slate-700">
