@@ -577,17 +577,44 @@ const CodeExamples: React.FC = () => {
       </div>
 
       {/* Tutorial Playbook */}
-      <div className="bg-blue-50 dark:bg-slate-900 border border-blue-200 dark:border-slate-700 rounded-lg p-4 space-y-2">
+      <div className="bg-blue-50 dark:bg-slate-900 border border-blue-200 dark:border-slate-700 rounded-lg p-4 space-y-3">
         <h3 className="text-lg font-semibold text-primary-800 dark:text-cyan-300">Tutorial Playbook (all 19 examples)</h3>
-        <p className="text-sm text-primary-700 dark:text-slate-300">Oracle arg is fixed to our EntropyOracle address: <code className="bg-blue-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361</code></p>
-        <ul className="list-decimal list-inside text-sm space-y-1 text-primary-700 dark:text-slate-300">
-          <li>Install deps (first run per example): <code className="bg-gray-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">npm install --legacy-peer-deps</code></li>
-          <li>Compile: <code className="bg-gray-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">npx hardhat compile</code></li>
-          <li>Test (local FHE + local oracle/chaos engine auto-deployed): <code className="bg-gray-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">npx hardhat test</code></li>
-          <li>Deploy (frontend “Deploy” button): wallet tx uses the fixed oracle arg automatically.</li>
-          <li>Verify (frontend “Verify” button or CLI): <code className="bg-gray-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">npx hardhat verify --network sepolia &lt;contractAddress&gt; 0x75b9...5361</code></li>
-        </ul>
-        <p className="text-xs text-primary-600 dark:text-slate-400">Tip: Frontend Test/Compile/Verify buttons call the backend API which installs deps on first run and uses local Hardhat binaries.</p>
+        <p className="text-sm text-primary-700 dark:text-slate-300">
+          Oracle arg is fixed to EntropyOracle: <code className="bg-blue-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361</code>
+        </p>
+        <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-blue-100 dark:border-slate-700 space-y-2">
+          <h4 className="text-sm font-semibold text-primary-800 dark:text-cyan-200">Global workflow</h4>
+          <ul className="list-decimal list-inside text-sm space-y-1 text-primary-700 dark:text-slate-300">
+            <li>Install (first run): <code className="bg-gray-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">npm install --legacy-peer-deps</code></li>
+            <li>Compile: <code className="bg-gray-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">npx hardhat compile</code></li>
+            <li>Test (local FHE + local oracle/chaos engine auto-deployed): <code className="bg-gray-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">npx hardhat test</code></li>
+            <li>Deploy (frontend “Deploy”): wallet tx uses fixed oracle arg automatically</li>
+            <li>Verify: <code className="bg-gray-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">npx hardhat verify --network sepolia &lt;contractAddress&gt; 0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361</code></li>
+          </ul>
+          <p className="text-xs text-primary-600 dark:text-slate-400">Frontend Test/Compile/Verify calls backend API; deps auto-install on first run; uses local Hardhat.</p>
+        </div>
+        <div className="grid md:grid-cols-2 gap-3 text-sm text-primary-700 dark:text-slate-300">
+          <div className="bg-white dark:bg-slate-800 border border-blue-100 dark:border-slate-700 rounded-lg p-3 space-y-1">
+            <h4 className="text-sm font-semibold text-primary-800 dark:text-cyan-200">Core FHE + Entropy pattern</h4>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Import FHE + EntropyOracle</li>
+              <li>Encrypt inputs (externalEuint64 → FHE.fromExternal)</li>
+              <li>Request entropy → getEncryptedEntropy(requestId)</li>
+              <li>Grant permissions: FHE.allowThis(entropy)</li>
+              <li>FHE ops on euint64 (add/xor/compare)</li>
+            </ul>
+          </div>
+          <div className="bg-white dark:bg-slate-800 border border-blue-100 dark:border-slate-700 rounded-lg p-3 space-y-1">
+            <h4 className="text-sm font-semibold text-primary-800 dark:text-cyan-200">Common pitfalls</h4>
+            <ul className="list-disc list-inside space-y-1">
+              <li>Missing FHE.allowThis on entropy or external inputs</li>
+              <li>View/pure functions can’t run FHE ops</li>
+              <li>Wrong constructor arg on verify (must be oracle)</li>
+              <li>Missing deps → run npm install --legacy-peer-deps</li>
+              <li>Etherscan timeout → retry verify</li>
+            </ul>
+          </div>
+        </div>
       </div>
 
       {/* Tabs */}
