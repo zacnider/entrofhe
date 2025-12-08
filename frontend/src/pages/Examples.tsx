@@ -344,7 +344,7 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
   const [deployedAddress, setDeployedAddress] = useState<string>('');
   const [compiledBytecode, setCompiledBytecode] = useState<string>('');
   const [compiledABI, setCompiledABI] = useState<any[]>([]);
-  const [constructorArgs, setConstructorArgs] = useState<string>('');
+  // Constructor args are fixed to the Entropy Oracle address for all tutorial examples
 
   // Extract contract name from path (e.g., "basic-simplecounter" -> "EntropyCounter")
   const getContractName = (path: string): string => {
@@ -430,22 +430,8 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
     setOutput('Sending transaction...');
 
     try {
-      // Parse constructor arguments if provided
-      let args: any[] = [];
-      if (constructorArgs.trim()) {
-        try {
-          args = JSON.parse(constructorArgs);
-        } catch {
-          // If not JSON, try to parse as space-separated values
-          args = constructorArgs.split(',').map(arg => arg.trim());
-        }
-      }
-
-      // For EntropyOracle-based contracts, we need to pass the oracle address
-      // Most examples take EntropyOracle address as first constructor arg
-      if (args.length === 0) {
-        args = [ENTROPY_ORACLE_ADDRESS];
-      }
+      // For all tutorial examples we fix constructor args to the EntropyOracle address
+      const args: any[] = [ENTROPY_ORACLE_ADDRESS];
 
       // Encode constructor arguments
       const { encodeAbiParameters } = await import('viem');
@@ -495,20 +481,8 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
     setShowTerminal(true);
     clearOutput();
     try {
-      // Parse constructor args if provided
-      let parsedConstructorArgs: string[] | undefined;
-      if (constructorArgs && constructorArgs.trim()) {
-        try {
-          // Try parsing as JSON array first
-          parsedConstructorArgs = JSON.parse(constructorArgs);
-        } catch {
-          // If not JSON, try comma-separated values
-          parsedConstructorArgs = constructorArgs.split(',').map(arg => arg.trim()).filter(Boolean);
-        }
-      } else {
-        // Default to EntropyOracle address for tutorial examples
-        parsedConstructorArgs = [ENTROPY_ORACLE_ADDRESS];
-      }
+      // Always use EntropyOracle address as constructor argument
+      const parsedConstructorArgs: string[] = [ENTROPY_ORACLE_ADDRESS];
 
       if (!deployedAddress) {
         toast.info('Please enter the contract address to verify');
@@ -566,25 +540,13 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
           </button>
         </div>
 
-        {/* Deploy Input - Constructor Args */}
-        {terminalAction === 'deploy' && !deployedAddress && compiledBytecode && (
-          <div className="mb-4">
-            <label className="block text-xs font-medium text-primary-700 dark:text-slate-300 mb-1">
-              Constructor Arguments (JSON array or comma-separated)
-            </label>
-            <input
-              type="text"
-              value={constructorArgs}
-              onChange={(e) => setConstructorArgs(e.target.value)}
-              placeholder={`Default: ["${ENTROPY_ORACLE_ADDRESS}"]`}
-              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-primary-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            />
-            <p className="text-xs text-primary-500 dark:text-slate-400 mt-1">
-              Leave empty to use default EntropyOracle address
-            </p>
+        {/* Constructor args are fixed to EntropyOracle */}
+        {terminalAction === 'deploy' && (
+          <div className="mb-4 p-3 bg-primary-50 dark:bg-slate-900 rounded-lg text-xs text-primary-700 dark:text-slate-300">
+            Constructor args are fixed to EntropyOracle address: {ENTROPY_ORACLE_ADDRESS}
           </div>
         )}
-        {/* Verify Input - Contract Address and Constructor Args */}
+        {/* Verify Input - Contract Address; constructor args fixed to oracle */}
         {terminalAction === 'verify' && (
           <div className="mb-4 space-y-3">
             <div>
@@ -602,20 +564,8 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
                 Enter the deployed contract address to verify
               </p>
             </div>
-            <div>
-              <label className="block text-xs font-medium text-primary-700 dark:text-slate-300 mb-1">
-                Constructor Arguments (if used during deployment)
-              </label>
-              <input
-                type="text"
-                value={constructorArgs}
-                onChange={(e) => setConstructorArgs(e.target.value)}
-                placeholder={`Example: ["${ENTROPY_ORACLE_ADDRESS}"] or comma-separated values`}
-                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-primary-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-              />
-              <p className="text-xs text-primary-500 dark:text-slate-400 mt-1">
-                Leave empty if no constructor arguments were used
-              </p>
+            <div className="p-3 bg-primary-50 dark:bg-slate-900 rounded-lg text-xs text-primary-700 dark:text-slate-300">
+              Constructor args are fixed to EntropyOracle address: {ENTROPY_ORACLE_ADDRESS}
             </div>
           </div>
         )}
