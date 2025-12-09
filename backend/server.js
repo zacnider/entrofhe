@@ -407,75 +407,17 @@ app.post('/api/verify', async (req, res) => {
     }
 
     console.log(`Verifying ${contractAddress} on ${network}...`);
-    console.log(`Verify command: ${verifyCmd}`);
-    console.log(`Constructor args: ${JSON.stringify(constructorArgs)}`);
-    
-    // Try verification with retry mechanism for Etherscan API timeouts
-    let lastError = null;
-    const maxRetries = 3;
-    let stdout = '';
-    let stderr = '';
-    
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        console.log(`Verification attempt ${attempt}/${maxRetries}...`);
-        const result = await execAsync(verifyCmd, {
-          cwd: exampleDir,
-          env: {
-            ...process.env,
-            TS_NODE_TRANSPILE_ONLY: 'true',
-            ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY || '',
-            SEPOLIA_RPC_URL: process.env.SEPOLIA_RPC_URL || '',
-            // Increase timeout for Etherscan API
-            HARDHAT_VERIFY_TIMEOUT: '300000',
-          },
-          timeout: 300000, // 5 minutes for Etherscan API
-          maxBuffer: 10 * 1024 * 1024,
-        });
-        stdout = result.stdout;
-        stderr = result.stderr;
-        lastError = null;
-        break; // Success, exit retry loop
-      } catch (error) {
-        lastError = error;
-        stdout = error.stdout || '';
-        stderr = error.stderr || '';
-        
-        // Check if it's a timeout or connection error (retryable)
-        // NOT_FOUND errors are usually permanent (contract not found) and should not be retried
-        const errorMessage = (error.message || error.stderr || '').toLowerCase();
-        const isRetryableError = errorMessage.includes('timeout') || 
-                                errorMessage.includes('connect timeout') ||
-                                errorMessage.includes('network request failed') ||
-                                errorMessage.includes('econnrefused') ||
-                                errorMessage.includes('etimedout');
-        
-        // NOT_FOUND errors are usually permanent - don't retry them
-        const isNotFoundError = errorMessage.includes('not_found') ||
-                               errorMessage.includes('the page could not be found') ||
-                               errorMessage.includes('fra1::');
-        
-        if (isNotFoundError) {
-          // NOT_FOUND is usually a permanent error - don't retry, just throw
-          console.log(`NOT_FOUND error detected - this is usually permanent, not retrying`);
-          throw error;
-        }
-        
-        if (isRetryableError && attempt < maxRetries) {
-          console.log(`Attempt ${attempt} failed with retryable error, retrying in 10 seconds...`);
-          console.log(`Error: ${errorMessage.substring(0, 200)}`);
-          await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 seconds before retry
-          continue;
-        } else {
-          // Not a retryable error or last attempt, throw the error
-          throw error;
-        }
-      }
-    }
-    
-    if (lastError) {
-      throw lastError;
-    }
+    const { stdout, stderr } = await execAsync(verifyCmd, {
+      cwd: exampleDir,
+      env: {
+        ...process.env,
+        TS_NODE_TRANSPILE_ONLY: 'true',
+        ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY || '',
+        SEPOLIA_RPC_URL: process.env.SEPOLIA_RPC_URL || '',
+      },
+      timeout: 120000,
+      maxBuffer: 10 * 1024 * 1024,
+    });
 
     return res.json({
       success: true,
