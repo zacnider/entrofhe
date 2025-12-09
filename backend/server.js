@@ -413,8 +413,6 @@ app.post('/api/verify', async (req, res) => {
       maxBuffer: 10 * 1024 * 1024,
     });
     
-    return { stdout, stderr };
-
     return res.json({
       success: true,
       stdout,
