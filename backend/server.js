@@ -389,85 +389,63 @@ app.post('/api/verify', async (req, res) => {
       // Ignore cleanup errors
     }
 
-    // Use Hardhat's verify task programmatically (exactly like EntropyCounter verify.ts does)
-    // Create a TypeScript verify script matching EntropyCounter's verify.ts exactly
-    const constructorArgsJson = JSON.stringify(constructorArgs || []);
-    const verifyScriptContent = `import hre from "hardhat";
-
-async function main() {
-  const contractAddress = "${contractAddress}";
-  const constructorArgs = ${constructorArgsJson};
-  
-  console.log(\`\\n🔍 Verifying contract...\`);
-  console.log(\`   Address: \${contractAddress}\`);
-  console.log(\`   Network: \${hre.network.name}\`);
-  
-  try {
-    await hre.run("verify:verify", {
-      address: contractAddress,
-      constructorArguments: constructorArgs,
-    });
-    console.log(\`\\n✅ Contract verified successfully!\`);
-  } catch (error: any) {
-    if (error.message && error.message.includes("Already Verified")) {
-      console.log(\`\\n✅ Contract is already verified!\`);
-      process.exit(0);
-    } else {
-      console.error(\`\\n❌ Verification failed:\`);
-      console.error(error.message || error);
-      process.exit(1);
+    // Use Hardhat verify command directly with spawn (simplest and most reliable approach)
+    // Build arguments array to avoid shell escaping issues
+    const verifyArgs = [
+      hardhatPath,
+      'verify',
+      '--network',
+      network,
+      contractAddress
+    ];
+    
+    // Add constructor arguments (spawn handles them correctly, no quoting needed)
+    if (constructorArgs && constructorArgs.length > 0) {
+      verifyArgs.push(...constructorArgs);
     }
-  }
-}
 
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
-`;
-    
-    // Write verify script to temp file (TypeScript like EntropyCounter)
-    const verifyScriptPath = path.join(exampleDir, '.verify-temp.ts');
-    fs.writeFileSync(verifyScriptPath, verifyScriptContent);
-    
     console.log(`Verifying ${contractAddress} on ${network}...`);
-    console.log(`Constructor args: ${constructorArgsJson}`);
+    console.log(`Verify command: node ${verifyArgs.join(' ')}`);
     
-    try {
-      // Run verify script using hardhat run (exactly like EntropyCounter does)
-      // This ensures Hardhat environment is properly set up with network config
-      const verifyCmd = `node "${hardhatPath}" run "${verifyScriptPath}" --network ${network}`;
-      const { stdout, stderr } = await execAsync(verifyCmd, {
-        cwd: exampleDir,
-        env: {
-          ...process.env,
-          TS_NODE_TRANSPILE_ONLY: 'true',
-          ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY || '',
-          SEPOLIA_RPC_URL: process.env.SEPOLIA_RPC_URL || '',
-        },
-        timeout: 120000,
-        maxBuffer: 10 * 1024 * 1024,
+    // Use spawn to avoid shell escaping issues with constructor arguments
+    const verifyProcess = spawn('node', verifyArgs, {
+      cwd: exampleDir,
+      env: {
+        ...process.env,
+        TS_NODE_TRANSPILE_ONLY: 'true',
+        ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY || '',
+        SEPOLIA_RPC_URL: process.env.SEPOLIA_RPC_URL || '',
+      },
+    });
+    
+    let stdout = '';
+    let stderr = '';
+    
+    verifyProcess.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+    
+    verifyProcess.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+    
+    const exitCode = await new Promise((resolve, reject) => {
+      verifyProcess.on('close', (code) => {
+        resolve(code);
       });
-      
-      // Clean up temp script
-      try {
-        fs.unlinkSync(verifyScriptPath);
-      } catch (e) {
-        // Ignore cleanup errors
-      }
-      
-      return { stdout, stderr };
-    } catch (error) {
-      // Clean up temp script
-      try {
-        fs.unlinkSync(verifyScriptPath);
-      } catch (e) {
-        // Ignore cleanup errors
-      }
+      verifyProcess.on('error', (err) => {
+        reject(err);
+      });
+    });
+    
+    if (exitCode !== 0) {
+      const error = new Error(`Verify failed with exit code ${exitCode}`);
+      error.stdout = stdout;
+      error.stderr = stderr;
       throw error;
     }
+    
+    return { stdout, stderr };
 
     return res.json({
       success: true,
