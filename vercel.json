@@ -6,7 +6,12 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "http://185.169.180.167:3002/api/:path*"
+      "destination": "/api/proxy?path=:path*"
     }
-  ]
+  ],
+  "functions": {
+    "api/proxy.ts": {
+      "maxDuration": 300
+    }
+  }
 }
