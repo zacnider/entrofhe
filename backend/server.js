@@ -389,61 +389,29 @@ app.post('/api/verify', async (req, res) => {
       // Ignore cleanup errors
     }
 
-    // Use Hardhat verify command directly with spawn (simplest and most reliable approach)
-    // Build arguments array to avoid shell escaping issues
-    const verifyArgs = [
-      hardhatPath,
-      'verify',
-      '--network',
-      network,
-      contractAddress
-    ];
+    // Use simple hardhat verify command (exactly like README examples)
+    // Build command: npx hardhat verify --network <network> <address> <args...>
+    let verifyCmd = `npx hardhat verify --network ${network} ${contractAddress}`;
     
-    // Add constructor arguments (spawn handles them correctly, no quoting needed)
+    // Add constructor arguments (space-separated, no quotes needed for execAsync)
     if (constructorArgs && constructorArgs.length > 0) {
-      verifyArgs.push(...constructorArgs);
+      verifyCmd += ' ' + constructorArgs.join(' ');
     }
 
     console.log(`Verifying ${contractAddress} on ${network}...`);
-    console.log(`Verify command: node ${verifyArgs.join(' ')}`);
+    console.log(`Verify command: ${verifyCmd}`);
     
-    // Use spawn to avoid shell escaping issues with constructor arguments
-    const verifyProcess = spawn('node', verifyArgs, {
+    // Execute verify command (simple execAsync, works like manual terminal command)
+    const { stdout, stderr } = await execAsync(verifyCmd, {
       cwd: exampleDir,
       env: {
         ...process.env,
-        TS_NODE_TRANSPILE_ONLY: 'true',
         ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY || '',
         SEPOLIA_RPC_URL: process.env.SEPOLIA_RPC_URL || '',
       },
+      timeout: 300000, // 5 minutes
+      maxBuffer: 10 * 1024 * 1024,
     });
-    
-    let stdout = '';
-    let stderr = '';
-    
-    verifyProcess.stdout.on('data', (data) => {
-      stdout += data.toString();
-    });
-    
-    verifyProcess.stderr.on('data', (data) => {
-      stderr += data.toString();
-    });
-    
-    const exitCode = await new Promise((resolve, reject) => {
-      verifyProcess.on('close', (code) => {
-        resolve(code);
-      });
-      verifyProcess.on('error', (err) => {
-        reject(err);
-      });
-    });
-    
-    if (exitCode !== 0) {
-      const error = new Error(`Verify failed with exit code ${exitCode}`);
-      error.stdout = stdout;
-      error.stderr = stderr;
-      throw error;
-    }
     
     return { stdout, stderr };
 
