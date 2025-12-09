@@ -458,7 +458,23 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
 
     try {
       // For all tutorial examples we fix constructor args to the EntropyOracle address
-      const args: any[] = [ENTROPY_ORACLE_ADDRESS];
+      // Special handling for contracts that require additional constructor parameters
+      let args: any[] = [ENTROPY_ORACLE_ADDRESS];
+      
+      // Special cases for swap contracts
+      if (path === 'openzeppelin-swaperc7984toerc20') {
+        // EntropySwapERC7984ToERC20 requires: (oracle, erc20Token)
+        // Use zero address for ERC20 token (can be set later or use a placeholder)
+        args = [ENTROPY_ORACLE_ADDRESS, '0x0000000000000000000000000000000000000000'];
+      } else if (path === 'openzeppelin-swaperc7984toerc7984') {
+        // EntropySwapERC7984ToERC7984 requires: (oracle, tokenA, tokenB)
+        // Use zero addresses for tokens (can be set later or use placeholders)
+        args = [
+          ENTROPY_ORACLE_ADDRESS, 
+          '0x0000000000000000000000000000000000000000', 
+          '0x0000000000000000000000000000000000000000'
+        ];
+      }
 
       // Encode constructor arguments
       const { encodeAbiParameters } = await import('viem');
@@ -466,6 +482,13 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
       if (compiledABI.length > 0 && args.length > 0) {
         const constructor = compiledABI.find((item: any) => item.type === 'constructor');
         if (constructor && constructor.inputs && constructor.inputs.length > 0) {
+          // Check if args length matches constructor inputs length
+          if (args.length !== constructor.inputs.length) {
+            throw new Error(
+              `Constructor argument mismatch: Expected ${constructor.inputs.length} arguments, but got ${args.length}. ` +
+              `Contract requires: ${constructor.inputs.map((inp: any) => inp.name || inp.type).join(', ')}`
+            );
+          }
           // Use constructor inputs directly as AbiParameter[]
           const abiParameters = constructor.inputs.map((input: any) => ({
             type: input.type,
@@ -509,7 +532,21 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
     clearOutput();
     try {
       // Always use EntropyOracle address as constructor argument
-      const parsedConstructorArgs: string[] = [ENTROPY_ORACLE_ADDRESS];
+      // Special handling for contracts that require additional constructor parameters
+      let parsedConstructorArgs: string[] = [ENTROPY_ORACLE_ADDRESS];
+      
+      // Special cases for swap contracts
+      if (path === 'openzeppelin-swaperc7984toerc20') {
+        // EntropySwapERC7984ToERC20 requires: (oracle, erc20Token)
+        parsedConstructorArgs = [ENTROPY_ORACLE_ADDRESS, '0x0000000000000000000000000000000000000000'];
+      } else if (path === 'openzeppelin-swaperc7984toerc7984') {
+        // EntropySwapERC7984ToERC7984 requires: (oracle, tokenA, tokenB)
+        parsedConstructorArgs = [
+          ENTROPY_ORACLE_ADDRESS, 
+          '0x0000000000000000000000000000000000000000', 
+          '0x0000000000000000000000000000000000000000'
+        ];
+      }
 
       if (!deployedAddress) {
         toast.info('Please enter the contract address to verify');
