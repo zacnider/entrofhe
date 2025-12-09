@@ -642,8 +642,8 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
           </button>
         </div>
 
-        {/* Constructor args input fields */}
-        {terminalAction === 'deploy' && (
+        {/* Constructor args input fields - Show when compiled or when deploy action is active */}
+        {((terminalAction === 'deploy' || compiledBytecode) && (path === 'openzeppelin-swaperc7984toerc20' || path === 'openzeppelin-swaperc7984toerc7984')) && (
           <div className="mb-4 space-y-3">
             {path === 'openzeppelin-swaperc7984toerc20' && (
               <>
@@ -721,18 +721,19 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
                 </div>
               </>
             )}
-            {(path !== 'openzeppelin-swaperc7984toerc20' && path !== 'openzeppelin-swaperc7984toerc7984') && (
-              <div className="p-3 bg-primary-50 dark:bg-slate-900 rounded-lg text-xs text-primary-700 dark:text-slate-300">
-                {path === 'openzeppelin-erc7984token' || path === 'openzeppelin-erc7984toerc20wrapper' ? (
-                  <>
-                    Constructor args: EntropyOracle ({ENTROPY_ORACLE_ADDRESS}), Name, Symbol
-                  </>
-                ) : (
-                  <>
-                    Constructor args are fixed to EntropyOracle address: {ENTROPY_ORACLE_ADDRESS}
-                  </>
-                )}
-              </div>
+          </div>
+        )}
+        {/* Constructor args info for other contracts */}
+        {terminalAction === 'deploy' && path !== 'openzeppelin-swaperc7984toerc20' && path !== 'openzeppelin-swaperc7984toerc7984' && (
+          <div className="mb-4 p-3 bg-primary-50 dark:bg-slate-900 rounded-lg text-xs text-primary-700 dark:text-slate-300">
+            {path === 'openzeppelin-erc7984token' || path === 'openzeppelin-erc7984toerc20wrapper' ? (
+              <>
+                Constructor args: EntropyOracle ({ENTROPY_ORACLE_ADDRESS}), Name, Symbol
+              </>
+            ) : (
+              <>
+                Constructor args are fixed to EntropyOracle address: {ENTROPY_ORACLE_ADDRESS}
+              </>
             )}
           </div>
         )}
