@@ -441,18 +441,22 @@ app.post('/api/verify', async (req, res) => {
         stdout = error.stdout || '';
         stderr = error.stderr || '';
         
-        // Check if it's a timeout or connection error
+        // Check if it's a timeout, connection error, or NOT_FOUND (Etherscan API issue)
         const errorMessage = (error.message || error.stderr || '').toLowerCase();
-        const isTimeoutError = errorMessage.includes('timeout') || 
-                              errorMessage.includes('connect timeout') ||
-                              errorMessage.includes('network request failed');
+        const isRetryableError = errorMessage.includes('timeout') || 
+                                errorMessage.includes('connect timeout') ||
+                                errorMessage.includes('network request failed') ||
+                                errorMessage.includes('not_found') ||
+                                errorMessage.includes('the page could not be found') ||
+                                errorMessage.includes('fra1::');
         
-        if (isTimeoutError && attempt < maxRetries) {
-          console.log(`Attempt ${attempt} failed with timeout, retrying in 10 seconds...`);
-          await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 seconds before retry
+        if (isRetryableError && attempt < maxRetries) {
+          console.log(`Attempt ${attempt} failed with retryable error, retrying in 15 seconds...`);
+          console.log(`Error: ${errorMessage.substring(0, 200)}`);
+          await new Promise(resolve => setTimeout(resolve, 15000)); // Wait 15 seconds before retry
           continue;
         } else {
-          // Not a timeout or last attempt, throw the error
+          // Not a retryable error or last attempt, throw the error
           throw error;
         }
       }
