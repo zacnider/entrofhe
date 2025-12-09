@@ -40,11 +40,28 @@ app.post('/api/test', async (req, res) => {
       return res.status(404).json({ error: `Example not found: ${examplePath}` });
     }
 
-    // Check if node_modules exists, if not install
+    // Check if node_modules exists and if package.json is newer than node_modules
     const nodeModulesPath = path.join(exampleDir, 'node_modules');
     const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
+    const packageJsonPath = path.join(exampleDir, 'package.json');
+    
+    let shouldInstall = false;
     
     if (!fs.existsSync(nodeModulesPath) || !fs.existsSync(hardhatPath)) {
+      shouldInstall = true;
+      console.log(`node_modules missing or hardhat binary not found for ${examplePath}`);
+    } else if (fs.existsSync(packageJsonPath)) {
+      // Check if package.json is newer than node_modules
+      const packageJsonStats = fs.statSync(packageJsonPath);
+      const nodeModulesStats = fs.statSync(nodeModulesPath);
+      
+      if (packageJsonStats.mtime > nodeModulesStats.mtime) {
+        shouldInstall = true;
+        console.log(`package.json is newer than node_modules for ${examplePath}`);
+      }
+    }
+    
+    if (shouldInstall) {
       console.log(`Installing dependencies for ${examplePath}...`);
       try {
         const installResult = await execAsync('npm install --legacy-peer-deps', {
@@ -135,11 +152,28 @@ app.post('/api/compile', async (req, res) => {
       return res.status(404).json({ error: `Example not found: ${examplePath}` });
     }
 
-    // Check if node_modules exists, if not install
+    // Check if node_modules exists and if package.json is newer than node_modules
     const nodeModulesPath = path.join(exampleDir, 'node_modules');
     const hardhatPath = path.join(exampleDir, 'node_modules', '.bin', 'hardhat');
+    const packageJsonPath = path.join(exampleDir, 'package.json');
+    
+    let shouldInstall = false;
     
     if (!fs.existsSync(nodeModulesPath) || !fs.existsSync(hardhatPath)) {
+      shouldInstall = true;
+      console.log(`node_modules missing or hardhat binary not found for ${examplePath}`);
+    } else if (fs.existsSync(packageJsonPath)) {
+      // Check if package.json is newer than node_modules
+      const packageJsonStats = fs.statSync(packageJsonPath);
+      const nodeModulesStats = fs.statSync(nodeModulesPath);
+      
+      if (packageJsonStats.mtime > nodeModulesStats.mtime) {
+        shouldInstall = true;
+        console.log(`package.json is newer than node_modules for ${examplePath}`);
+      }
+    }
+    
+    if (shouldInstall) {
       console.log(`Installing dependencies for ${examplePath}...`);
       try {
         const installResult = await execAsync('npm install --legacy-peer-deps', {

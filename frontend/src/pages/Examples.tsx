@@ -371,6 +371,10 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
   const [deployedAddress, setDeployedAddress] = useState<string>('');
   const [compiledBytecode, setCompiledBytecode] = useState<string>('');
   const [compiledABI, setCompiledABI] = useState<any[]>([]);
+  // Constructor args for swap contracts
+  const [swapERC20TokenAddress, setSwapERC20TokenAddress] = useState<string>('');
+  const [swapTokenAAddress, setSwapTokenAAddress] = useState<string>('');
+  const [swapTokenBAddress, setSwapTokenBAddress] = useState<string>('');
   // Constructor args are fixed to the Entropy Oracle address for all tutorial examples
 
   // Extract contract name from path (e.g., "basic-simplecounter" -> "EntropyCounter")
@@ -461,19 +465,43 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
       // Special handling for contracts that require additional constructor parameters
       let args: any[] = [ENTROPY_ORACLE_ADDRESS];
       
-      // Special cases for swap contracts
-      if (path === 'openzeppelin-swaperc7984toerc20') {
+      // Special cases for contracts with additional constructor parameters
+      if (path === 'openzeppelin-erc7984token') {
+        // EntropyERC7984Token requires: (oracle, name, symbol)
+        args = [ENTROPY_ORACLE_ADDRESS, 'EntropyToken', 'ENTROPY'];
+      } else if (path === 'openzeppelin-erc7984toerc20wrapper') {
+        // EntropyERC7984ToERC20Wrapper requires: (oracle, name, symbol)
+        args = [ENTROPY_ORACLE_ADDRESS, 'ERC7984Wrapper', 'WRAP'];
+      } else if (path === 'openzeppelin-swaperc7984toerc20') {
         // EntropySwapERC7984ToERC20 requires: (oracle, erc20Token)
-        // Use zero address for ERC20 token (can be set later or use a placeholder)
-        args = [ENTROPY_ORACLE_ADDRESS, '0x0000000000000000000000000000000000000000'];
+        if (!swapERC20TokenAddress || swapERC20TokenAddress.trim() === '') {
+          toast.error('Please enter a valid ERC20 token address');
+          throw new Error('ERC20 token address is required');
+        }
+        if (!swapERC20TokenAddress.startsWith('0x') || swapERC20TokenAddress.length !== 42) {
+          toast.error('Invalid ERC20 token address format');
+          throw new Error('ERC20 token address must be a valid Ethereum address (0x...)');
+        }
+        args = [ENTROPY_ORACLE_ADDRESS, swapERC20TokenAddress.trim()];
       } else if (path === 'openzeppelin-swaperc7984toerc7984') {
         // EntropySwapERC7984ToERC7984 requires: (oracle, tokenA, tokenB)
-        // Use zero addresses for tokens (can be set later or use placeholders)
-        args = [
-          ENTROPY_ORACLE_ADDRESS, 
-          '0x0000000000000000000000000000000000000000', 
-          '0x0000000000000000000000000000000000000000'
-        ];
+        if (!swapTokenAAddress || swapTokenAAddress.trim() === '' || !swapTokenBAddress || swapTokenBAddress.trim() === '') {
+          toast.error('Please enter valid ERC7984 token addresses for both Token A and Token B');
+          throw new Error('Token addresses are required');
+        }
+        if (!swapTokenAAddress.startsWith('0x') || swapTokenAAddress.length !== 42) {
+          toast.error('Invalid Token A address format');
+          throw new Error('Token A address must be a valid Ethereum address (0x...)');
+        }
+        if (!swapTokenBAddress.startsWith('0x') || swapTokenBAddress.length !== 42) {
+          toast.error('Invalid Token B address format');
+          throw new Error('Token B address must be a valid Ethereum address (0x...)');
+        }
+        if (swapTokenAAddress.toLowerCase() === swapTokenBAddress.toLowerCase()) {
+          toast.error('Token A and Token B must be different addresses');
+          throw new Error('Token addresses must be different');
+        }
+        args = [ENTROPY_ORACLE_ADDRESS, swapTokenAAddress.trim(), swapTokenBAddress.trim()];
       }
 
       // Encode constructor arguments
@@ -535,17 +563,27 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
       // Special handling for contracts that require additional constructor parameters
       let parsedConstructorArgs: string[] = [ENTROPY_ORACLE_ADDRESS];
       
-      // Special cases for swap contracts
-      if (path === 'openzeppelin-swaperc7984toerc20') {
+      // Special cases for contracts with additional constructor parameters
+      if (path === 'openzeppelin-erc7984token') {
+        // EntropyERC7984Token requires: (oracle, name, symbol)
+        parsedConstructorArgs = [ENTROPY_ORACLE_ADDRESS, 'EntropyToken', 'ENTROPY'];
+      } else if (path === 'openzeppelin-erc7984toerc20wrapper') {
+        // EntropyERC7984ToERC20Wrapper requires: (oracle, name, symbol)
+        parsedConstructorArgs = [ENTROPY_ORACLE_ADDRESS, 'ERC7984Wrapper', 'WRAP'];
+      } else if (path === 'openzeppelin-swaperc7984toerc20') {
         // EntropySwapERC7984ToERC20 requires: (oracle, erc20Token)
-        parsedConstructorArgs = [ENTROPY_ORACLE_ADDRESS, '0x0000000000000000000000000000000000000000'];
+        if (!swapERC20TokenAddress || swapERC20TokenAddress.trim() === '') {
+          toast.error('Please enter the ERC20 token address used during deployment');
+          return;
+        }
+        parsedConstructorArgs = [ENTROPY_ORACLE_ADDRESS, swapERC20TokenAddress.trim()];
       } else if (path === 'openzeppelin-swaperc7984toerc7984') {
         // EntropySwapERC7984ToERC7984 requires: (oracle, tokenA, tokenB)
-        parsedConstructorArgs = [
-          ENTROPY_ORACLE_ADDRESS, 
-          '0x0000000000000000000000000000000000000000', 
-          '0x0000000000000000000000000000000000000000'
-        ];
+        if (!swapTokenAAddress || swapTokenAAddress.trim() === '' || !swapTokenBAddress || swapTokenBAddress.trim() === '') {
+          toast.error('Please enter the token addresses used during deployment');
+          return;
+        }
+        parsedConstructorArgs = [ENTROPY_ORACLE_ADDRESS, swapTokenAAddress.trim(), swapTokenBAddress.trim()];
       }
 
       if (!deployedAddress) {
@@ -604,13 +642,101 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
           </button>
         </div>
 
-        {/* Constructor args are fixed to EntropyOracle */}
+        {/* Constructor args input fields */}
         {terminalAction === 'deploy' && (
-          <div className="mb-4 p-3 bg-primary-50 dark:bg-slate-900 rounded-lg text-xs text-primary-700 dark:text-slate-300">
-            Constructor args are fixed to EntropyOracle address: {ENTROPY_ORACLE_ADDRESS}
+          <div className="mb-4 space-y-3">
+            {path === 'openzeppelin-swaperc7984toerc20' && (
+              <>
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg mb-3">
+                  <p className="text-xs text-blue-800 dark:text-blue-200 font-medium mb-1">
+                    📋 Token Address Required
+                  </p>
+                  <p className="text-xs text-blue-700 dark:text-blue-300">
+                    This contract requires an ERC20 token address. You need to deploy or use an existing ERC20 token first.
+                    For testing, you can deploy a standard ERC20 token (e.g., using OpenZeppelin's ERC20) or use any existing ERC20 token on Sepolia.
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-primary-700 dark:text-slate-300 mb-1">
+                    ERC20 Token Address *
+                  </label>
+                  <input
+                    type="text"
+                    value={swapERC20TokenAddress}
+                    onChange={(e) => setSwapERC20TokenAddress(e.target.value)}
+                    placeholder="0x..."
+                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-primary-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                  <p className="text-xs text-primary-500 dark:text-slate-400 mt-1">
+                    Enter the address of the ERC20 token to swap with (must be a valid ERC20 contract on Sepolia)
+                  </p>
+                </div>
+              </>
+            )}
+            {path === 'openzeppelin-swaperc7984toerc7984' && (
+              <>
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg mb-3">
+                  <p className="text-xs text-blue-800 dark:text-blue-200 font-medium mb-1">
+                    📋 Token Addresses Required
+                  </p>
+                  <p className="text-xs text-blue-700 dark:text-blue-300 mb-2">
+                    This contract requires two ERC7984 token addresses. You need to deploy <strong>EntropyERC7984Token</strong> contracts first.
+                  </p>
+                  <ol className="text-xs text-blue-700 dark:text-blue-300 list-decimal list-inside space-y-1 ml-2">
+                    <li>Go to <strong>EntropyERC7984Token</strong> example above</li>
+                    <li>Deploy it to get Token A address</li>
+                    <li>Deploy it again (or use a different instance) to get Token B address</li>
+                    <li>Copy the deployed addresses and paste them below</li>
+                  </ol>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-primary-700 dark:text-slate-300 mb-1">
+                    Token A Address (ERC7984) *
+                  </label>
+                  <input
+                    type="text"
+                    value={swapTokenAAddress}
+                    onChange={(e) => setSwapTokenAAddress(e.target.value)}
+                    placeholder="0x..."
+                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-primary-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                  <p className="text-xs text-primary-500 dark:text-slate-400 mt-1">
+                    First ERC7984 token address (deploy EntropyERC7984Token first)
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-primary-700 dark:text-slate-300 mb-1">
+                    Token B Address (ERC7984) *
+                  </label>
+                  <input
+                    type="text"
+                    value={swapTokenBAddress}
+                    onChange={(e) => setSwapTokenBAddress(e.target.value)}
+                    placeholder="0x..."
+                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-primary-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                  <p className="text-xs text-primary-500 dark:text-slate-400 mt-1">
+                    Second ERC7984 token address (must be different from Token A)
+                  </p>
+                </div>
+              </>
+            )}
+            {(path !== 'openzeppelin-swaperc7984toerc20' && path !== 'openzeppelin-swaperc7984toerc7984') && (
+              <div className="p-3 bg-primary-50 dark:bg-slate-900 rounded-lg text-xs text-primary-700 dark:text-slate-300">
+                {path === 'openzeppelin-erc7984token' || path === 'openzeppelin-erc7984toerc20wrapper' ? (
+                  <>
+                    Constructor args: EntropyOracle ({ENTROPY_ORACLE_ADDRESS}), Name, Symbol
+                  </>
+                ) : (
+                  <>
+                    Constructor args are fixed to EntropyOracle address: {ENTROPY_ORACLE_ADDRESS}
+                  </>
+                )}
+              </div>
+            )}
           </div>
         )}
-        {/* Verify Input - Contract Address; constructor args fixed to oracle */}
+        {/* Verify Input - Contract Address; constructor args */}
         {terminalAction === 'verify' && (
           <div className="mb-4 space-y-3">
             <div>
@@ -628,9 +754,70 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
                 Enter the deployed contract address to verify
               </p>
             </div>
-            <div className="p-3 bg-primary-50 dark:bg-slate-900 rounded-lg text-xs text-primary-700 dark:text-slate-300">
-              Constructor args are fixed to EntropyOracle address: {ENTROPY_ORACLE_ADDRESS}
-            </div>
+            {path === 'openzeppelin-swaperc7984toerc20' && (
+              <div>
+                <label className="block text-xs font-medium text-primary-700 dark:text-slate-300 mb-1">
+                  ERC20 Token Address (used during deployment) *
+                </label>
+                <input
+                  type="text"
+                  value={swapERC20TokenAddress}
+                  onChange={(e) => setSwapERC20TokenAddress(e.target.value)}
+                  placeholder="0x..."
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-primary-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                />
+                <p className="text-xs text-primary-500 dark:text-slate-400 mt-1">
+                  Enter the same ERC20 token address you used when deploying this contract
+                </p>
+              </div>
+            )}
+            {path === 'openzeppelin-swaperc7984toerc7984' && (
+              <>
+                <div>
+                  <label className="block text-xs font-medium text-primary-700 dark:text-slate-300 mb-1">
+                    Token A Address (used during deployment) *
+                  </label>
+                  <input
+                    type="text"
+                    value={swapTokenAAddress}
+                    onChange={(e) => setSwapTokenAAddress(e.target.value)}
+                    placeholder="0x..."
+                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-primary-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                  <p className="text-xs text-primary-500 dark:text-slate-400 mt-1">
+                    Enter the same Token A address you used when deploying this contract
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-primary-700 dark:text-slate-300 mb-1">
+                    Token B Address (used during deployment) *
+                  </label>
+                  <input
+                    type="text"
+                    value={swapTokenBAddress}
+                    onChange={(e) => setSwapTokenBAddress(e.target.value)}
+                    placeholder="0x..."
+                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-primary-900 dark:text-slate-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                  <p className="text-xs text-primary-500 dark:text-slate-400 mt-1">
+                    Enter the same Token B address you used when deploying this contract
+                  </p>
+                </div>
+              </>
+            )}
+            {(path !== 'openzeppelin-swaperc7984toerc20' && path !== 'openzeppelin-swaperc7984toerc7984') && (
+              <div className="p-3 bg-primary-50 dark:bg-slate-900 rounded-lg text-xs text-primary-700 dark:text-slate-300">
+                {path === 'openzeppelin-erc7984token' || path === 'openzeppelin-erc7984toerc20wrapper' ? (
+                  <>
+                    Constructor args: EntropyOracle ({ENTROPY_ORACLE_ADDRESS}), Name, Symbol
+                  </>
+                ) : (
+                  <>
+                    Constructor args are fixed to EntropyOracle address: {ENTROPY_ORACLE_ADDRESS}
+                  </>
+                )}
+              </div>
+            )}
           </div>
         )}
 
