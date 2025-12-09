@@ -3,12 +3,6 @@
   "outputDirectory": "frontend/build",
   "installCommand": "cd frontend && npm install --legacy-peer-deps",
   "framework": "create-react-app",
-  "functions": {
-    "api/**/*.ts": {
-      "maxDuration": 300,
-      "memory": 3008
-    }
-  },
   "rewrites": [
     {
       "source": "/api/:path*",
