@@ -20,9 +20,21 @@ export const useExampleAPI = () => {
     setError(null);
     setOutput('');
 
-    // Use backend server if available, otherwise fallback to Vercel serverless functions
-    const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || '';
+    // Use Vercel proxy (/api/*) which rewrites to backend server
+    // This avoids Mixed Content issues (HTTPS -> HTTP)
+    // If REACT_APP_BACKEND_URL is set, use it directly (for local development)
+    const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || process.env.BACKEND_API_URL || '';
     const apiUrl = API_BASE_URL ? `${API_BASE_URL}/api/${endpoint}` : `/api/${endpoint}`;
+
+    // Debug logging for verify requests
+    if (endpoint === 'verify') {
+      console.log('🔍 Frontend Verify Request:');
+      console.log('  API_BASE_URL:', API_BASE_URL);
+      console.log('  apiUrl:', apiUrl);
+      console.log('  body:', JSON.stringify(body, null, 2));
+      console.log('  constructorArgs:', body.constructorArgs);
+      console.log('  constructorArgs type:', typeof body.constructorArgs, Array.isArray(body.constructorArgs));
+    }
 
     try {
       const response = await fetch(apiUrl, {

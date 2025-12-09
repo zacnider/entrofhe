@@ -1,12 +1,8 @@
 {
-  "buildCommand": "bash install-examples-deps.sh && cd frontend && npm install --legacy-peer-deps && npm run build",
-  "outputDirectory": "frontend/build",
-  "installCommand": "cd frontend && npm install --legacy-peer-deps",
-  "framework": "create-react-app",
-  "functions": {
-    "api/**/*.ts": {
-      "maxDuration": 300,
-      "memory": 3008
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "http://185.169.180.167:3002/api/:path*"
     }
-  }
+  ]
 }
