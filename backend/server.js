@@ -390,25 +390,30 @@ app.post('/api/verify', async (req, res) => {
     }
 
     // Use Hardhat's verify task programmatically (exactly like EntropyCounter verify.ts does)
-    // Create a TypeScript verify script and run it with hardhat run
+    // Create a TypeScript verify script matching EntropyCounter's verify.ts exactly
+    const constructorArgsJson = JSON.stringify(constructorArgs || []);
     const verifyScriptContent = `import hre from "hardhat";
 
 async function main() {
   const contractAddress = "${contractAddress}";
-  const constructorArgs = ${JSON.stringify(constructorArgs || [])};
+  const constructorArgs = ${constructorArgsJson};
+  
+  console.log(\`\\n🔍 Verifying contract...\`);
+  console.log(\`   Address: \${contractAddress}\`);
+  console.log(\`   Network: \${hre.network.name}\`);
   
   try {
     await hre.run("verify:verify", {
       address: contractAddress,
       constructorArguments: constructorArgs,
     });
-    console.log("✅ Verification successful!");
+    console.log(\`\\n✅ Contract verified successfully!\`);
   } catch (error: any) {
     if (error.message && error.message.includes("Already Verified")) {
-      console.log("✅ Contract is already verified!");
+      console.log(\`\\n✅ Contract is already verified!\`);
       process.exit(0);
     } else {
-      console.error("❌ Verification failed:");
+      console.error(\`\\n❌ Verification failed:\`);
       console.error(error.message || error);
       process.exit(1);
     }
@@ -428,11 +433,11 @@ main()
     fs.writeFileSync(verifyScriptPath, verifyScriptContent);
     
     console.log(`Verifying ${contractAddress} on ${network}...`);
-    console.log(`Constructor args: ${JSON.stringify(constructorArgs || [])}`);
+    console.log(`Constructor args: ${constructorArgsJson}`);
     
     try {
       // Run verify script using hardhat run (exactly like EntropyCounter does)
-      // This ensures Hardhat environment is properly set up
+      // This ensures Hardhat environment is properly set up with network config
       const verifyCmd = `node "${hardhatPath}" run "${verifyScriptPath}" --network ${network}`;
       const { stdout, stderr } = await execAsync(verifyCmd, {
         cwd: exampleDir,
