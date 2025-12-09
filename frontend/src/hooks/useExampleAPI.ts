@@ -22,8 +22,9 @@ export const useExampleAPI = () => {
 
     // Use Vercel proxy (/api/*) which rewrites to backend server
     // This avoids Mixed Content issues (HTTPS -> HTTP)
-    // If REACT_APP_BACKEND_URL is set, use it directly (for local development)
-    const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || process.env.BACKEND_API_URL || '';
+    // Only use direct backend URL in local development (localhost)
+    const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const API_BASE_URL = (isLocalDev && (process.env.REACT_APP_BACKEND_URL || process.env.BACKEND_API_URL)) || '';
     const apiUrl = API_BASE_URL ? `${API_BASE_URL}/api/${endpoint}` : `/api/${endpoint}`;
 
     // Debug logging for verify requests
