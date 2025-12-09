@@ -389,58 +389,78 @@ app.post('/api/verify', async (req, res) => {
       // Ignore cleanup errors
     }
 
-    // Build verify command arguments array to avoid shell escaping issues
-    const verifyArgs = [
-      hardhatPath,
-      'verify',
-      '--network',
-      network,
-      contractAddress
-    ];
-    
-    // Add constructor arguments directly (no quoting needed when using array)
-    if (constructorArgs && constructorArgs.length > 0) {
-      verifyArgs.push(...constructorArgs);
-    }
+    // Use Hardhat's verify task programmatically (exactly like EntropyCounter verify.ts does)
+    // Create a TypeScript verify script and run it with hardhat run
+    const verifyScriptContent = `import hre from "hardhat";
 
+async function main() {
+  const contractAddress = "${contractAddress}";
+  const constructorArgs = ${JSON.stringify(constructorArgs || [])};
+  
+  try {
+    await hre.run("verify:verify", {
+      address: contractAddress,
+      constructorArguments: constructorArgs,
+    });
+    console.log("✅ Verification successful!");
+  } catch (error: any) {
+    if (error.message && error.message.includes("Already Verified")) {
+      console.log("✅ Contract is already verified!");
+      process.exit(0);
+    } else {
+      console.error("❌ Verification failed:");
+      console.error(error.message || error);
+      process.exit(1);
+    }
+  }
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+`;
+    
+    // Write verify script to temp file (TypeScript like EntropyCounter)
+    const verifyScriptPath = path.join(exampleDir, '.verify-temp.ts');
+    fs.writeFileSync(verifyScriptPath, verifyScriptContent);
+    
     console.log(`Verifying ${contractAddress} on ${network}...`);
-    console.log(`Verify command: node ${verifyArgs.join(' ')}`);
+    console.log(`Constructor args: ${JSON.stringify(constructorArgs || [])}`);
     
-    // Use spawn instead of execAsync to avoid shell escaping issues with quotes
-    const verifyProcess = spawn('node', verifyArgs, {
-      cwd: exampleDir,
-      env: {
-        ...process.env,
-        TS_NODE_TRANSPILE_ONLY: 'true',
-        ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY || '',
-        SEPOLIA_RPC_URL: process.env.SEPOLIA_RPC_URL || '',
-      },
-    });
-    
-    let stdout = '';
-    let stderr = '';
-    
-    verifyProcess.stdout.on('data', (data) => {
-      stdout += data.toString();
-    });
-    
-    verifyProcess.stderr.on('data', (data) => {
-      stderr += data.toString();
-    });
-    
-    const exitCode = await new Promise((resolve, reject) => {
-      verifyProcess.on('close', (code) => {
-        resolve(code);
+    try {
+      // Run verify script using hardhat run (exactly like EntropyCounter does)
+      // This ensures Hardhat environment is properly set up
+      const verifyCmd = `node "${hardhatPath}" run "${verifyScriptPath}" --network ${network}`;
+      const { stdout, stderr } = await execAsync(verifyCmd, {
+        cwd: exampleDir,
+        env: {
+          ...process.env,
+          TS_NODE_TRANSPILE_ONLY: 'true',
+          ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY || '',
+          SEPOLIA_RPC_URL: process.env.SEPOLIA_RPC_URL || '',
+        },
+        timeout: 120000,
+        maxBuffer: 10 * 1024 * 1024,
       });
-      verifyProcess.on('error', (err) => {
-        reject(err);
-      });
-    });
-    
-    if (exitCode !== 0) {
-      const error = new Error(`Verify failed with exit code ${exitCode}`);
-      error.stdout = stdout;
-      error.stderr = stderr;
+      
+      // Clean up temp script
+      try {
+        fs.unlinkSync(verifyScriptPath);
+      } catch (e) {
+        // Ignore cleanup errors
+      }
+      
+      return { stdout, stderr };
+    } catch (error) {
+      // Clean up temp script
+      try {
+        fs.unlinkSync(verifyScriptPath);
+      } catch (e) {
+        // Ignore cleanup errors
+      }
       throw error;
     }
 
