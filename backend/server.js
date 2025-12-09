@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { exec } = require('child_process');
+const { exec, spawn } = require('child_process');
 const { promisify } = require('util');
 const path = require('path');
 const fs = require('fs');
@@ -389,25 +389,25 @@ app.post('/api/verify', async (req, res) => {
       // Ignore cleanup errors
     }
 
-    // Build verify command - use local binary only
-    // String arguments need to be quoted, addresses don't
-    let verifyCmd = `node "${hardhatPath}" verify --network ${network} ${contractAddress}`;
+    // Build verify command arguments array to avoid shell escaping issues
+    const verifyArgs = [
+      hardhatPath,
+      'verify',
+      '--network',
+      network,
+      contractAddress
+    ];
     
+    // Add constructor arguments directly (no quoting needed when using array)
     if (constructorArgs && constructorArgs.length > 0) {
-      // Quote string arguments (non-address strings)
-      const quotedArgs = constructorArgs.map(arg => {
-        // Check if it's an address (starts with 0x and is 42 chars)
-        if (arg.startsWith('0x') && arg.length === 42) {
-          return arg;
-        }
-        // Otherwise, it's a string - quote it
-        return `"${arg}"`;
-      });
-      verifyCmd += ` ${quotedArgs.join(' ')}`;
+      verifyArgs.push(...constructorArgs);
     }
 
     console.log(`Verifying ${contractAddress} on ${network}...`);
-    const { stdout, stderr } = await execAsync(verifyCmd, {
+    console.log(`Verify command: node ${verifyArgs.join(' ')}`);
+    
+    // Use spawn instead of execAsync to avoid shell escaping issues with quotes
+    const verifyProcess = spawn('node', verifyArgs, {
       cwd: exampleDir,
       env: {
         ...process.env,
@@ -415,9 +415,34 @@ app.post('/api/verify', async (req, res) => {
         ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY || '',
         SEPOLIA_RPC_URL: process.env.SEPOLIA_RPC_URL || '',
       },
-      timeout: 120000,
-      maxBuffer: 10 * 1024 * 1024,
     });
+    
+    let stdout = '';
+    let stderr = '';
+    
+    verifyProcess.stdout.on('data', (data) => {
+      stdout += data.toString();
+    });
+    
+    verifyProcess.stderr.on('data', (data) => {
+      stderr += data.toString();
+    });
+    
+    const exitCode = await new Promise((resolve, reject) => {
+      verifyProcess.on('close', (code) => {
+        resolve(code);
+      });
+      verifyProcess.on('error', (err) => {
+        reject(err);
+      });
+    });
+    
+    if (exitCode !== 0) {
+      const error = new Error(`Verify failed with exit code ${exitCode}`);
+      error.stdout = stdout;
+      error.stderr = stderr;
+      throw error;
+    }
 
     return res.json({
       success: true,
