@@ -86,7 +86,7 @@ export const useExampleAPI = () => {
   };
 
   const verifyExample = async (examplePath: string, contractAddress: string, network: string = 'sepolia', constructorArgs?: string[]) => {
-    return callAPI('verify-example', { examplePath, contractAddress, network, constructorArgs });
+    return callAPI('verify', { examplePath, contractAddress, network, constructorArgs });
   };
 
   return {

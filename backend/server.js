@@ -390,14 +390,24 @@ app.post('/api/verify', async (req, res) => {
     }
 
     // Build verify command - use local binary only
-    
+    // String arguments need to be quoted, addresses don't
     let verifyCmd = `node "${hardhatPath}" verify --network ${network} ${contractAddress}`;
     
     if (constructorArgs && constructorArgs.length > 0) {
-      verifyCmd += ` ${constructorArgs.join(' ')}`;
+      // Quote string arguments (non-address strings)
+      const quotedArgs = constructorArgs.map(arg => {
+        // Check if it's an address (starts with 0x and is 42 chars)
+        if (arg.startsWith('0x') && arg.length === 42) {
+          return arg;
+        }
+        // Otherwise, it's a string - quote it
+        return `"${arg}"`;
+      });
+      verifyCmd += ` ${quotedArgs.join(' ')}`;
     }
 
     console.log(`Verifying ${contractAddress} on ${network}...`);
+    console.log(`Verify command: ${verifyCmd}`);
     const { stdout, stderr } = await execAsync(verifyCmd, {
       cwd: exampleDir,
       env: {
@@ -406,7 +416,7 @@ app.post('/api/verify', async (req, res) => {
         ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY || '',
         SEPOLIA_RPC_URL: process.env.SEPOLIA_RPC_URL || '',
       },
-      timeout: 120000,
+      timeout: 300000, // 5 minutes for Etherscan API
       maxBuffer: 10 * 1024 * 1024,
     });
 
