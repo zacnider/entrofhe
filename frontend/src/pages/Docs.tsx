@@ -12,36 +12,43 @@ import {
 } from '@heroicons/react/24/outline';
 
 const Docs: React.FC = () => {
-  const [activeSection, setActiveSection] = useState<string>('getting-started');
+  const [activeSection, setActiveSection] = useState<string>('quick-start');
+
+  // Listen for navigation events
+  React.useEffect(() => {
+    const handleNavigate = (e: CustomEvent) => {
+      if (e.detail === 'tutorials') {
+        setActiveSection('tutorials');
+      }
+    };
+    window.addEventListener('docs-navigate', handleNavigate as EventListener);
+    return () => {
+      window.removeEventListener('docs-navigate', handleNavigate as EventListener);
+    };
+  }, []);
 
   const sections = [
-    { id: 'getting-started', title: 'Getting Started', icon: RocketLaunchIcon },
-    { id: 'how-it-works', title: 'How It Works', icon: CpuChipIcon },
-    { id: 'integration', title: 'Integration Guide', icon: CodeBracketIcon },
+    { id: 'quick-start', title: 'Quick Start', icon: RocketLaunchIcon },
+    { id: 'tutorials', title: 'Tutorials', icon: AcademicCapIcon },
+    { id: 'integration', title: 'Integration', icon: CodeBracketIcon },
     { id: 'api-reference', title: 'API Reference', icon: DocumentTextIcon },
-    { id: 'examples', title: 'Code Examples', icon: LightBulbIcon },
-    { id: 'tutorial-track', title: 'Full Tutorial Track', icon: AcademicCapIcon },
     { id: 'faq', title: 'FAQ', icon: QuestionMarkCircleIcon },
   ];
 
   const renderContent = () => {
     switch (activeSection) {
-      case 'getting-started':
-        return <GettingStarted />;
-      case 'how-it-works':
-        return <HowItWorks />;
+      case 'quick-start':
+        return <QuickStart />;
+      case 'tutorials':
+        return <FullTutorialTrack />;
       case 'integration':
-        return <IntegrationGuide />;
+        return <Integration />;
       case 'api-reference':
         return <APIReference />;
-      case 'examples':
-        return <CodeExamples />;
-      case 'tutorial-track':
-        return <FullTutorialTrack />;
       case 'faq':
         return <FAQ />;
       default:
-        return <GettingStarted />;
+        return <QuickStart />;
     }
   };
 
@@ -62,6 +69,7 @@ const Docs: React.FC = () => {
                   return (
                     <button
                       key={section.id}
+                      data-section-id={section.id}
                       onClick={() => setActiveSection(section.id)}
                       className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
                         activeSection === section.id
@@ -90,15 +98,15 @@ const Docs: React.FC = () => {
   );
 };
 
-// Getting Started Section
-const GettingStarted: React.FC = () => (
+// Quick Start Section
+const QuickStart: React.FC = () => (
   <div className="space-y-6">
     <div>
       <h1 className="text-4xl font-bold text-primary-900 dark:text-slate-100 mb-4">
-        Getting Started
+        Quick Start
       </h1>
       <p className="text-lg text-gray-600 dark:text-slate-400">
-        Welcome to Entrofhe - A Fully Homomorphic Encryption (FHE) based entropy and randomness infrastructure for blockchain applications.
+        Get started with Entrofhe in minutes. Learn the basics and start building confidential smart contracts with encrypted randomness.
       </p>
     </div>
 
@@ -134,7 +142,7 @@ const GettingStarted: React.FC = () => (
     </section>
 
     <section className="space-y-4">
-      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Quick Start</h2>
+      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">3-Step Quick Start</h2>
       <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
         <h3 className="text-lg font-semibold mb-3 text-primary-800 dark:text-cyan-300">1. Install Dependencies</h3>
         <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto">
@@ -175,23 +183,55 @@ euint64 entropy = oracle.getEncryptedEntropy(requestId);`}
         </p>
       </div>
     </section>
+
+    <section className="space-y-4">
+      <div className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 rounded-lg p-6 border-2 border-primary-200 dark:border-cyan-800">
+        <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300 mb-3">Ready to Learn More?</h2>
+        <p className="text-gray-700 dark:text-slate-300 mb-4">
+          For a complete step-by-step tutorial with 19 practical examples, check out our comprehensive <strong>Tutorials</strong> section.
+        </p>
+        <button
+          onClick={() => {
+            // Use React state to navigate
+            const event = new CustomEvent('docs-navigate', { detail: 'tutorials' });
+            window.dispatchEvent(event);
+          }}
+          onMouseDown={(e) => {
+            // Prevent default to allow custom navigation
+            e.preventDefault();
+            const button = e.currentTarget;
+            const clickEvent = new MouseEvent('click', { bubbles: true });
+            button.dispatchEvent(clickEvent);
+          }}
+          className="bg-primary-600 dark:bg-cyan-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 dark:hover:bg-cyan-600 transition-colors cursor-pointer"
+        >
+          Go to Tutorials →
+        </button>
+      </div>
+    </section>
   </div>
 );
 
-// How It Works Section
-const HowItWorks: React.FC = () => (
+// Integration Section (combines How It Works + Integration Guide)
+const Integration: React.FC = () => (
   <div className="space-y-6">
     <div>
       <h1 className="text-4xl font-bold text-primary-900 dark:text-slate-100 mb-4">
-        How It Works
+        Integration
       </h1>
       <p className="text-lg text-gray-600 dark:text-slate-400">
-        Understanding the architecture and flow of Entrofhe.
+        Learn how Entrofhe works and integrate it into your smart contracts.
       </p>
     </div>
 
+    {/* How It Works Section */}
     <section className="space-y-4">
-      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Architecture</h2>
+      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">How It Works</h2>
+      <p className="text-gray-700 dark:text-slate-300 mb-4">
+        Understanding the architecture and flow of Entrofhe.
+      </p>
+
+      <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Architecture</h3>
       <div className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 rounded-lg p-6">
         <div className="space-y-4">
           <div className="flex items-start space-x-4">
@@ -231,10 +271,9 @@ const HowItWorks: React.FC = () => (
           </div>
         </div>
       </div>
-    </section>
 
     <section className="space-y-4">
-      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">FHE Technology</h2>
+      <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">FHE Technology</h3>
       <p className="text-gray-700 dark:text-slate-300">
         Entrofhe uses Zama Network's FHEVM (Fully Homomorphic Encryption Virtual Machine) to perform computations 
         on encrypted data without ever decrypting it. This ensures that:
@@ -248,32 +287,27 @@ const HowItWorks: React.FC = () => (
     </section>
 
     <section className="space-y-4">
-      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Security Model</h2>
+      <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Security Model</h3>
       <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-        <h3 className="font-semibold text-green-800 dark:text-green-200 mb-2">Internal Seeds Only</h3>
+        <h4 className="font-semibold text-green-800 dark:text-green-200 mb-2">Internal Seeds Only</h4>
         <p className="text-green-700 dark:text-green-300">
           Entrofhe generates entropy using only on-chain data. No external oracles or user-provided seeds are used, 
           ensuring deterministic yet unpredictable randomness.
         </p>
       </div>
     </section>
-  </div>
-);
+    </section>
 
-// Integration Guide Section
-const IntegrationGuide: React.FC = () => (
-  <div className="space-y-6">
-    <div>
-      <h1 className="text-4xl font-bold text-primary-900 dark:text-slate-100 mb-4">
-        Integration Guide
-      </h1>
-      <p className="text-lg text-gray-600 dark:text-slate-400">
+    {/* Integration Guide Section */}
+    <section className="space-y-4 mt-8">
+      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Integration Guide</h2>
+      <p className="text-gray-700 dark:text-slate-300 mb-4">
         Step-by-step guide to integrate Entrofhe into your smart contract.
       </p>
-    </div>
+    </section>
 
     <section className="space-y-4">
-      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Step 1: Add Interface</h2>
+      <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Step 1: Add Interface</h3>
       <p className="text-gray-700 dark:text-slate-300">
         Copy the <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">IEntropyOracle</code> interface to your project:
       </p>
@@ -317,7 +351,7 @@ interface IEntropyOracle {
     </section>
 
     <section className="space-y-4">
-      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Step 2: Import in Your Contract</h2>
+      <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Step 2: Import in Your Contract</h3>
       <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
         <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
 {`// SPDX-License-Identifier: MIT
@@ -339,7 +373,7 @@ contract MyDApp {
     </section>
 
     <section className="space-y-4">
-      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Step 3: Request Entropy</h2>
+      <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Step 3: Request Entropy</h3>
       <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
         <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
 {`function useRandomness(bytes32 uniqueTag) external payable {
@@ -365,7 +399,7 @@ contract MyDApp {
     </section>
 
     <section className="space-y-4">
-      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Important Notes</h2>
+      <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Important Notes</h3>
       <div className="space-y-3">
         <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
           <p className="text-yellow-800 dark:text-yellow-200">
@@ -565,673 +599,7 @@ const APIReference: React.FC = () => (
   </div>
 );
 
-// Code Examples Section
-const CodeExamples: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'live' | 'tutorial'>('live');
-
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-4xl font-bold text-primary-900 dark:text-slate-100 mb-4">
-          Code Examples
-        </h1>
-        <p className="text-lg text-gray-600 dark:text-slate-400">
-          Practical examples for common use cases. Includes 3 live examples and 19 tutorial examples (14 FHEVM + 5 OpenZeppelin) - all integrated with EntropyOracle.
-        </p>
-      </div>
-
-      {/* Tutorial Playbook */}
-      <div className="bg-blue-50 dark:bg-slate-900 border border-blue-200 dark:border-slate-700 rounded-lg p-4 space-y-3">
-        <h3 className="text-lg font-semibold text-primary-800 dark:text-cyan-300">Tutorial Playbook (all 19 examples)</h3>
-        <p className="text-sm text-primary-700 dark:text-slate-300">
-          Oracle arg is fixed to EntropyOracle: <code className="bg-blue-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361</code>
-        </p>
-        <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-blue-100 dark:border-slate-700 space-y-2">
-          <h4 className="text-sm font-semibold text-primary-800 dark:text-cyan-200">Global workflow</h4>
-          <ul className="list-decimal list-inside text-sm space-y-1 text-primary-700 dark:text-slate-300">
-            <li>Install (first run): <code className="bg-gray-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">npm install --legacy-peer-deps</code></li>
-            <li>Compile: <code className="bg-gray-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">npx hardhat compile</code></li>
-            <li>Test (local FHE + local oracle/chaos engine auto-deployed): <code className="bg-gray-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">npx hardhat test</code></li>
-            <li>Deploy (frontend “Deploy”): wallet tx uses fixed oracle arg automatically</li>
-            <li>Verify: <code className="bg-gray-200 dark:bg-slate-800 px-1.5 py-0.5 rounded">npx hardhat verify --network sepolia &lt;contractAddress&gt; 0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361</code></li>
-          </ul>
-          <p className="text-xs text-primary-600 dark:text-slate-400">Frontend Test/Compile/Verify calls backend API; deps auto-install on first run; uses local Hardhat.</p>
-        </div>
-        <div className="grid md:grid-cols-2 gap-3 text-sm text-primary-700 dark:text-slate-300">
-          <div className="bg-white dark:bg-slate-800 border border-blue-100 dark:border-slate-700 rounded-lg p-3 space-y-1">
-            <h4 className="text-sm font-semibold text-primary-800 dark:text-cyan-200">Core FHE + Entropy pattern</h4>
-            <ul className="list-disc list-inside space-y-1">
-              <li>Import FHE + EntropyOracle</li>
-              <li>Encrypt inputs (externalEuint64 → FHE.fromExternal)</li>
-              <li>Request entropy → getEncryptedEntropy(requestId)</li>
-              <li>Grant permissions: FHE.allowThis(entropy)</li>
-              <li>FHE ops on euint64 (add/xor/compare)</li>
-            </ul>
-          </div>
-          <div className="bg-white dark:bg-slate-800 border border-blue-100 dark:border-slate-700 rounded-lg p-3 space-y-1">
-            <h4 className="text-sm font-semibold text-primary-800 dark:text-cyan-200">Common pitfalls</h4>
-            <ul className="list-disc list-inside space-y-1">
-              <li>Missing FHE.allowThis on entropy or external inputs</li>
-              <li>View/pure functions can’t run FHE ops</li>
-              <li>Wrong constructor arg on verify (must be oracle)</li>
-              <li>Missing deps → run npm install --legacy-peer-deps</li>
-              <li>Etherscan timeout → retry verify</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="mb-8">
-        <div className="border-b border-gray-200 dark:border-slate-700">
-          <nav className="-mb-px flex space-x-8">
-            <button
-              onClick={() => setActiveTab('live')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'live'
-                  ? 'border-primary-500 dark:border-cyan-500 text-primary-600 dark:text-cyan-400'
-                  : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-600'
-              }`}
-            >
-              Live Examples
-            </button>
-            <button
-              onClick={() => setActiveTab('tutorial')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'tutorial'
-                  ? 'border-primary-500 dark:border-cyan-500 text-primary-600 dark:text-cyan-400'
-                  : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-300 hover:border-gray-300 dark:hover:border-slate-600'
-              }`}
-            >
-              Tutorial Examples
-            </button>
-          </nav>
-        </div>
-      </div>
-
-      {/* Live Examples Tab */}
-      {activeTab === 'live' && (
-        <div className="space-y-6">
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Example 1: Simple Lottery</h2>
-      <p className="text-gray-600 dark:text-slate-400">
-        Fair winner selection using entropy. Participants enter the lottery, then entropy is used to randomly select a winner.
-      </p>
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
-{`// SPDX-License-Identifier: BSD-3-Clause-Clear
-pragma solidity ^0.8.27;
-
-import {FHE, euint64} from "@fhevm/solidity/lib/FHE.sol";
-import "../interfaces/IEntropyOracle.sol";
-
-contract SimpleLottery {
-    IEntropyOracle public entropyOracle;
-    
-    // Lottery state
-    address[] public participants;
-    mapping(uint256 => mapping(address => bool)) public hasParticipated; // Round-based
-    uint256 public winningRequestId;
-    address public winner;
-    bool public lotteryComplete;
-    uint256 public lotteryRound; // Track lottery rounds
-    
-    event LotteryStarted(uint256 indexed round);
-    event ParticipantAdded(address indexed participant, uint256 indexed round);
-    event WinnerSelected(address indexed winner, uint256 indexed requestId, uint256 indexed round);
-    event LotteryReset(uint256 indexed newRound);
-    
-    constructor(address _entropyOracle) {
-        require(_entropyOracle != address(0), "Invalid oracle address");
-        entropyOracle = IEntropyOracle(_entropyOracle);
-        lotteryRound = 1;
-        emit LotteryStarted(lotteryRound);
-    }
-    
-    function enter() external {
-        require(!lotteryComplete, "Lottery already complete");
-        require(!hasParticipated[lotteryRound][msg.sender], "Already participated in this round");
-        
-        participants.push(msg.sender);
-        hasParticipated[lotteryRound][msg.sender] = true;
-        
-        emit ParticipantAdded(msg.sender, lotteryRound);
-    }
-    
-    function selectWinner() external payable {
-        require(!lotteryComplete, "Lottery already complete");
-        require(participants.length > 0, "No participants");
-        require(msg.value >= entropyOracle.getFee(), "Insufficient fee");
-        
-        bytes32 tag = keccak256("lottery-winner-selection");
-        uint256 requestId = entropyOracle.requestEntropy{value: msg.value}(tag);
-        winningRequestId = requestId;
-        
-        // Simplified: Use request ID modulo participants length
-        uint256 winnerIndex = requestId % participants.length;
-        winner = participants[winnerIndex];
-        lotteryComplete = true;
-        
-        emit WinnerSelected(winner, requestId, lotteryRound);
-    }
-    
-    function getStatus() external view returns (
-        uint256 participantCount,
-        bool complete,
-        address currentWinner
-    ) {
-        return (participants.length, lotteryComplete, winner);
-    }
-    
-    function resetLottery() external {
-        require(lotteryComplete, "Lottery must be complete before reset");
-        
-        delete participants;
-        lotteryComplete = false;
-        winner = address(0);
-        winningRequestId = 0;
-        lotteryRound++;
-        
-        emit LotteryReset(lotteryRound);
-        emit LotteryStarted(lotteryRound);
-    }
-}`}
-        </pre>
-      </div>
-      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-        <p className="text-sm text-blue-700 dark:text-blue-300">
-          <strong>💡 Live Example:</strong> Test this contract on the <a href="/examples" className="underline font-semibold">Examples page</a> (Simple Lottery).
-        </p>
-        <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">
-                <strong>📦 GitHub:</strong> <a href={getExampleRepoUrl('advanced-simplelottery')} target="_blank" rel="noopener noreferrer" className="underline font-semibold">View source code</a>
-        </p>
-      </div>
-    </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Example 2: Random Number Generator</h2>
-      <p className="text-gray-600 dark:text-slate-400">
-        Generate encrypted random numbers using entropy. Each request creates a unique encrypted random number.
-      </p>
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
-{`// SPDX-License-Identifier: BSD-3-Clause-Clear
-pragma solidity ^0.8.27;
-
-import {FHE, euint64} from "@fhevm/solidity/lib/FHE.sol";
-import "../interfaces/IEntropyOracle.sol";
-
-contract RandomNumberGenerator {
-    IEntropyOracle public entropyOracle;
-    mapping(uint256 => euint64) public randomNumbers;
-    mapping(uint256 => bool) public isGenerated;
-    uint256 public totalGenerated;
-
-    constructor(address _entropyOracle) {
-        require(_entropyOracle != address(0), "Invalid oracle address");
-        entropyOracle = IEntropyOracle(_entropyOracle);
-    }
-
-    function requestRandomNumber(bytes32 tag) external payable returns (uint256 requestId) {
-        require(msg.value >= entropyOracle.getFee(), "Insufficient fee");
-        
-        requestId = entropyOracle.requestEntropy{value: msg.value}(tag);
-        
-        // Get encrypted entropy
-        euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
-        
-        // Store encrypted random number
-        randomNumbers[requestId] = entropy;
-        isGenerated[requestId] = true;
-        totalGenerated++;
-        
-        emit RandomNumberRequested(requestId, tag);
-        emit RandomNumberGenerated(requestId, totalGenerated);
-        
-        return requestId;
-    }
-
-    function getEncryptedRandomNumber(uint256 requestId) external view returns (euint64) {
-        require(isGenerated[requestId], "Random number not generated");
-        return randomNumbers[requestId];
-    }
-    
-    event RandomNumberRequested(uint256 indexed requestId, bytes32 tag);
-    event RandomNumberGenerated(uint256 indexed requestId, uint256 requestNumber);
-}`}
-        </pre>
-      </div>
-      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-        <p className="text-sm text-blue-700 dark:text-blue-300">
-          <strong>💡 Live Example:</strong> Test this contract on the <a href="/examples" className="underline font-semibold">Examples page</a> (Random Number Generator).
-        </p>
-        <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">
-                <strong>📦 GitHub:</strong> <a href={getExampleRepoUrl('advanced-randomnumbergenerator')} target="_blank" rel="noopener noreferrer" className="underline font-semibold">View source code</a>
-        </p>
-      </div>
-    </section>
-
-          <section className="space-y-4">
-            <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Example 3: EntropyNFT (Real ERC721)</h2>
-      <p className="text-gray-600 dark:text-slate-400">
-        Mint real ERC721 NFTs with IPFS metadata and trait selection using entropy. Traits are selected from entropy and stored on-chain.
-      </p>
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
-{`// SPDX-License-Identifier: BSD-3-Clause-Clear
-pragma solidity ^0.8.27;
-
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-import {FHE, euint64} from "@fhevm/solidity/lib/FHE.sol";
-import "../interfaces/IEntropyOracle.sol";
-
-contract EntropyNFT is ERC721, ERC721URIStorage {
-    IEntropyOracle public entropyOracle;
-    
-    // NFT traits
-    string[] public backgrounds = ["Red", "Blue", "Green", "Yellow", "Purple"];
-    string[] public accessories = ["Hat", "Glasses", "Necklace", "Watch", "Ring"];
-    string[] public expressions = ["Happy", "Sad", "Angry", "Surprised", "Cool"];
-    
-    struct NFTData {
-        uint256 tokenId;
-        uint256 entropyRequestId;
-        uint8 backgroundIndex;
-        uint8 accessoryIndex;
-        uint8 expressionIndex;
-        string tokenURI;
-        bool minted;
-    }
-    
-    mapping(uint256 => NFTData) public nftData;
-    uint256 public nextTokenId;
-    
-    constructor(address _entropyOracle) ERC721("EntropyNFT", "ENTNFT") {
-        entropyOracle = IEntropyOracle(_entropyOracle);
-        nextTokenId = 1;
-    }
-    
-    function requestMint(bytes32 tag) external payable returns (uint256 tokenId, uint256 requestId) {
-        require(msg.value >= entropyOracle.getFee(), "Insufficient fee");
-        
-        tokenId = nextTokenId++;
-        requestId = entropyOracle.requestEntropy{value: msg.value}(tag);
-        
-        nftData[tokenId] = NFTData({
-            tokenId: tokenId,
-            entropyRequestId: requestId,
-            backgroundIndex: 0,
-            accessoryIndex: 0,
-            expressionIndex: 0,
-            tokenURI: "",
-            minted: false
-        });
-        
-        emit NFTMintRequested(tokenId, requestId);
-        return (tokenId, requestId);
-    }
-    
-    function completeMintWithTraits(
-        uint256 tokenId,
-        uint8 backgroundIdx,
-        uint8 accessoryIdx,
-        uint8 expressionIdx,
-        string memory tokenURI
-    ) external {
-        NFTData storage nft = nftData[tokenId];
-        require(!nft.minted, "NFT already minted");
-        require(entropyOracle.isRequestFulfilled(nft.entropyRequestId), "Entropy not ready");
-        
-        // Store traits (selected off-chain using entropy)
-        nft.backgroundIndex = backgroundIdx;
-        nft.accessoryIndex = accessoryIdx;
-        nft.expressionIndex = expressionIdx;
-        nft.tokenURI = tokenURI;
-        nft.minted = true;
-        
-        // Mint the NFT
-        _safeMint(msg.sender, tokenId);
-        _setTokenURI(tokenId, tokenURI);
-        
-        emit NFTMinted(tokenId, nft.entropyRequestId, tokenURI);
-    }
-    
-    event NFTMintRequested(uint256 indexed tokenId, uint256 indexed requestId);
-    event NFTMinted(uint256 indexed tokenId, uint256 indexed requestId, string tokenURI);
-}`}
-        </pre>
-      </div>
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
-              <p className="text-sm text-blue-700 dark:text-blue-300">
-                <strong>💡 Live Example:</strong> Test this contract on the <a href="/examples" className="underline font-semibold">Examples page</a> (EntropyNFT). Mint real NFTs with IPFS metadata!
-              </p>
-              <p className="text-sm text-blue-700 dark:text-blue-300 mt-2">
-                <strong>📦 GitHub:</strong> <a href={getExampleRepoUrl('advanced-entropynft')} target="_blank" rel="noopener noreferrer" className="underline font-semibold">View source code</a>
-              </p>
-            </div>
-          </section>
-        </div>
-      )}
-
-      {/* Tutorial Examples Tab */}
-      {activeTab === 'tutorial' && (
-        <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300 mb-4">
-                Tutorial Examples
-              </h2>
-              <p className="text-gray-600 dark:text-slate-400 mb-6">
-                Educational examples demonstrating EntropyOracle integration patterns. Each example shows how to use entropy in different FHEVM scenarios. Includes 19 examples across 10 categories: Basic, Encryption, Decryption, Access Control, Input Proof, Anti-Patterns, Handles, Advanced, and OpenZeppelin Confidential Contracts.
-              </p>
-              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-6">
-                <p className="text-sm text-blue-700 dark:text-blue-300">
-                  <strong>💡 Explore:</strong> View all tutorial examples on the <a href="/examples" className="underline font-semibold">Examples page</a> (Tutorial Examples tab).
-                </p>
-              </div>
-            </div>
-
-      {/* Basic Examples */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 border-b border-gray-200 dark:border-slate-700 pb-2">
-          Basic Examples
-        </h3>
-
-        <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-          <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropyCounter</h4>
-          <p className="text-gray-600 dark:text-slate-400 mb-3">
-            Counter using EntropyOracle for encrypted randomness. Demonstrates entropy-based counter increments.
-          </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
-            <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/basic-simplecounter</code>
-          </p>
-          <p className="text-sm">
-            <a href={getExampleRepoUrl('basic-simplecounter')} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
-              📦 View on GitHub
-            </a>
-          </p>
-        </div>
-
-        <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-          <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropyArithmetic</h4>
-          <p className="text-gray-600 dark:text-slate-400 mb-3">
-            FHE arithmetic operations using EntropyOracle. Shows entropy-enhanced calculations (add, sub, mul).
-          </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
-            <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/basic-arithmetic</code>
-          </p>
-          <p className="text-sm">
-            <a href={getExampleRepoUrl('basic-arithmetic')} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
-              📦 View on GitHub
-            </a>
-          </p>
-        </div>
-
-        <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-          <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropyEqualityComparison</h4>
-          <p className="text-gray-600 dark:text-slate-400 mb-3">
-            FHE equality comparison using EntropyOracle. Demonstrates entropy-enhanced comparison operations.
-          </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
-            <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/basic-equalitycomparison</code>
-          </p>
-          <p className="text-sm">
-            <a href={getExampleRepoUrl('basic-equalitycomparison')} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
-              📦 View on GitHub
-            </a>
-          </p>
-        </div>
-      </div>
-
-      {/* Encryption Examples */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 border-b border-gray-200 dark:border-slate-700 pb-2">
-          Encryption Examples
-        </h3>
-
-        <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-          <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropyEncryption</h4>
-          <p className="text-gray-600 dark:text-slate-400 mb-3">
-            Encrypt and store values using EntropyOracle. Shows entropy-enhanced encryption patterns.
-          </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
-            <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/encryption-encryptsingle</code>
-          </p>
-          <p className="text-sm">
-            <a href={getExampleRepoUrl('encryption-encryptsingle')} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
-              📦 View on GitHub
-            </a>
-          </p>
-        </div>
-      </div>
-
-      {/* Decryption Examples */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 border-b border-gray-200 dark:border-slate-700 pb-2">
-          Decryption Examples
-        </h3>
-
-        <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-          <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropyUserDecryption</h4>
-          <p className="text-gray-600 dark:text-slate-400 mb-3">
-            User decrypt using EntropyOracle and FHE.allow. Demonstrates entropy-enhanced user-specific decryption.
-          </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
-            <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/user-decryption-userdecryptsingle</code>
-          </p>
-          <p className="text-sm">
-            <a href={getExampleRepoUrl('user-decryption-userdecryptsingle')} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
-              📦 View on GitHub
-            </a>
-          </p>
-        </div>
-
-        <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-          <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropyPublicDecryption</h4>
-          <p className="text-gray-600 dark:text-slate-400 mb-3">
-            Public decrypt using EntropyOracle and makePubliclyDecryptable. Shows entropy-enhanced public decryption.
-          </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
-            <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/public-decryption-publicdecryptsingle</code>
-          </p>
-          <p className="text-sm">
-            <a href={getExampleRepoUrl('public-decryption-publicdecryptsingle')} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
-              📦 View on GitHub
-            </a>
-          </p>
-        </div>
-      </div>
-
-      {/* Access Control Examples */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 border-b border-gray-200 dark:border-slate-700 pb-2">
-          Access Control Examples
-        </h3>
-
-        <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-          <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropyAccessControl</h4>
-          <p className="text-gray-600 dark:text-slate-400 mb-3">
-            Access control with EntropyOracle, FHE.allow and FHE.allowTransient. Demonstrates entropy-enhanced access control patterns.
-          </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
-            <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/access-control-accesscontrol</code>
-          </p>
-          <p className="text-sm">
-            <a href={getExampleRepoUrl('access-control-accesscontrol')} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
-              📦 View on GitHub
-            </a>
-          </p>
-        </div>
-      </div>
-
-      {/* Input Proof Examples */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 border-b border-gray-200 dark:border-slate-700 pb-2">
-          Input Proof Examples
-        </h3>
-
-        <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-          <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropyInputProof</h4>
-          <p className="text-gray-600 dark:text-slate-400 mb-3">
-            Input proofs with EntropyOracle integration. Shows entropy-enhanced input validation and proof requirements.
-          </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
-            <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/input-proof-inputproofexplanation</code>
-          </p>
-          <p className="text-sm">
-            <a href={getExampleRepoUrl('input-proof-inputproofexplanation')} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
-              📦 View on GitHub
-            </a>
-          </p>
-        </div>
-      </div>
-
-      {/* Anti-Patterns Examples */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 border-b border-gray-200 dark:border-slate-700 pb-2">
-          Anti-Patterns Examples
-        </h3>
-
-        <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-          <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropyMissingAllowThis</h4>
-          <p className="text-gray-600 dark:text-slate-400 mb-3">
-            Missing FHE.allowThis() permissions with EntropyOracle. Demonstrates common mistakes when using entropy.
-          </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
-            <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/anti-patterns-missingallowthis</code>
-          </p>
-          <p className="text-sm">
-            <a href={getExampleRepoUrl('anti-patterns-missingallowthis')} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
-              📦 View on GitHub
-            </a>
-          </p>
-        </div>
-
-        <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-          <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropyViewWithEncrypted</h4>
-          <p className="text-gray-600 dark:text-slate-400 mb-3">
-            View functions with encrypted values and EntropyOracle. Shows limitations of view functions with FHE.
-          </p>
-          <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
-            <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/anti-patterns-viewwithencrypted</code>
-          </p>
-          <p className="text-sm">
-            <a href={getExampleRepoUrl('anti-patterns-viewwithencrypted')} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
-              📦 View on GitHub
-            </a>
-          </p>
-        </div>
-      </div>
-
-            {/* Handles Examples */}
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 border-b border-gray-200 dark:border-slate-700 pb-2">
-                Handles Examples
-              </h3>
-
-              <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-                <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropyHandleLifecycle</h4>
-                <p className="text-gray-600 dark:text-slate-400 mb-3">
-                  Understanding handles and symbolic execution with EntropyOracle. Demonstrates entropy handle lifecycle and permissions.
-                </p>
-                <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
-                  <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/handles-handlelifecycle</code>
-                </p>
-                <p className="text-sm">
-                  <a href={getExampleRepoUrl('handles-handlelifecycle')} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
-                    📦 View on GitHub
-                  </a>
-                </p>
-              </div>
-            </div>
-
-            {/* OpenZeppelin Examples */}
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 border-b border-gray-200 dark:border-slate-700 pb-2">
-                OpenZeppelin Confidential Contracts Examples
-              </h3>
-
-              <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-                <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropyERC7984Token</h4>
-                <p className="text-gray-600 dark:text-slate-400 mb-3">
-                  Basic ERC7984 confidential token implementation with EntropyOracle. Demonstrates encrypted balances and token operations.
-                </p>
-                <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
-                  <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/openzeppelin-erc7984token</code>
-                </p>
-                <p className="text-sm">
-                  <a href={getExampleRepoUrl('openzeppelin-erc7984token')} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
-                    📦 View on GitHub
-                  </a>
-                </p>
-              </div>
-
-              <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-                <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropyERC7984ToERC20Wrapper</h4>
-                <p className="text-gray-600 dark:text-slate-400 mb-3">
-                  Wrapper contract to convert ERC7984 confidential tokens to ERC20 tokens with EntropyOracle integration.
-                </p>
-                <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
-                  <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/openzeppelin-erc7984toerc20wrapper</code>
-                </p>
-                <p className="text-sm">
-                  <a href={getExampleRepoUrl('openzeppelin-erc7984toerc20wrapper')} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
-                    📦 View on GitHub
-                  </a>
-                </p>
-              </div>
-
-              <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-                <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropySwapERC7984ToERC20</h4>
-                <p className="text-gray-600 dark:text-slate-400 mb-3">
-                  Swap ERC7984 confidential tokens to ERC20 tokens with EntropyOracle integration.
-                </p>
-                <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
-                  <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/openzeppelin-swaperc7984toerc20</code>
-                </p>
-                <p className="text-sm">
-                  <a href={getExampleRepoUrl('openzeppelin-swaperc7984toerc20')} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
-                    📦 View on GitHub
-                  </a>
-                </p>
-              </div>
-
-              <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-                <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropySwapERC7984ToERC7984</h4>
-                <p className="text-gray-600 dark:text-slate-400 mb-3">
-                  Swap between two ERC7984 tokens with EntropyOracle integration. Demonstrates cross-token swaps with encrypted amounts.
-                </p>
-                <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
-                  <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/openzeppelin-swaperc7984toerc7984</code>
-                </p>
-                <p className="text-sm">
-                  <a href={getExampleRepoUrl('openzeppelin-swaperc7984toerc7984')} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
-                    📦 View on GitHub
-                  </a>
-                </p>
-              </div>
-
-              <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-                <h4 className="text-lg font-semibold text-primary-700 dark:text-cyan-300 mb-2">EntropyVestingWallet</h4>
-                <p className="text-gray-600 dark:text-slate-400 mb-3">
-                  Vesting wallet with encrypted amounts and EntropyOracle integration. Demonstrates time-based vesting with confidential amounts.
-                </p>
-                <p className="text-sm text-gray-500 dark:text-slate-500 mb-2">
-                  <strong>Path:</strong> <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">examples/openzeppelin-vestingwallet</code>
-                </p>
-                <p className="text-sm">
-                  <a href={getExampleRepoUrl('openzeppelin-vestingwallet')} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-cyan-400 hover:underline font-semibold">
-                    📦 View on GitHub
-                  </a>
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-};
+// Code Examples Section - REMOVED (content moved to Tutorials section)
 
 // Full Tutorial Track Section
 const FullTutorialTrack: React.FC = () => {
