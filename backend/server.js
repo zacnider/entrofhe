@@ -391,11 +391,20 @@ app.post('/api/verify', async (req, res) => {
 
     // Use simple hardhat verify command (exactly like README examples)
     // Build command: npx hardhat verify --network <network> <address> <args...>
+    // String arguments need to be quoted for shell
     let verifyCmd = `npx hardhat verify --network ${network} ${contractAddress}`;
     
-    // Add constructor arguments (space-separated, no quotes needed for execAsync)
+    // Add constructor arguments (quote strings, addresses don't need quotes)
     if (constructorArgs && constructorArgs.length > 0) {
-      verifyCmd += ' ' + constructorArgs.join(' ');
+      const quotedArgs = constructorArgs.map(arg => {
+        // If it's an address (starts with 0x and is 42 chars), don't quote
+        if (typeof arg === 'string' && arg.startsWith('0x') && arg.length === 42) {
+          return arg;
+        }
+        // Otherwise quote it (for strings like "ERC7984Wrapper")
+        return `"${arg}"`;
+      });
+      verifyCmd += ' ' + quotedArgs.join(' ');
     }
 
     console.log(`Verifying ${contractAddress} on ${network}...`);
