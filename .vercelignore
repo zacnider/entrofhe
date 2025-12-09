@@ -1,0 +1,7 @@
+api/
+backend/
+examples/
+scripts/
+node_modules/
+.git/
+
