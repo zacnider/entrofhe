@@ -408,17 +408,59 @@ app.post('/api/verify', async (req, res) => {
 
     console.log(`Verifying ${contractAddress} on ${network}...`);
     console.log(`Verify command: ${verifyCmd}`);
-    const { stdout, stderr } = await execAsync(verifyCmd, {
-      cwd: exampleDir,
-      env: {
-        ...process.env,
-        TS_NODE_TRANSPILE_ONLY: 'true',
-        ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY || '',
-        SEPOLIA_RPC_URL: process.env.SEPOLIA_RPC_URL || '',
-      },
-      timeout: 300000, // 5 minutes for Etherscan API
-      maxBuffer: 10 * 1024 * 1024,
-    });
+    console.log(`Constructor args: ${JSON.stringify(constructorArgs)}`);
+    
+    // Try verification with retry mechanism for Etherscan API timeouts
+    let lastError = null;
+    const maxRetries = 3;
+    let stdout = '';
+    let stderr = '';
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`Verification attempt ${attempt}/${maxRetries}...`);
+        const result = await execAsync(verifyCmd, {
+          cwd: exampleDir,
+          env: {
+            ...process.env,
+            TS_NODE_TRANSPILE_ONLY: 'true',
+            ETHERSCAN_API_KEY: process.env.ETHERSCAN_API_KEY || '',
+            SEPOLIA_RPC_URL: process.env.SEPOLIA_RPC_URL || '',
+            // Increase timeout for Etherscan API
+            HARDHAT_VERIFY_TIMEOUT: '300000',
+          },
+          timeout: 300000, // 5 minutes for Etherscan API
+          maxBuffer: 10 * 1024 * 1024,
+        });
+        stdout = result.stdout;
+        stderr = result.stderr;
+        lastError = null;
+        break; // Success, exit retry loop
+      } catch (error) {
+        lastError = error;
+        stdout = error.stdout || '';
+        stderr = error.stderr || '';
+        
+        // Check if it's a timeout or connection error
+        const errorMessage = (error.message || error.stderr || '').toLowerCase();
+        const isTimeoutError = errorMessage.includes('timeout') || 
+                              errorMessage.includes('connect timeout') ||
+                              errorMessage.includes('network request failed');
+        
+        if (isTimeoutError && attempt < maxRetries) {
+          console.log(`Attempt ${attempt} failed with timeout, retrying in 10 seconds...`);
+          await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 seconds before retry
+          continue;
+        } else {
+          // Not a timeout or last attempt, throw the error
+          throw error;
+        }
+      }
+    }
+    
+    if (lastError) {
+      throw lastError;
+    }
 
     return res.json({
       success: true,
