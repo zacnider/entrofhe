@@ -441,19 +441,30 @@ app.post('/api/verify', async (req, res) => {
         stdout = error.stdout || '';
         stderr = error.stderr || '';
         
-        // Check if it's a timeout, connection error, or NOT_FOUND (Etherscan API issue)
+        // Check if it's a timeout or connection error (retryable)
+        // NOT_FOUND errors are usually permanent (contract not found) and should not be retried
         const errorMessage = (error.message || error.stderr || '').toLowerCase();
         const isRetryableError = errorMessage.includes('timeout') || 
                                 errorMessage.includes('connect timeout') ||
                                 errorMessage.includes('network request failed') ||
-                                errorMessage.includes('not_found') ||
-                                errorMessage.includes('the page could not be found') ||
-                                errorMessage.includes('fra1::');
+                                errorMessage.includes('econnrefused') ||
+                                errorMessage.includes('etimedout');
+        
+        // NOT_FOUND errors are usually permanent - don't retry them
+        const isNotFoundError = errorMessage.includes('not_found') ||
+                               errorMessage.includes('the page could not be found') ||
+                               errorMessage.includes('fra1::');
+        
+        if (isNotFoundError) {
+          // NOT_FOUND is usually a permanent error - don't retry, just throw
+          console.log(`NOT_FOUND error detected - this is usually permanent, not retrying`);
+          throw error;
+        }
         
         if (isRetryableError && attempt < maxRetries) {
-          console.log(`Attempt ${attempt} failed with retryable error, retrying in 15 seconds...`);
+          console.log(`Attempt ${attempt} failed with retryable error, retrying in 10 seconds...`);
           console.log(`Error: ${errorMessage.substring(0, 200)}`);
-          await new Promise(resolve => setTimeout(resolve, 15000)); // Wait 15 seconds before retry
+          await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 seconds before retry
           continue;
         } else {
           // Not a retryable error or last attempt, throw the error
