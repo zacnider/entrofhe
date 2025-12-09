@@ -3,4 +3,8 @@ examples/
 scripts/
 node_modules/
 .git/
+api/test-example.ts
+api/compile-example.ts
+api/deploy-example.ts
+api/verify-example.ts
 
