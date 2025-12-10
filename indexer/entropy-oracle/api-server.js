@@ -53,7 +53,8 @@ app.get('/api/events', async (req, res) => {
 
     // Build query based on event type
     // Envio uses capitalized table names (e.g., EntropyRequested)
-    const tableName = eventType;
+    // PostgreSQL requires quoted identifiers for case-sensitive table names
+    const tableName = `"${eventType}"`;
     
     let query = `SELECT * FROM ${tableName}`;
     const conditions = [];
@@ -100,7 +101,7 @@ app.get('/api/events', async (req, res) => {
     const result = await pgPool.query(query, params);
 
     // Get total count for pagination
-    let countQuery = `SELECT COUNT(*) FROM ${tableName}`;
+    let countQuery = `SELECT COUNT(*) FROM "${eventType}"`;
     if (conditions.length > 0) {
       countQuery += ' WHERE ' + conditions.join(' AND ');
     }
