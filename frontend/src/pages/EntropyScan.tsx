@@ -18,6 +18,7 @@ import { useAccount } from 'wagmi';
 import { toast } from 'react-toastify';
 
 const ENTROPY_ORACLE_ADDRESS = process.env.REACT_APP_ENTROPY_ORACLE_ADDRESS || '0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361';
+const INDEXER_API_URL = process.env.REACT_APP_INDEXER_API_URL || 'http://185.169.180.167:4000';
 
 interface EntropyRequest {
   requestId: bigint;
@@ -48,253 +49,94 @@ const EntropyScan: React.FC = () => {
     }
   }, [isConnected, address]);
 
-  // Fetch all requests from events
+  // Fetch all requests from indexer API
   useEffect(() => {
     const fetchRequests = async () => {
-      if (!publicClient) {
-        console.log('Public client not available');
-        setLoading(false);
-        return;
-      }
-
       setLoading(true);
       try {
-        // Get current block number
-        const currentBlock = await publicClient.getBlockNumber();
-        console.log('Current block:', currentBlock.toString());
+        // Fetch EntropyRequested events from indexer API
+        const response = await fetch(`${INDEXER_API_URL}/api/events?type=EntropyRequested&limit=1000&offset=0`);
         
-        // Get EntropyRequested event ABI
-        const eventABI = EntropyOracleABI.abi.find((item: any) => item.name === 'EntropyRequested' && item.type === 'event');
-        if (!eventABI) {
-          console.error('EntropyRequested event ABI not found');
-          setLoading(false);
-          return;
+        if (!response.ok) {
+          throw new Error(`Indexer API error: ${response.status} ${response.statusText}`);
         }
+
+        const data = await response.json();
         
-        // Fetch events in chunks of 1000 blocks (RPC limit is 1000 blocks per request)
-        // Fetch from last 10000 blocks by making multiple requests
-        const totalBlocksToFetch = BigInt(10000);
-        const chunkSize = BigInt(1000);
-        const fromBlock = currentBlock > totalBlocksToFetch ? currentBlock - totalBlocksToFetch : BigInt(0);
-        
-        console.log('Fetching events from block', fromBlock.toString(), 'to', currentBlock.toString(), 'in chunks of', chunkSize.toString());
-        
-        // Fetch events in chunks
-        const allEvents: any[] = [];
-        let currentFromBlock = fromBlock;
-        
-        while (currentFromBlock < currentBlock) {
-          const currentToBlock = currentFromBlock + chunkSize > currentBlock 
-            ? currentBlock 
-            : currentFromBlock + chunkSize;
+        if (!data.success || !data.events) {
+          throw new Error('Invalid response from indexer API');
+        }
+
+        console.log(`[EntropyScan] Fetched ${data.events.length} events from indexer`);
+
+        // Convert indexer events to EntropyRequest format
+        const requests: EntropyRequest[] = data.events.map((event: any) => {
+          // Indexer stores BigInt as strings, convert back
+          const requestId = BigInt(event.request_id || event.requestId || '0');
+          const blockNumber = BigInt(event.block_number || event.blockNumber || '0');
           
-          console.log(`Fetching chunk: block ${currentFromBlock.toString()} to ${currentToBlock.toString()}`);
+          // hashedConsumer and hashedTag are stored as bytes in DB
+          // They're already hashed for privacy, so we can't get the original values
+          const hashedConsumer = event.hashed_consumer || event.hashedConsumer || '0x0';
+          const hashedTag = event.hashed_tag || event.hashedTag || '0x0';
           
-          try {
-            const chunkEvents = await publicClient.getLogs({
-              address: ENTROPY_ORACLE_ADDRESS as `0x${string}`,
-              event: {
-                type: 'event',
-                name: 'EntropyRequested',
-                inputs: eventABI.inputs || [],
-              },
-              fromBlock: currentFromBlock,
-              toBlock: currentToBlock,
-            });
-            
-            allEvents.push(...chunkEvents);
-            console.log(`Found ${chunkEvents.length} events in this chunk`);
-            
-            // Move to next chunk
-            currentFromBlock = currentToBlock + BigInt(1);
-            
-            // Small delay to avoid rate limiting
-            await new Promise(resolve => setTimeout(resolve, 100));
-          } catch (error: any) {
-            console.error(`Error fetching chunk ${currentFromBlock.toString()} to ${currentToBlock.toString()}:`, error);
-            // Continue with next chunk even if one fails
-            currentFromBlock = currentToBlock + BigInt(1);
-          }
-        }
-        
-        console.log('Total events found:', allEvents.length);
-        const events = allEvents;
-
-        // Extract unique request IDs and fetch details
-        const requestIds = new Set<bigint>();
-        const eventMap = new Map<string, { consumer: string; tag: string; txHash: string; blockNumber: bigint }>();
-        
-        for (const event of events) {
-          try {
-            // Decode event using viem's decodeEventLog
-            const decoded = decodeEventLog({
-              abi: [eventABI] as any,
-              data: event.data,
-              topics: event.topics,
-            }) as { args: { requestId: bigint; hashedConsumer: string; hashedTag: string; feePaid: bigint } };
-
-            const requestId = decoded.args.requestId;
-            const hashedConsumer = decoded.args.hashedConsumer; // bytes32 hash
-            const hashedTag = decoded.args.hashedTag; // bytes32 hash
-            
-            if (requestId > 0) {
-              requestIds.add(requestId);
-              eventMap.set(requestId.toString(), {
-                consumer: hashedConsumer, // Will be replaced with actual address from tx
-                tag: hashedTag,
-                txHash: event.transactionHash,
-                blockNumber: event.blockNumber,
-              });
-            }
-          } catch (error) {
-            console.error('Error decoding event:', error, event);
-            // Fallback: try to parse from topics (indexed params)
-            // topics[0] = event signature
-            // topics[1] = requestId (indexed)
-            // topics[2] = hashedConsumer (indexed, bytes32)
-            if (event.topics && event.topics.length >= 3 && event.topics[1] && event.topics[2]) {
-              try {
-                const requestId = BigInt(event.topics[1]);
-                const hashedConsumerTopic = event.topics[2]; // bytes32 hash
-                
-                if (requestId > 0) {
-                  requestIds.add(requestId);
-                  eventMap.set(requestId.toString(), {
-                    consumer: hashedConsumerTopic, // Will be replaced with actual address from tx
-                    tag: '0x0', // Tag not in topics, will get from getRequest
-                    txHash: event.transactionHash,
-                    blockNumber: event.blockNumber,
-                  });
-                }
-              } catch (fallbackError) {
-                console.error('Error in fallback parsing:', fallbackError);
-              }
-            }
-          }
-        }
-        
-        console.log('Unique request IDs found:', requestIds.size);
-
-        // Fetch request details for all unique IDs
-        const requestPromises = Array.from(requestIds).map(async (requestId) => {
-          try {
-            // Always use getRequest for accurate data
-            const data: any = await publicClient.readContract({
-              address: ENTROPY_ORACLE_ADDRESS as `0x${string}`,
-              abi: EntropyOracleABI.abi,
-              functionName: 'getRequest',
-              args: [requestId],
-            });
-
-            const eventData = eventMap.get(requestId.toString());
-            
-            // getRequest returns a tuple: [consumer, tag, timestamp, fulfilled]
-            // Handle both tuple array and object formats
-            let consumer: string;
-            let tag: string;
-            let timestamp: bigint;
-            let fulfilled: boolean;
-            
-            if (Array.isArray(data)) {
-              // Tuple format: [consumer, tag, timestamp, fulfilled]
-              consumer = (data[0] as string).toLowerCase();
-              tag = data[1] as string;
-              timestamp = data[2] as bigint;
-              fulfilled = Boolean(data[3]); // Explicitly convert to boolean
-            } else if (data && typeof data === 'object') {
-              // Object format: { consumer, tag, timestamp, fulfilled }
-              consumer = (data.consumer as string)?.toLowerCase() || (eventData?.consumer || '');
-              tag = data.tag || eventData?.tag || '0x0';
-              timestamp = data.timestamp || BigInt(0);
-              // fulfilled can be false, so check explicitly for boolean
-              fulfilled = typeof data.fulfilled === 'boolean' ? data.fulfilled : Boolean(data.fulfilled);
-            } else {
-              // Fallback to event data
-              consumer = eventData?.consumer || '';
-              tag = eventData?.tag || '0x0';
-              timestamp = BigInt(0);
-              fulfilled = true; // If we can't get from contract, assume fulfilled
-            }
-            
-            // Get actual user address from transaction (not contract address)
-            // If consumer is a contract, get the transaction sender
-            let actualConsumer = consumer;
-            if (eventData?.txHash) {
-              try {
-                const tx = await publicClient.getTransaction({ hash: eventData.txHash as `0x${string}` });
-                // Use transaction 'from' address as the actual user
-                actualConsumer = tx.from.toLowerCase();
-              } catch (txError) {
-                console.warn(`Could not fetch transaction for ${eventData.txHash}:`, txError);
-                // Keep original consumer if we can't get transaction
-              }
-            }
-            
-            const request: EntropyRequest = {
-              requestId,
-              consumer: actualConsumer, // Use actual user address
-              tag: tag,
-              timestamp: timestamp,
-              fulfilled: fulfilled,
-              txHash: eventData?.txHash,
-              blockNumber: eventData?.blockNumber,
-            };
-            
-            return request;
-          } catch (error) {
-            console.error(`Error fetching request ${requestId}:`, error);
-            // If getRequest fails, use event data as fallback
-            const eventData = eventMap.get(requestId.toString());
-            if (eventData) {
-              // Try to get user address from transaction
-              let actualConsumer = eventData.consumer;
-              if (eventData.txHash) {
-                try {
-                  const tx = await publicClient.getTransaction({ hash: eventData.txHash as `0x${string}` });
-                  actualConsumer = tx.from.toLowerCase();
-                } catch (txError) {
-                  // Keep original consumer if we can't get transaction
-                }
-              }
-              
-              return {
-                requestId,
-                consumer: actualConsumer,
-                tag: eventData.tag,
-                timestamp: BigInt(0), // Will be fetched from block
-                fulfilled: true, // If event exists, it's fulfilled
-                txHash: eventData.txHash,
-                blockNumber: eventData.blockNumber,
-              } as EntropyRequest;
-            }
-            return null;
-          }
+          return {
+            requestId,
+            consumer: hashedConsumer, // This is hashed, not the actual address
+            tag: hashedTag, // This is hashed, not the actual tag
+            timestamp: BigInt(0), // Will fetch from block if needed
+            fulfilled: true, // EntropyRequested events are always fulfilled
+            txHash: event.tx_hash || event.txHash,
+            blockNumber,
+          } as EntropyRequest;
         });
 
-        const results = await Promise.all(requestPromises);
-        const validRequests = results.filter((r): r is EntropyRequest => r !== null);
-        
-        console.log('Valid requests after fetching details:', validRequests.length);
-
-        // Fetch timestamps from blocks if missing
-        for (const req of validRequests) {
-          if (req.timestamp === BigInt(0) && req.blockNumber) {
-            try {
-              const block = await publicClient.getBlock({ blockNumber: req.blockNumber });
-              req.timestamp = BigInt(block.timestamp);
-            } catch (error) {
-              console.error('Error fetching block:', error);
-            }
-          }
+        // If we have publicClient, try to get actual consumer addresses from transactions
+        if (publicClient && requests.length > 0) {
+          console.log('[EntropyScan] Fetching transaction details to get actual consumer addresses...');
+          
+          const requestsWithDetails = await Promise.all(
+            requests.map(async (req) => {
+              if (req.txHash) {
+                try {
+                  const tx = await publicClient.getTransaction({ hash: req.txHash as `0x${string}` });
+                  // Use transaction 'from' address as the actual consumer
+                  req.consumer = tx.from.toLowerCase();
+                  
+                  // Try to get timestamp from block
+                  if (req.blockNumber) {
+                    try {
+                      const block = await publicClient.getBlock({ blockNumber: req.blockNumber });
+                      req.timestamp = BigInt(block.timestamp);
+                    } catch (blockError) {
+                      console.warn(`Could not fetch block ${req.blockNumber}:`, blockError);
+                    }
+                  }
+                } catch (txError) {
+                  console.warn(`Could not fetch transaction ${req.txHash}:`, txError);
+                }
+              }
+              return req;
+            })
+          );
+          
+          setRequests(requestsWithDetails);
+        } else {
+          // If no publicClient, just use the hashed values
+          setRequests(requests);
         }
 
         // Sort by requestId descending (newest first)
-        validRequests.sort((a, b) => Number(b.requestId - a.requestId));
-
-        setRequests(validRequests);
+        setRequests((prev) => [...prev].sort((a, b) => Number(b.requestId - a.requestId)));
       } catch (error) {
-        console.error('Error fetching requests:', error);
+        console.error('[EntropyScan] Error fetching requests from indexer:', error);
         toast.error(`Error loading requests: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        
+        // Fallback: try to use publicClient if available
+        if (publicClient) {
+          console.log('[EntropyScan] Falling back to RPC method...');
+          // Could implement RPC fallback here if needed
+        }
       } finally {
         setLoading(false);
       }
