@@ -87,8 +87,11 @@ const EntropyScan: React.FC = () => {
         // Convert logs to EntropyRequest format
         const requests: EntropyRequest[] = await Promise.all(
           logs.map(async (log) => {
+            // Extract ABI array from the JSON structure
+            const abi = Array.isArray(EntropyOracleABI) ? EntropyOracleABI : (EntropyOracleABI as any).abi || [];
+            
             const decoded = decodeEventLog({
-              abi: EntropyOracleABI as any,
+              abi: abi,
               data: log.data,
               topics: log.topics,
             }) as any;
@@ -122,9 +125,12 @@ const EntropyScan: React.FC = () => {
                 toBlock: await publicClient.getBlockNumber(),
               });
               
+              // Extract ABI array from the JSON structure
+              const abi = Array.isArray(EntropyOracleABI) ? EntropyOracleABI : (EntropyOracleABI as any).abi || [];
+              
               fulfilled = fulfilledLogs.some((fulfilledLog: any) => {
                 const fulfilledDecoded = decodeEventLog({
-                  abi: EntropyOracleABI as any,
+                  abi: abi,
                   data: fulfilledLog.data,
                   topics: fulfilledLog.topics,
                 }) as any;
