@@ -88,7 +88,7 @@ const EntropyScan: React.FC = () => {
         const requests: EntropyRequest[] = await Promise.all(
           logs.map(async (log) => {
             const decoded = decodeEventLog({
-              abi: EntropyOracleABI,
+              abi: EntropyOracleABI as any,
               data: log.data,
               topics: log.topics,
             }) as any;
