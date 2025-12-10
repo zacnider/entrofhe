@@ -11,6 +11,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Remove leading slash if present
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
   
+  // If no path provided, return error
+  if (!cleanPath) {
+    return res.status(400).json({ 
+      error: 'Path parameter is required',
+      query: req.query,
+      url: req.url
+    });
+  }
+  
   // Build target URL
   let targetUrl = `${INDEXER_API_URL}/api/${cleanPath}`;
   
@@ -29,6 +38,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   
   const queryString = queryParams.toString();
   const fullUrl = queryString ? `${targetUrl}?${queryString}` : targetUrl;
+  
+  console.log('[Indexer Proxy] Request:', {
+    pathParam,
+    cleanPath,
+    targetUrl,
+    fullUrl,
+    query: req.query,
+    url: req.url,
+    method: req.method
+  });
   
   try {
     const response = await fetch(fullUrl, {
