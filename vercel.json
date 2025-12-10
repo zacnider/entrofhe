@@ -13,6 +13,17 @@
       "destination": "/api/indexer-proxy?path=:path*"
     }
   ],
+  "headers": [
+    {
+      "source": "/api/indexer/:path*",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    }
+  ],
   "functions": {
     "api/proxy.ts": {
       "maxDuration": 300
