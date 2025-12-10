@@ -7,10 +7,17 @@
     {
       "source": "/api/:path*",
       "destination": "/api/proxy?path=:path*"
+    },
+    {
+      "source": "/api/indexer/:path*",
+      "destination": "/api/indexer-proxy?path=:path*"
     }
   ],
   "functions": {
     "api/proxy.ts": {
+      "maxDuration": 300
+    },
+    "api/indexer-proxy.ts": {
       "maxDuration": 300
     }
   }
