@@ -19,13 +19,7 @@ import { toast } from 'react-toastify';
 
 const ENTROPY_ORACLE_ADDRESS = process.env.REACT_APP_ENTROPY_ORACLE_ADDRESS || '0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361';
 
-// Try Vercel proxy first, fallback to HTTP API if proxy fails
-// In local dev, use direct URL if REACT_APP_INDEXER_API_URL is set
-const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const INDEXER_API_URL = (isLocalDev && process.env.REACT_APP_INDEXER_API_URL) 
-  ? process.env.REACT_APP_INDEXER_API_URL 
-  : '/api/indexer'; // Try Vercel proxy first
-const FALLBACK_API_URL = 'http://185.169.180.167:4000'; // Fallback to HTTP API (Mixed Content warning)
+// Simple: Use RPC directly, no indexer needed
 
 interface EntropyRequest {
   requestId: bigint;
@@ -59,134 +53,105 @@ const EntropyScan: React.FC = () => {
   // Fetch all requests from indexer API
   useEffect(() => {
     const fetchRequests = async () => {
+      if (!publicClient) {
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
-        // Fetch EntropyRequested events from indexer API
-        // Try Vercel proxy first, fallback to HTTP API if proxy fails
-        let apiUrl = INDEXER_API_URL.startsWith('/')
-          ? `${INDEXER_API_URL}/events?type=EntropyRequested&limit=1000&offset=0`
-          : `${INDEXER_API_URL}/api/events?type=EntropyRequested&limit=1000&offset=0`;
+        console.log('[EntropyScan] Fetching events directly from RPC...');
         
-        console.log('[EntropyScan] Trying Vercel proxy:', apiUrl);
+        // Fetch EntropyRequested events directly from blockchain
+        const fromBlock = BigInt(9780901); // Contract deployment block
+        const toBlock = await publicClient.getBlockNumber();
         
-        let response: Response;
-        try {
-          response = await fetch(apiUrl, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
-          
-          // If proxy returns 404, try HTTP API fallback
-          if (!response.ok && response.status === 404 && INDEXER_API_URL.startsWith('/')) {
-            console.warn('[EntropyScan] Vercel proxy returned 404, trying HTTP API fallback (Mixed Content warning)...');
-            apiUrl = `${FALLBACK_API_URL}/api/events?type=EntropyRequested&limit=1000&offset=0`;
-            // Note: This will show Mixed Content warning in browser console
-            // User may need to allow insecure content in browser settings
-            response = await fetch(apiUrl, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            });
-          }
-        } catch (fetchError) {
-          // If fetch fails (e.g., network error, CORS), try HTTP API fallback
-          if (INDEXER_API_URL.startsWith('/')) {
-            console.warn('[EntropyScan] Vercel proxy failed, trying HTTP API fallback...', fetchError);
-            apiUrl = `${FALLBACK_API_URL}/api/events?type=EntropyRequested&limit=1000&offset=0`;
-            response = await fetch(apiUrl, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            });
-          } else {
-            throw fetchError;
-          }
-        }
-        
-        if (!response.ok) {
-          throw new Error(`Indexer API error: ${response.status} ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        
-        if (!data.success || !data.events) {
-          throw new Error('Invalid response from indexer API');
-        }
-
-        console.log(`[EntropyScan] Fetched ${data.events.length} events from indexer`);
-
-        // Convert indexer events to EntropyRequest format
-        const requests: EntropyRequest[] = data.events.map((event: any) => {
-          // Indexer stores BigInt as strings, convert back
-          const requestId = BigInt(event.request_id || event.requestId || '0');
-          const blockNumber = BigInt(event.block_number || event.blockNumber || '0');
-          
-          // hashedConsumer and hashedTag are stored as bytes in DB
-          // They're already hashed for privacy, so we can't get the original values
-          const hashedConsumer = event.hashed_consumer || event.hashedConsumer || '0x0';
-          const hashedTag = event.hashed_tag || event.hashedTag || '0x0';
-          
-          return {
-            requestId,
-            consumer: hashedConsumer, // This is hashed, not the actual address
-            tag: hashedTag, // This is hashed, not the actual tag
-            timestamp: BigInt(0), // Will fetch from block if needed
-            fulfilled: true, // EntropyRequested events are always fulfilled
-            txHash: event.tx_hash || event.txHash,
-            blockNumber,
-          } as EntropyRequest;
+        const logs = await publicClient.getLogs({
+          address: ENTROPY_ORACLE_ADDRESS as `0x${string}`,
+          event: {
+            type: 'event',
+            name: 'EntropyRequested',
+            inputs: [
+              { type: 'uint256', indexed: true, name: 'requestId' },
+              { type: 'bytes32', indexed: true, name: 'hashedConsumer' },
+              { type: 'bytes32', name: 'hashedTag' },
+              { type: 'uint256', name: 'feePaid' },
+            ],
+          } as any,
+          fromBlock,
+          toBlock,
         });
 
-        // If we have publicClient, try to get actual consumer addresses from transactions
-        if (publicClient && requests.length > 0) {
-          console.log('[EntropyScan] Fetching transaction details to get actual consumer addresses...');
-          
-          const requestsWithDetails = await Promise.all(
-            requests.map(async (req) => {
-              if (req.txHash) {
-                try {
-                  const tx = await publicClient.getTransaction({ hash: req.txHash as `0x${string}` });
-                  // Use transaction 'from' address as the actual consumer
-                  req.consumer = tx.from.toLowerCase();
-                  
-                  // Try to get timestamp from block
-                  if (req.blockNumber) {
-                    try {
-                      const block = await publicClient.getBlock({ blockNumber: req.blockNumber });
-                      req.timestamp = BigInt(block.timestamp);
-                    } catch (blockError) {
-                      console.warn(`Could not fetch block ${req.blockNumber}:`, blockError);
-                    }
-                  }
-                } catch (txError) {
-                  console.warn(`Could not fetch transaction ${req.txHash}:`, txError);
-                }
-              }
-              return req;
-            })
-          );
-          
-          setRequests(requestsWithDetails);
-        } else {
-          // If no publicClient, just use the hashed values
-          setRequests(requests);
-        }
+        console.log(`[EntropyScan] Found ${logs.length} EntropyRequested events`);
+
+        // Convert logs to EntropyRequest format
+        const requests: EntropyRequest[] = await Promise.all(
+          logs.map(async (log) => {
+            const decoded = decodeEventLog({
+              abi: EntropyOracleABI,
+              data: log.data,
+              topics: log.topics,
+            }) as any;
+
+            const requestId = BigInt(decoded.requestId.toString());
+            const blockNumber = BigInt(log.blockNumber.toString());
+            
+            // Get transaction and block for more details
+            let consumer = decoded.hashedConsumer; // This is hashed
+            let timestamp = BigInt(0);
+            let fulfilled = false;
+
+            try {
+              const tx = await publicClient.getTransaction({ hash: log.transactionHash });
+              consumer = tx.from.toLowerCase(); // Actual consumer address
+              
+              const block = await publicClient.getBlock({ blockNumber: log.blockNumber });
+              timestamp = BigInt(block.timestamp);
+              
+              // Check if there's a corresponding EntropyFulfilled event
+              const fulfilledLogs = await publicClient.getLogs({
+                address: ENTROPY_ORACLE_ADDRESS as `0x${string}`,
+                event: {
+                  type: 'event',
+                  name: 'EntropyFulfilled',
+                  inputs: [
+                    { type: 'uint256', indexed: true, name: 'requestId' },
+                  ],
+                } as any,
+                fromBlock: log.blockNumber,
+                toBlock: await publicClient.getBlockNumber(),
+              });
+              
+              fulfilled = fulfilledLogs.some((fulfilledLog: any) => {
+                const fulfilledDecoded = decodeEventLog({
+                  abi: EntropyOracleABI,
+                  data: fulfilledLog.data,
+                  topics: fulfilledLog.topics,
+                }) as any;
+                return BigInt(fulfilledDecoded.requestId.toString()) === requestId;
+              });
+            } catch (error) {
+              console.warn(`Error fetching details for request ${requestId}:`, error);
+            }
+
+            return {
+              requestId,
+              consumer,
+              tag: decoded.hashedTag,
+              timestamp,
+              fulfilled,
+              txHash: log.transactionHash,
+              blockNumber,
+            } as EntropyRequest;
+          })
+        );
 
         // Sort by requestId descending (newest first)
-        setRequests((prev) => [...prev].sort((a, b) => Number(b.requestId - a.requestId)));
+        requests.sort((a, b) => Number(b.requestId - a.requestId));
+        setRequests(requests);
       } catch (error) {
-        console.error('[EntropyScan] Error fetching requests from indexer:', error);
+        console.error('[EntropyScan] Error fetching events:', error);
         toast.error(`Error loading requests: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        
-        // Fallback: try to use publicClient if available
-        if (publicClient) {
-          console.log('[EntropyScan] Falling back to RPC method...');
-          // Could implement RPC fallback here if needed
-        }
       } finally {
         setLoading(false);
       }
