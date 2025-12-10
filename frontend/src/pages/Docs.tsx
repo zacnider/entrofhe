@@ -699,20 +699,44 @@ const QuickStartTutorial: React.FC = () => (
 
     <section className="space-y-4">
       <h3 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Step 1: Clone and Setup</h3>
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
-{`# Clone the repository
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-4">
+        <div>
+          <p className="text-sm text-gray-700 dark:text-slate-300 mb-3">
+            <strong>Option A (Recommended):</strong> Clone a single example directly. Each example is a standalone repository.
+          </p>
+          <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
+{`# Clone a specific example (recommended)
+git clone https://github.com/zacnider/fhevm-example-basic-simplecounter.git
+cd fhevm-example-basic-simplecounter
+
+# Install dependencies
+npm install --legacy-peer-deps`}
+          </pre>
+        </div>
+        <div>
+          <p className="text-sm text-gray-700 dark:text-slate-300 mb-3">
+            <strong>Option B:</strong> Clone the main repository with all examples as submodules.
+          </p>
+          <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
+{`# Clone the main repository
 git clone https://github.com/zacnider/entrofhe.git
 cd entrofhe
+
+# Initialize and update submodules (downloads all examples)
+git submodule update --init --recursive
 
 # Navigate to an example
 cd examples/basic-simplecounter
 
 # Install dependencies
 npm install --legacy-peer-deps`}
-        </pre>
+          </pre>
+        </div>
         <p className="text-sm text-gray-600 dark:text-slate-400 mt-3">
           <strong>Note:</strong> We use <code className="bg-gray-200 dark:bg-slate-700 px-1 py-0.5 rounded">--legacy-peer-deps</code> to resolve dependency conflicts with FHEVM packages.
+        </p>
+        <p className="text-sm text-gray-600 dark:text-slate-400">
+          <strong>Tip:</strong> Each example is a standalone Hardhat project. You can clone individual examples or use the main repository to access all examples at once.
         </p>
       </div>
     </section>
