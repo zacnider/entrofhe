@@ -90,13 +90,35 @@ const EntropyScan: React.FC = () => {
             // Extract ABI array from the JSON structure
             const abi = Array.isArray(EntropyOracleABI) ? EntropyOracleABI : (EntropyOracleABI as any).abi || [];
             
-            const decoded = decodeEventLog({
-              abi: abi,
-              data: log.data,
-              topics: log.topics,
-            }) as any;
+            let decoded: any;
+            try {
+              decoded = decodeEventLog({
+                abi: abi,
+                data: log.data,
+                topics: log.topics,
+              });
+            } catch (decodeError) {
+              console.error('Error decoding event log:', decodeError, log);
+              // Fallback: try to extract from topics directly
+              // EntropyRequested(uint256 indexed requestId, ...)
+              // requestId is in topics[1] (first indexed parameter)
+              const requestIdFromTopic = log.topics[1] ? BigInt(log.topics[1]) : BigInt(0);
+              return {
+                requestId: requestIdFromTopic,
+                consumer: log.topics[2] || '0x0', // hashedConsumer is in topics[2]
+                tag: '0x0', // hashedTag is in data, would need to decode
+                timestamp: BigInt(0),
+                fulfilled: false,
+                txHash: log.transactionHash,
+                blockNumber: BigInt(log.blockNumber.toString()),
+              } as EntropyRequest;
+            }
 
-            const requestId = BigInt(decoded.requestId.toString());
+            // Handle decoded event - check both possible formats
+            const requestId = decoded.args?.requestId 
+              ? BigInt(decoded.args.requestId.toString())
+              : (decoded.requestId ? BigInt(decoded.requestId.toString()) : BigInt(0));
+            
             const blockNumber = BigInt(log.blockNumber.toString());
             
             // Get transaction and block for more details
