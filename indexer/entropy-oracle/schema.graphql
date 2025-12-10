@@ -1,0 +1,35 @@
+type EntropyRequested @entity {
+  id: ID!
+  requestId: BigInt
+  hashedConsumer: Bytes
+  hashedTag: Bytes
+  feePaid: BigInt
+  txHash: String
+  blockNumber: BigInt
+}
+
+type EntropyFulfilled @entity {
+  id: ID!
+  requestId: BigInt
+  hashedConsumer: Bytes
+  hashedTag: Bytes
+  txHash: String
+  blockNumber: BigInt
+}
+
+type FeeRecipientUpdated @entity {
+  id: ID!
+  oldRecipient: Bytes
+  newRecipient: Bytes
+  txHash: String
+  blockNumber: BigInt
+}
+
+type ChaosEngineUpdated @entity {
+  id: ID!
+  oldEngine: Bytes
+  newEngine: Bytes
+  txHash: String
+  blockNumber: BigInt
+}
+
