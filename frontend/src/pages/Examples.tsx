@@ -64,6 +64,13 @@ const Examples: React.FC = () => {
       icon: <LockClosedIcon className="h-6 w-6" />,
     },
     {
+      title: "EntropyEncryptMultiple",
+      description: "Encrypt and store multiple values using EntropyOracle",
+      category: "encryption",
+      path: "encryption-encryptmultiple",
+      icon: <LockClosedIcon className="h-6 w-6" />,
+    },
+    {
       title: "EntropyUserDecryption",
       description: "User decrypt using EntropyOracle and FHE.allow",
       category: "user-decryption",
@@ -71,10 +78,24 @@ const Examples: React.FC = () => {
       icon: <KeyIcon className="h-6 w-6" />,
     },
     {
+      title: "EntropyUserDecryptMultiple",
+      description: "User decrypt multiple values using EntropyOracle and FHE.allow",
+      category: "user-decryption",
+      path: "user-decryption-userdecryptmultiple",
+      icon: <KeyIcon className="h-6 w-6" />,
+    },
+    {
       title: "EntropyPublicDecryption",
       description: "Public decrypt using EntropyOracle and makePubliclyDecryptable",
       category: "public-decryption",
       path: "public-decryption-publicdecryptsingle",
+      icon: <KeyIcon className="h-6 w-6" />,
+    },
+    {
+      title: "EntropyPublicDecryptMultiple",
+      description: "Public decrypt multiple values using EntropyOracle and makePubliclyDecryptable",
+      category: "public-decryption",
+      path: "public-decryption-publicdecryptmultiple",
       icon: <KeyIcon className="h-6 w-6" />,
     },
     {
@@ -338,8 +359,11 @@ const getExampleRepoUrl = (examplePath: string): string => {
     'basic-arithmetic': 'fhevm-example-basic-arithmetic',
     'basic-equalitycomparison': 'fhevm-example-basic-equalitycomparison',
     'encryption-encryptsingle': 'fhevm-example-encryption-encryptsingle',
+    'encryption-encryptmultiple': 'fhevm-example-encryption-encryptmultiple',
     'user-decryption-userdecryptsingle': 'fhevm-example-user-decryption-userdecryptsingle',
+    'user-decryption-userdecryptmultiple': 'fhevm-example-user-decryption-userdecryptmultiple',
     'public-decryption-publicdecryptsingle': 'fhevm-example-public-decryption-publicdecryptsingle',
+    'public-decryption-publicdecryptmultiple': 'fhevm-example-public-decryption-publicdecryptmultiple',
     'access-control-accesscontrol': 'fhevm-example-access-control-accesscontrol',
     'input-proof-inputproofexplanation': 'fhevm-example-input-proof-inputproofexplanation',
     'anti-patterns-viewwithencrypted': 'fhevm-example-anti-patterns-viewwithencrypted',
@@ -386,8 +410,11 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
       'basic-equalitycomparison': 'EntropyEqualityComparison',
       'basic-videodemo': 'VideoDemo',
       'encryption-encryptsingle': 'EntropyEncryption',
+      'encryption-encryptmultiple': 'EntropyEncryptMultiple',
       'user-decryption-userdecryptsingle': 'EntropyUserDecryption',
+      'user-decryption-userdecryptmultiple': 'EntropyUserDecryptMultiple',
       'public-decryption-publicdecryptsingle': 'EntropyPublicDecryption',
+      'public-decryption-publicdecryptmultiple': 'EntropyPublicDecryptMultiple',
       'access-control-accesscontrol': 'EntropyAccessControl',
       'input-proof-inputproofexplanation': 'EntropyInputProof',
       'anti-patterns-missingallowthis': 'EntropyMissingAllowThis',
@@ -590,6 +617,13 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
         toast.info('Please enter the contract address to verify');
         return;
       }
+      
+      console.log('🔍 Frontend handleVerify:');
+      console.log('  path:', path);
+      console.log('  deployedAddress:', deployedAddress);
+      console.log('  parsedConstructorArgs:', parsedConstructorArgs);
+      console.log('  parsedConstructorArgs type:', typeof parsedConstructorArgs, Array.isArray(parsedConstructorArgs));
+      
       await verifyExample(path, deployedAddress, 'sepolia', parsedConstructorArgs);
       toast.success('Contract verified successfully!');
     } catch (err) {

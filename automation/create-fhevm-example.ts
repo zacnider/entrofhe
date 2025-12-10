@@ -106,7 +106,12 @@ function copyTemplate(dest: string) {
 }
 
 function createContract(config: ExampleConfig, dest: string) {
-  const contractPath = path.join(__dirname, '..', 'examples', dest, 'contracts', `${config.name}.sol`);
+  const contractsDir = path.join(__dirname, '..', 'examples', dest, 'contracts');
+  // Ensure contracts directory exists
+  if (!fs.existsSync(contractsDir)) {
+    fs.mkdirSync(contractsDir, { recursive: true });
+  }
+  const contractPath = path.join(contractsDir, `${config.name}.sol`);
   const contractContent = `// SPDX-License-Identifier: BSD-3-Clause-Clear
 pragma solidity ^0.8.27;
 
