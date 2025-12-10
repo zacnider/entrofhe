@@ -87,15 +87,15 @@ export const useExampleAPI = () => {
   };
 
   const testExample = async (examplePath: string) => {
-    return callAPI('test-example', { examplePath });
+    return callAPI('test', { examplePath });
   };
 
   const compileExample = async (examplePath: string, contractName?: string) => {
-    return callAPI('compile-example', { examplePath, contractName });
+    return callAPI('compile', { examplePath, contractName });
   };
 
   const deployExample = async (examplePath: string, network: string = 'sepolia', privateKey: string) => {
-    return callAPI('deploy-example', { examplePath, network, privateKey });
+    return callAPI('deploy', { examplePath, network, privateKey });
   };
 
   const verifyExample = async (examplePath: string, contractAddress: string, network: string = 'sepolia', constructorArgs?: string[]) => {
