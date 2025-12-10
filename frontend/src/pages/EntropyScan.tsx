@@ -64,7 +64,16 @@ const EntropyScan: React.FC = () => {
         // INDEXER_API_URL is either 'https://185.169.180.167' (production) or 'http://185.169.180.167:4000' (local dev)
         const apiUrl = `${INDEXER_API_URL}/api/events?type=EntropyRequested&limit=1000&offset=0`;
         
-        const response = await fetch(apiUrl);
+        console.log('[EntropyScan] Fetching from:', apiUrl);
+        
+        const response = await fetch(apiUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          // Note: Self-signed certificates will show browser warning
+          // User needs to click "Advanced" -> "Proceed" in browser
+        });
         
         if (!response.ok) {
           throw new Error(`Indexer API error: ${response.status} ${response.statusText}`);
