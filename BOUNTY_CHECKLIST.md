@@ -30,7 +30,7 @@
 - ✅ **Advanced**: entropynft, randomnumbergenerator, simplelottery (3/3)
 
 ### 4. Documentation Strategy
-- ✅ **JSDoc/TSDoc comments**: All test files have @chapter tags (19 examples found)
+- ✅ **JSDoc/TSDoc comments**: All test files have @chapter tags (22 examples found)
 - ✅ **Auto-generate README**: `generate-docs.ts` generates README per example
 - ✅ **Chapter tags**: @chapter tags present in all examples
 - ✅ **GitBook-compatible**: Documentation generator creates markdown files
@@ -54,7 +54,7 @@
 - ✅ **Standalone repos**: Each example can be cloned independently:
   - `https://github.com/zacnider/fhevm-example-basic-simplecounter.git`
   - `https://github.com/zacnider/fhevm-example-basic-arithmetic.git`
-  - etc. (19 separate repos)
+  - etc. (19 separate repos + 3 new repos ready to be created)
 - ✅ **Independent operation**: Each example is a complete, standalone Hardhat project
 - ✅ **Hub repository**: Main repo (`entrofhe`) acts as an aggregator/hub using submodules
 
