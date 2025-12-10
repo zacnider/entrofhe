@@ -11,10 +11,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Remove leading slash if present
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
   
-  const targetUrl = `${INDEXER_API_URL}/api/${cleanPath}`;
+  // Build target URL
+  let targetUrl = `${INDEXER_API_URL}/api/${cleanPath}`;
   
-  // Add query parameters from original request
-  const queryString = new URLSearchParams(req.query as Record<string, string>).toString();
+  // Add query parameters from original request (excluding 'path' which is used for routing)
+  const queryParams = new URLSearchParams();
+  Object.keys(req.query).forEach(key => {
+    if (key !== 'path') {
+      const value = req.query[key];
+      if (Array.isArray(value)) {
+        value.forEach(v => queryParams.append(key, v));
+      } else if (value) {
+        queryParams.append(key, value as string);
+      }
+    }
+  });
+  
+  const queryString = queryParams.toString();
   const fullUrl = queryString ? `${targetUrl}?${queryString}` : targetUrl;
   
   try {
