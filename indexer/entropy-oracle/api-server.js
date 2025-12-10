@@ -62,25 +62,25 @@ app.get('/api/events', async (req, res) => {
     let paramIndex = 1;
 
     if (requestId) {
-      conditions.push(`request_id = $${paramIndex}`);
+      conditions.push(`"requestId" = $${paramIndex}`);
       params.push(requestId);
       paramIndex++;
     }
 
     if (txHash) {
-      conditions.push(`tx_hash = $${paramIndex}`);
+      conditions.push(`"txHash" = $${paramIndex}`);
       params.push(txHash);
       paramIndex++;
     }
 
     if (fromBlock) {
-      conditions.push(`block_number >= $${paramIndex}`);
+      conditions.push(`"blockNumber" >= $${paramIndex}`);
       params.push(fromBlock);
       paramIndex++;
     }
 
     if (toBlock) {
-      conditions.push(`block_number <= $${paramIndex}`);
+      conditions.push(`"blockNumber" <= $${paramIndex}`);
       params.push(toBlock);
       paramIndex++;
     }
@@ -90,7 +90,7 @@ app.get('/api/events', async (req, res) => {
     }
 
     // Order by block number descending (newest first)
-    query += ` ORDER BY block_number DESC`;
+    query += ` ORDER BY "blockNumber" DESC`;
 
     // Add limit and offset
     query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
