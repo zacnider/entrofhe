@@ -1,0 +1,66 @@
+[submodule "examples/basic-simplecounter"]
+	path = examples/basic-simplecounter
+	url = https://github.com/zacnider/fhevm-example-basic-simplecounter.git
+[submodule "examples/basic-arithmetic"]
+	path = examples/basic-arithmetic
+	url = https://github.com/zacnider/fhevm-example-basic-arithmetic.git
+[submodule "examples/basic-equalitycomparison"]
+	path = examples/basic-equalitycomparison
+	url = https://github.com/zacnider/fhevm-example-basic-equalitycomparison.git
+[submodule "examples/encryption-encryptsingle"]
+	path = examples/encryption-encryptsingle
+	url = https://github.com/zacnider/fhevm-example-encryption-encryptsingle.git
+[submodule "examples/user-decryption-userdecryptsingle"]
+	path = examples/user-decryption-userdecryptsingle
+	url = https://github.com/zacnider/fhevm-example-user-decryption-userdecryptsingle.git
+[submodule "examples/public-decryption-publicdecryptsingle"]
+	path = examples/public-decryption-publicdecryptsingle
+	url = https://github.com/zacnider/fhevm-example-public-decryption-publicdecryptsingle.git
+[submodule "examples/encryption-encryptmultiple"]
+	path = examples/encryption-encryptmultiple
+	url = https://github.com/zacnider/fhevm-example-encryption-encryptmultiple.git
+[submodule "examples/user-decryption-userdecryptmultiple"]
+	path = examples/user-decryption-userdecryptmultiple
+	url = https://github.com/zacnider/fhevm-example-user-decryption-userdecryptmultiple.git
+[submodule "examples/public-decryption-publicdecryptmultiple"]
+	path = examples/public-decryption-publicdecryptmultiple
+	url = https://github.com/zacnider/fhevm-example-public-decryption-publicdecryptmultiple.git
+[submodule "examples/access-control-accesscontrol"]
+	path = examples/access-control-accesscontrol
+	url = https://github.com/zacnider/fhevm-example-access-control-accesscontrol.git
+[submodule "examples/input-proof-inputproofexplanation"]
+	path = examples/input-proof-inputproofexplanation
+	url = https://github.com/zacnider/fhevm-example-input-proof-inputproofexplanation.git
+[submodule "examples/anti-patterns-viewwithencrypted"]
+	path = examples/anti-patterns-viewwithencrypted
+	url = https://github.com/zacnider/fhevm-example-anti-patterns-viewwithencrypted.git
+[submodule "examples/anti-patterns-missingallowthis"]
+	path = examples/anti-patterns-missingallowthis
+	url = https://github.com/zacnider/fhevm-example-anti-patterns-missingallowthis.git
+[submodule "examples/handles-handlelifecycle"]
+	path = examples/handles-handlelifecycle
+	url = https://github.com/zacnider/fhevm-example-handles-handlelifecycle.git
+[submodule "examples/advanced-simplelottery"]
+	path = examples/advanced-simplelottery
+	url = https://github.com/zacnider/fhevm-example-advanced-simplelottery.git
+[submodule "examples/advanced-randomnumbergenerator"]
+	path = examples/advanced-randomnumbergenerator
+	url = https://github.com/zacnider/fhevm-example-advanced-randomnumbergenerator.git
+[submodule "examples/advanced-entropynft"]
+	path = examples/advanced-entropynft
+	url = https://github.com/zacnider/fhevm-example-advanced-entropynft.git
+[submodule "examples/openzeppelin-erc7984token"]
+	path = examples/openzeppelin-erc7984token
+	url = https://github.com/zacnider/fhevm-example-openzeppelin-erc7984token.git
+[submodule "examples/openzeppelin-erc7984toerc20wrapper"]
+	path = examples/openzeppelin-erc7984toerc20wrapper
+	url = https://github.com/zacnider/fhevm-example-openzeppelin-erc7984toerc20wrapper.git
+[submodule "examples/openzeppelin-swaperc7984toerc20"]
+	path = examples/openzeppelin-swaperc7984toerc20
+	url = https://github.com/zacnider/fhevm-example-openzeppelin-swaperc7984toerc20.git
+[submodule "examples/openzeppelin-swaperc7984toerc7984"]
+	path = examples/openzeppelin-swaperc7984toerc7984
+	url = https://github.com/zacnider/fhevm-example-openzeppelin-swaperc7984toerc7984.git
+[submodule "examples/openzeppelin-vestingwallet"]
+	path = examples/openzeppelin-vestingwallet
+	url = https://github.com/zacnider/fhevm-example-openzeppelin-vestingwallet.git
