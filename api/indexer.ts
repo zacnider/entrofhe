@@ -6,13 +6,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Get the path from the URL
   // Vercel rewrites: /api/indexer/:path* -> /api/indexer
   // We need to extract the path from the original URL
-  const originalUrl = req.headers['x-vercel-original-url'] || req.url || '';
+  const originalUrlHeader = req.headers['x-vercel-original-url'];
+  const originalUrl = Array.isArray(originalUrlHeader) 
+    ? originalUrlHeader[0] 
+    : (originalUrlHeader || '');
+  
+  const reqUrl = Array.isArray(req.url) ? req.url[0] : (req.url || '');
+  const urlToParse = originalUrl || reqUrl;
   
   // Extract path after /api/indexer/
   // Example: /api/indexer/events -> events
   let path = '';
-  if (originalUrl.includes('/api/indexer/')) {
-    const pathMatch = originalUrl.match(/\/api\/indexer\/([^?]+)/);
+  if (typeof urlToParse === 'string' && urlToParse.includes('/api/indexer/')) {
+    const pathMatch = urlToParse.match(/\/api\/indexer\/([^?]+)/);
     path = pathMatch ? pathMatch[1] : '';
   }
   
@@ -24,8 +30,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!path) {
     return res.status(400).json({ 
       error: 'Path is required. Use /api/indexer/events?type=...',
-      originalUrl,
-      url: req.url,
+      originalUrl: urlToParse,
+      url: reqUrl,
       query: req.query,
       headers: Object.keys(req.headers)
     });
@@ -51,7 +57,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const fullUrl = queryString ? `${targetUrl}?${queryString}` : targetUrl;
   
   console.log('[Indexer Proxy] Request:', {
-    originalUrl,
+    originalUrl: urlToParse,
     path,
     targetUrl,
     fullUrl,
