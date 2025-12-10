@@ -10,7 +10,7 @@
     },
     {
       "source": "/api/indexer/:path*",
-      "destination": "/api/indexer"
+      "destination": "/api/indexer?path=:path*"
     }
   ],
   "functions": {

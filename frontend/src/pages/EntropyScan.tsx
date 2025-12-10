@@ -19,12 +19,12 @@ import { toast } from 'react-toastify';
 
 const ENTROPY_ORACLE_ADDRESS = process.env.REACT_APP_ENTROPY_ORACLE_ADDRESS || '0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361';
 
-// Use HTTP API directly (Mixed Content warning but works)
+// Use Vercel proxy to avoid Mixed Content issues
 // In local dev, use direct URL if REACT_APP_INDEXER_API_URL is set
 const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const INDEXER_API_URL = (isLocalDev && process.env.REACT_APP_INDEXER_API_URL) 
   ? process.env.REACT_APP_INDEXER_API_URL 
-  : 'http://185.169.180.167:4000'; // Direct HTTP API (Mixed Content warning but works)
+  : '/api/indexer'; // Use Vercel proxy (HTTPS -> HTTPS)
 
 interface EntropyRequest {
   requestId: bigint;
@@ -61,8 +61,10 @@ const EntropyScan: React.FC = () => {
       setLoading(true);
       try {
         // Fetch EntropyRequested events from indexer API
-        // Using direct HTTP API (Mixed Content warning but works)
-        const apiUrl = `${INDEXER_API_URL}/api/events?type=EntropyRequested&limit=1000&offset=0`;
+        // INDEXER_API_URL is either '/api/indexer' (Vercel proxy) or 'http://185.169.180.167:4000' (local dev)
+        const apiUrl = INDEXER_API_URL.startsWith('/')
+          ? `${INDEXER_API_URL}/events?type=EntropyRequested&limit=1000&offset=0`
+          : `${INDEXER_API_URL}/api/events?type=EntropyRequested&limit=1000&offset=0`;
         
         console.log('[EntropyScan] Fetching from:', apiUrl);
         
