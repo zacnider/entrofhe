@@ -122,7 +122,9 @@ const EntropyScan: React.FC = () => {
             const blockNumber = BigInt(log.blockNumber.toString());
             
             // Get transaction and block for more details
-            let consumer = decoded.hashedConsumer; // This is hashed
+            const hashedConsumer = decoded.args?.hashedConsumer || decoded.hashedConsumer || log.topics[2] || '0x0';
+            const hashedTag = decoded.args?.hashedTag || decoded.hashedTag || '0x0';
+            let consumer = hashedConsumer; // This is hashed
             let timestamp = BigInt(0);
             let fulfilled = false;
 
@@ -151,12 +153,20 @@ const EntropyScan: React.FC = () => {
               const abi = Array.isArray(EntropyOracleABI) ? EntropyOracleABI : (EntropyOracleABI as any).abi || [];
               
               fulfilled = fulfilledLogs.some((fulfilledLog: any) => {
-                const fulfilledDecoded = decodeEventLog({
-                  abi: abi,
-                  data: fulfilledLog.data,
-                  topics: fulfilledLog.topics,
-                }) as any;
-                return BigInt(fulfilledDecoded.requestId.toString()) === requestId;
+                try {
+                  const fulfilledDecoded = decodeEventLog({
+                    abi: abi,
+                    data: fulfilledLog.data,
+                    topics: fulfilledLog.topics,
+                  }) as any;
+                  const fulfilledRequestId = fulfilledDecoded.args?.requestId 
+                    ? BigInt(fulfilledDecoded.args.requestId.toString())
+                    : (fulfilledDecoded.requestId ? BigInt(fulfilledDecoded.requestId.toString()) : BigInt(0));
+                  return fulfilledRequestId === requestId;
+                } catch {
+                  // Fallback: compare topics directly
+                  return fulfilledLog.topics[1] === log.topics[1]; // requestId in topics[1]
+                }
               });
             } catch (error) {
               console.warn(`Error fetching details for request ${requestId}:`, error);
@@ -165,7 +175,7 @@ const EntropyScan: React.FC = () => {
             return {
               requestId,
               consumer,
-              tag: decoded.hashedTag,
+              tag: hashedTag,
               timestamp,
               fulfilled,
               txHash: log.transactionHash,
