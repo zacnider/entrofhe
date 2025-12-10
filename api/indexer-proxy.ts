@@ -11,12 +11,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Remove leading slash if present
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
   
-  // If no path provided, return error
+  // If no path provided, return error with debug info
   if (!cleanPath) {
     return res.status(400).json({ 
       error: 'Path parameter is required',
       query: req.query,
-      url: req.url
+      url: req.url,
+      method: req.method,
+      headers: {
+        'x-vercel-original-url': req.headers['x-vercel-original-url'],
+        'x-vercel-path': req.headers['x-vercel-path'],
+      }
     });
   }
   
