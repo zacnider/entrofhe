@@ -1,9 +1,10 @@
-// Minimal handlers for Envio. Generated types come from `envio codegen`.
-// After running `envio codegen`, import the generated types:
-// import { EntropyRequestedEvent, EntropyFulfilledEvent, FeeRecipientUpdatedEvent, ChaosEngineUpdatedEvent } from "../generated/Handlers.gen";
+// @ts-nocheck
+const generated = require("../generated/index.js");
+const EntropyOracle = generated.EntropyOracle || generated;
 
-export async function EntropyRequested(event: any, ctx: any) {
-  // Persist or log as needed; here we just print
+// Handler for EntropyRequested event
+console.log('[EntropyOracleHandlers] Registering EntropyRequested handler...');
+EntropyOracle.EntropyRequested.handler(async ({ event, context }) => {
   console.log("EntropyRequested", {
     requestId: event.params.requestId?.toString?.() ?? event.params.requestId,
     hashedConsumer: event.params.hashedConsumer,
@@ -12,9 +13,11 @@ export async function EntropyRequested(event: any, ctx: any) {
     txHash: event.transaction?.hash,
     blockNumber: event.block?.number,
   });
-}
+});
 
-export async function EntropyFulfilled(event: any, ctx: any) {
+// Handler for EntropyFulfilled event
+console.log('[EntropyOracleHandlers] Registering EntropyFulfilled handler...');
+EntropyOracle.EntropyFulfilled.handler(async ({ event, context }) => {
   console.log("EntropyFulfilled", {
     requestId: event.params.requestId?.toString?.() ?? event.params.requestId,
     hashedConsumer: event.params.hashedConsumer,
@@ -22,23 +25,27 @@ export async function EntropyFulfilled(event: any, ctx: any) {
     txHash: event.transaction?.hash,
     blockNumber: event.block?.number,
   });
-}
+});
 
-export async function FeeRecipientUpdated(event: any, ctx: any) {
+// Handler for FeeRecipientUpdated event
+console.log('[EntropyOracleHandlers] Registering FeeRecipientUpdated handler...');
+EntropyOracle.FeeRecipientUpdated.handler(async ({ event, context }) => {
   console.log("FeeRecipientUpdated", {
     oldRecipient: event.params.oldRecipient,
     newRecipient: event.params.newRecipient,
     txHash: event.transaction?.hash,
     blockNumber: event.block?.number,
   });
-}
+});
 
-export async function ChaosEngineUpdated(event: any, ctx: any) {
+// Handler for ChaosEngineUpdated event
+console.log('[EntropyOracleHandlers] Registering ChaosEngineUpdated handler...');
+EntropyOracle.ChaosEngineUpdated.handler(async ({ event, context }) => {
   console.log("ChaosEngineUpdated", {
     oldEngine: event.params.oldEngine,
     newEngine: event.params.newEngine,
     txHash: event.transaction?.hash,
     blockNumber: event.block?.number,
   });
-}
+});
 
