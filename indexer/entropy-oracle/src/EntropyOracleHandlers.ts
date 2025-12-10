@@ -1,5 +1,5 @@
 // @ts-nocheck
-const generated = require("../generated/index.js");
+import * as generated from "../generated/index.js";
 const EntropyOracle = generated.EntropyOracle || generated;
 
 // Handler for EntropyRequested event
