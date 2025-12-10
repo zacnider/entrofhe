@@ -1,10 +1,19 @@
 // @ts-nocheck
 import * as generated from "../generated/index.js";
-const EntropyOracle = generated.EntropyOracle || generated;
+const EntropyOracle = generated.EntropyOracle || generated.default || generated;
+
+// Debug: log generated structure
+console.log('[EntropyOracleHandlers] Generated module keys:', Object.keys(generated));
+console.log('[EntropyOracleHandlers] EntropyOracle:', EntropyOracle);
+console.log('[EntropyOracleHandlers] EntropyOracle.EntropyRequested:', EntropyOracle?.EntropyRequested);
 
 // Handler for EntropyRequested event
 console.log('[EntropyOracleHandlers] Registering EntropyRequested handler...');
-EntropyOracle.EntropyRequested.handler(async ({ event, context }) => {
+if (!EntropyOracle?.EntropyRequested) {
+  console.error('[EntropyOracleHandlers] ERROR: EntropyOracle.EntropyRequested is undefined!');
+  console.error('[EntropyOracleHandlers] Available keys in EntropyOracle:', EntropyOracle ? Object.keys(EntropyOracle) : 'EntropyOracle is undefined');
+}
+EntropyOracle.EntropyRequested?.handler(async ({ event, context }) => {
   console.log("EntropyRequested", {
     requestId: event.params.requestId?.toString?.() ?? event.params.requestId,
     hashedConsumer: event.params.hashedConsumer,
