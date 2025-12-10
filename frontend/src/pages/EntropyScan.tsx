@@ -19,12 +19,12 @@ import { toast } from 'react-toastify';
 
 const ENTROPY_ORACLE_ADDRESS = process.env.REACT_APP_ENTROPY_ORACLE_ADDRESS || '0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361';
 
-// Use Vercel proxy in production to avoid Mixed Content issues
+// Use HTTPS API directly (self-signed cert, browser will show warning but will work)
 // In local dev, use direct URL if REACT_APP_INDEXER_API_URL is set
 const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const INDEXER_API_URL = (isLocalDev && process.env.REACT_APP_INDEXER_API_URL) 
   ? process.env.REACT_APP_INDEXER_API_URL 
-  : '/api/indexer'; // Use Vercel proxy in production
+  : 'https://185.169.180.167'; // Use HTTPS API directly (self-signed cert)
 
 interface EntropyRequest {
   requestId: bigint;
@@ -61,19 +61,10 @@ const EntropyScan: React.FC = () => {
       setLoading(true);
       try {
         // Fetch EntropyRequested events from indexer API
-        // INDEXER_API_URL is either '/api/indexer' (Vercel proxy) or 'http://185.169.180.167:4000' (local dev)
-        let apiUrl = INDEXER_API_URL.startsWith('/') 
-          ? `${INDEXER_API_URL}/events?type=EntropyRequested&limit=1000&offset=0`
-          : `${INDEXER_API_URL}/api/events?type=EntropyRequested&limit=1000&offset=0`;
+        // INDEXER_API_URL is either 'https://185.169.180.167' (production) or 'http://185.169.180.167:4000' (local dev)
+        const apiUrl = `${INDEXER_API_URL}/api/events?type=EntropyRequested&limit=1000&offset=0`;
         
-        let response = await fetch(apiUrl);
-        
-        // If proxy fails (404), try direct API as fallback (only in production)
-        if (!response.ok && INDEXER_API_URL.startsWith('/') && response.status === 404) {
-          console.warn('[EntropyScan] Vercel proxy returned 404, trying direct API...');
-          const directApiUrl = 'http://185.169.180.167:4000/api/events?type=EntropyRequested&limit=1000&offset=0';
-          response = await fetch(directApiUrl);
-        }
+        const response = await fetch(apiUrl);
         
         if (!response.ok) {
           throw new Error(`Indexer API error: ${response.status} ${response.statusText}`);
