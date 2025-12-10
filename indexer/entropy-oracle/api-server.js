@@ -52,8 +52,8 @@ app.get('/api/events', async (req, res) => {
     }
 
     // Build query based on event type
-    // Envio uses lowercase table names
-    const tableName = eventType.toLowerCase();
+    // Envio uses capitalized table names (e.g., EntropyRequested)
+    const tableName = eventType;
     
     let query = `SELECT * FROM ${tableName}`;
     const conditions = [];
