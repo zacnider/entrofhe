@@ -19,12 +19,13 @@ import { toast } from 'react-toastify';
 
 const ENTROPY_ORACLE_ADDRESS = process.env.REACT_APP_ENTROPY_ORACLE_ADDRESS || '0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361';
 
-// Use HTTPS API directly (self-signed cert, browser will show warning but will work)
+// Try Vercel proxy first, fallback to HTTPS API if proxy fails
 // In local dev, use direct URL if REACT_APP_INDEXER_API_URL is set
 const isLocalDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const INDEXER_API_URL = (isLocalDev && process.env.REACT_APP_INDEXER_API_URL) 
   ? process.env.REACT_APP_INDEXER_API_URL 
-  : 'https://185.169.180.167'; // Use HTTPS API directly (self-signed cert)
+  : '/api/indexer'; // Try Vercel proxy first
+const FALLBACK_API_URL = 'https://185.169.180.167'; // Fallback to HTTPS API (self-signed cert)
 
 interface EntropyRequest {
   requestId: bigint;
@@ -61,19 +62,48 @@ const EntropyScan: React.FC = () => {
       setLoading(true);
       try {
         // Fetch EntropyRequested events from indexer API
-        // INDEXER_API_URL is either 'https://185.169.180.167' (production) or 'http://185.169.180.167:4000' (local dev)
-        const apiUrl = `${INDEXER_API_URL}/api/events?type=EntropyRequested&limit=1000&offset=0`;
+        // Try Vercel proxy first, fallback to HTTPS API if proxy fails
+        let apiUrl = INDEXER_API_URL.startsWith('/')
+          ? `${INDEXER_API_URL}/events?type=EntropyRequested&limit=1000&offset=0`
+          : `${INDEXER_API_URL}/api/events?type=EntropyRequested&limit=1000&offset=0`;
         
-        console.log('[EntropyScan] Fetching from:', apiUrl);
+        console.log('[EntropyScan] Trying Vercel proxy:', apiUrl);
         
-        const response = await fetch(apiUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          // Note: Self-signed certificates will show browser warning
-          // User needs to click "Advanced" -> "Proceed" in browser
-        });
+        let response: Response;
+        try {
+          response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+          
+          // If proxy returns 404, try fallback HTTPS API
+          if (!response.ok && response.status === 404 && INDEXER_API_URL.startsWith('/')) {
+            console.warn('[EntropyScan] Vercel proxy returned 404, trying HTTPS API fallback...');
+            apiUrl = `${FALLBACK_API_URL}/api/events?type=EntropyRequested&limit=1000&offset=0`;
+            response = await fetch(apiUrl, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+          }
+        } catch (fetchError) {
+          // If fetch fails (e.g., network error, CORS, SSL), try fallback
+          if (INDEXER_API_URL.startsWith('/')) {
+            console.warn('[EntropyScan] Vercel proxy failed, trying HTTPS API fallback...', fetchError);
+            apiUrl = `${FALLBACK_API_URL}/api/events?type=EntropyRequested&limit=1000&offset=0`;
+            response = await fetch(apiUrl, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+          } else {
+            throw fetchError;
+          }
+        }
         
         if (!response.ok) {
           throw new Error(`Indexer API error: ${response.status} ${response.statusText}`);
