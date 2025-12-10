@@ -62,11 +62,18 @@ const EntropyScan: React.FC = () => {
       try {
         // Fetch EntropyRequested events from indexer API
         // INDEXER_API_URL is either '/api/indexer' (Vercel proxy) or 'http://185.169.180.167:4000' (local dev)
-        const apiUrl = INDEXER_API_URL.startsWith('/') 
+        let apiUrl = INDEXER_API_URL.startsWith('/') 
           ? `${INDEXER_API_URL}/events?type=EntropyRequested&limit=1000&offset=0`
           : `${INDEXER_API_URL}/api/events?type=EntropyRequested&limit=1000&offset=0`;
         
-        const response = await fetch(apiUrl);
+        let response = await fetch(apiUrl);
+        
+        // If proxy fails (404), try direct API as fallback (only in production)
+        if (!response.ok && INDEXER_API_URL.startsWith('/') && response.status === 404) {
+          console.warn('[EntropyScan] Vercel proxy returned 404, trying direct API...');
+          const directApiUrl = 'http://185.169.180.167:4000/api/events?type=EntropyRequested&limit=1000&offset=0';
+          response = await fetch(directApiUrl);
+        }
         
         if (!response.ok) {
           throw new Error(`Indexer API error: ${response.status} ${response.statusText}`);
