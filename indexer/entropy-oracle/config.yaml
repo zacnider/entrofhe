@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=./node_modules/envio/evm.schema.json
+name: EntropyOracleIndexer
+description: Index EntropyOracle events on Sepolia (EntropyRequested, EntropyFulfilled, FeeRecipientUpdated, ChaosEngineUpdated)
+
+# Reorg rollback can be turned on for production
+rollback_on_reorg: false
+
+contracts:
+  - name: EntropyOracle
+    handler: src/EntropyOracleHandlers.ts
+    events:
+      - event: "EntropyRequested(uint256 indexed requestId, bytes32 indexed hashedConsumer, bytes32 hashedTag, uint256 feePaid)"
+      - event: "EntropyFulfilled(uint256 indexed requestId, bytes32 indexed hashedConsumer, bytes32 hashedTag)"
+      - event: "FeeRecipientUpdated(address indexed oldRecipient, address indexed newRecipient)"
+      - event: "ChaosEngineUpdated(address indexed oldEngine, address indexed newEngine)"
+
+networks:
+  - id: 11155111 # Sepolia
+    start_block: 9780901
+    rpc_config:
+      # Prefer env var at runtime: SEPOLIA_RPC_URL
+      url: ${SEPOLIA_RPC_URL}
+    contracts:
+      - name: EntropyOracle
+        address: "0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361"
+        handler: ./src/EntropyOracleHandlers.ts
+
