@@ -124,7 +124,7 @@ const EntropyScan: React.FC = () => {
               
               fulfilled = fulfilledLogs.some((fulfilledLog: any) => {
                 const fulfilledDecoded = decodeEventLog({
-                  abi: EntropyOracleABI,
+                  abi: EntropyOracleABI as any,
                   data: fulfilledLog.data,
                   topics: fulfilledLog.topics,
                 }) as any;
