@@ -10,22 +10,14 @@
     },
     {
       "source": "/api/indexer/:path*",
-      "destination": "/api/indexer-proxy?path=:path*"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/api/indexer/:path*",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        }
-      ]
+      "destination": "/api/indexer"
     }
   ],
   "functions": {
     "api/proxy.ts": {
+      "maxDuration": 300
+    },
+    "api/indexer.ts": {
       "maxDuration": 300
     },
     "api/indexer-proxy.ts": {
