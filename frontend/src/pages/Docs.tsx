@@ -1378,8 +1378,11 @@ const ExampleTutorials: React.FC = () => {
         {selectedExample === 'basic-arithmetic' && <EntropyArithmeticTutorial />}
         {selectedExample === 'basic-equalitycomparison' && <EntropyEqualityComparisonTutorial />}
         {selectedExample === 'encryption-encryptsingle' && <EntropyEncryptionTutorial />}
+        {selectedExample === 'encryption-encryptmultiple' && <EntropyEncryptMultipleTutorial />}
         {selectedExample === 'user-decryption-userdecryptsingle' && <EntropyUserDecryptionTutorial />}
+        {selectedExample === 'user-decryption-userdecryptmultiple' && <EntropyUserDecryptMultipleTutorial />}
         {selectedExample === 'public-decryption-publicdecryptsingle' && <EntropyPublicDecryptionTutorial />}
+        {selectedExample === 'public-decryption-publicdecryptmultiple' && <EntropyPublicDecryptMultipleTutorial />}
         {selectedExample === 'access-control-accesscontrol' && <EntropyAccessControlTutorial />}
         {selectedExample === 'input-proof-inputproofexplanation' && <EntropyInputProofTutorial />}
         {selectedExample === 'anti-patterns-missingallowthis' && <EntropyMissingAllowThisTutorial />}
@@ -2231,6 +2234,312 @@ const EntropyPublicDecryptionTutorial: React.FC = () => (
         error: "SenderNotAllowed()",
         cause: "Missing FHE.allowThis() call on encrypted value.",
         solution: "Always call FHE.allowThis() on all encrypted values before using them."
+      },
+      {
+        error: "Privacy Warning",
+        cause: "Using FHE.makePubliclyDecryptable() removes privacy.",
+        solution: "Only use when values should be publicly accessible. Consider FHE.allow() for selective access instead."
+      }
+    ]}
+  />
+);
+
+const EntropyEncryptMultipleTutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropyEncryptMultiple"
+    exampleId="encryption-encryptmultiple"
+    category="Encryption"
+    description="Learn how to encrypt and store multiple values using EntropyOracle. This example demonstrates batch encryption patterns with entropy enhancement for efficient multi-value operations."
+    whatTeaches={[
+      "How to encrypt multiple values off-chain using FHEVM SDK",
+      "How to send multiple encrypted values to contracts with input proofs",
+      "How to store multiple encrypted values on-chain in an array",
+      "How to enhance batch encryption with entropy from EntropyOracle",
+      "The importance of FHE.allowThis() for stored values in batch operations",
+      "Efficient batch operations on encrypted data"
+    ]}
+    whyMatters={[
+      "Batch encryption is crucial for efficiency and privacy when dealing with multiple data points",
+      "With EntropyOracle, you can add randomness to multiple encrypted values without revealing them",
+      "Enhance security by mixing entropy with user-encrypted data in bulk",
+      "Learn the foundation for more complex batch encryption patterns",
+      "Reduce gas costs by batching operations"
+    ]}
+    contractLogic={[
+      {
+        title: "1. Encrypt and Store Multiple Values",
+        code: `function encryptAndStoreMultiple(
+    externalEuint64[] calldata encryptedInputs,
+    bytes[] calldata inputProofs
+) external {
+    require(encryptedInputs.length == inputProofs.length, "Input mismatch");
+    require(encryptedInputs.length > 0, "No inputs provided");
+
+    encryptedValues = new euint64[](encryptedInputs.length);
+
+    for (uint256 i = 0; i < encryptedInputs.length; i++) {
+        euint64 internalValue = FHE.fromExternal(encryptedInputs[i], inputProofs[i]);
+        FHE.allowThis(internalValue);
+        encryptedValues[i] = internalValue;
+    }
+    initialized = true;
+}`,
+        explanation: "Accepts arrays of encrypted values and input proofs. Iterates through inputs, converts to internal FHE format, grants permission, and stores in array."
+      },
+      {
+        title: "2. Request Entropy",
+        code: `function requestEntropy(bytes32 tag) external payable returns (uint256 requestId) {
+    require(msg.value >= entropyOracle.getFee(), "Insufficient fee");
+    
+    requestId = entropyOracle.requestEntropy{value: msg.value}(tag);
+    entropyRequests[requestId] = true;
+    return requestId;
+}`,
+        explanation: "Requests entropy from EntropyOracle. Requires 0.00001 ETH fee. Returns requestId for later use."
+      },
+      {
+        title: "3. Encrypt Multiple Values with Entropy",
+        code: `function encryptAndStoreMultipleWithEntropy(
+    externalEuint64[] calldata encryptedInputs,
+    bytes[] calldata inputProofs,
+    uint256 requestId
+) external {
+    require(entropyOracle.isRequestFulfilled(requestId), "Entropy not ready");
+    
+    euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+    FHE.allowThis(entropy);
+    
+    encryptedValues = new euint64[](encryptedInputs.length);
+    
+    for (uint256 i = 0; i < encryptedInputs.length; i++) {
+        euint64 internalValue = FHE.fromExternal(encryptedInputs[i], inputProofs[i]);
+        FHE.allowThis(internalValue);
+        euint64 enhancedValue = FHE.xor(internalValue, entropy);
+        FHE.allowThis(enhancedValue);
+        encryptedValues[i] = enhancedValue;
+    }
+}`,
+        explanation: "Gets encrypted entropy, grants permission, then combines each user value with entropy using XOR. Stores entropy-enhanced values in array."
+      }
+    ]}
+    testSteps={[
+      { step: 1, title: "Deploy Contracts", description: "Test fixture automatically deploys FHEChaosEngine, EntropyOracle, and EntropyEncryptMultiple." },
+      { step: 2, title: "Encrypt Multiple Values", description: "Create multiple encrypted inputs (e.g., [10, 20, 30]), encrypt them, and call encryptAndStoreMultiple() with handles and proofs arrays." },
+      { step: 3, title: "Request Entropy", description: "Call requestEntropy() with a unique tag and fee for entropy-enhanced batch encryption." },
+      { step: 4, title: "Wait for Fulfillment", description: "Check isRequestFulfilled() until true." },
+      { step: 5, title: "Encrypt with Entropy", description: "Call encryptAndStoreMultipleWithEntropy() with encrypted inputs array, proofs array, and requestId." }
+    ]}
+    expectedOutputs={`✓ Should deploy successfully
+✓ Should encrypt and store multiple values
+✓ Should have correct array length
+✓ Should request entropy
+✓ Should encrypt and store multiple values with entropy enhancement`}
+    commonErrors={[
+      {
+        error: "SenderNotAllowed()",
+        cause: "Missing FHE.allowThis() call on encrypted value or entropy.",
+        solution: "Always call FHE.allowThis() on all encrypted values and entropy before using them."
+      },
+      {
+        error: "Input mismatch",
+        cause: "Lengths of encryptedInputs and inputProofs arrays do not match.",
+        solution: "Ensure all input arrays have the same length."
+      },
+      {
+        error: "Entropy not ready",
+        cause: "Calling encryptAndStoreMultipleWithEntropy() before entropy is fulfilled.",
+        solution: "Always check isRequestFulfilled() before using entropy."
+      }
+    ]}
+  />
+);
+
+const EntropyUserDecryptMultipleTutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropyUserDecryptMultiple"
+    exampleId="user-decryption-userdecryptmultiple"
+    category="Decryption"
+    description="Learn how to allow multiple users to decrypt different values using FHE.allow(). This example demonstrates batch user-specific decryption patterns with entropy enhancement."
+    whatTeaches={[
+      "How to store multiple encrypted values on-chain",
+      "How to grant decryption permissions to multiple specific users using FHE.allow()",
+      "How to enhance batch user decryption with entropy from EntropyOracle",
+      "The importance of FHE.allowThis() for stored values",
+      "Efficient batch operations for multiple user-specific values"
+    ]}
+    whyMatters={[
+      "Batch user decryption is essential for applications where multiple encrypted data points need to be selectively revealed to different users",
+      "With EntropyOracle, you can add randomness to encrypted values before granting decryption access",
+      "Enhance security by mixing entropy with user-encrypted data in bulk",
+      "Manage access control for multiple encrypted data points efficiently",
+      "Learn the foundation for more complex batch user decryption patterns"
+    ]}
+    contractLogic={[
+      {
+        title: "1. Store and Allow Multiple Users",
+        code: `function storeAndAllowMultiple(
+    externalEuint64[] calldata encryptedInputs,
+    bytes[] calldata inputProofs,
+    address[] calldata users
+) external {
+    require(encryptedInputs.length == inputProofs.length && encryptedInputs.length == users.length, "Input mismatch");
+    
+    encryptedValues = new euint64[](encryptedInputs.length);
+    
+    for (uint256 i = 0; i < encryptedInputs.length; i++) {
+        euint64 internalValue = FHE.fromExternal(encryptedInputs[i], inputProofs[i]);
+        FHE.allowThis(internalValue);
+        FHE.allow(internalValue, users[i]); // Allow specific user
+        encryptedValues[i] = internalValue;
+        allowedUsers[i] = users[i];
+    }
+}`,
+        explanation: "Stores multiple encrypted values and grants decryption permission to specific users for each value. Each value can have a different allowed user."
+      },
+      {
+        title: "2. Store with Entropy and Allow Multiple",
+        code: `function storeAndAllowMultipleWithEntropy(
+    externalEuint64[] calldata encryptedInputs,
+    bytes[] calldata inputProofs,
+    address[] calldata users,
+    uint256 requestId
+) external {
+    euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+    FHE.allowThis(entropy);
+    
+    encryptedValues = new euint64[](encryptedInputs.length);
+    
+    for (uint256 i = 0; i < encryptedInputs.length; i++) {
+        euint64 internalValue = FHE.fromExternal(encryptedInputs[i], inputProofs[i]);
+        FHE.allowThis(internalValue);
+        euint64 enhancedValue = FHE.xor(internalValue, entropy);
+        FHE.allowThis(enhancedValue);
+        FHE.allow(enhancedValue, users[i]); // Allow user to decrypt enhanced value
+        encryptedValues[i] = enhancedValue;
+        allowedUsers[i] = users[i];
+    }
+}`,
+        explanation: "Combines each user value with entropy using XOR, then grants specific users permission to decrypt their enhanced values."
+      }
+    ]}
+    testSteps={[
+      { step: 1, title: "Deploy Contracts", description: "Test fixture deploys all required contracts." },
+      { step: 2, title: "Store and Allow Multiple", description: "Create multiple encrypted inputs, encrypt them, and call storeAndAllowMultiple() with handles, proofs, and users arrays." },
+      { step: 3, title: "Request Entropy", description: "Call requestEntropy() for entropy-enhanced batch storage." },
+      { step: 4, title: "Wait for Fulfillment", description: "Check isRequestFulfilled() until true." },
+      { step: 5, title: "Store with Entropy", description: "Call storeAndAllowMultipleWithEntropy() with encrypted inputs, proofs, users, and requestId." },
+      { step: 6, title: "Decrypt Off-Chain", description: "Each allowed user can decrypt their assigned value off-chain using FHEVM SDK with their private key." }
+    ]}
+    expectedOutputs={`✓ Should deploy successfully
+✓ Should store and allow multiple users to decrypt
+✓ Should have correct allowed users for each index
+✓ Should request entropy
+✓ Should store and allow multiple with entropy enhancement`}
+    commonErrors={[
+      {
+        error: "SenderNotAllowed()",
+        cause: "Missing FHE.allowThis() or FHE.allow() call.",
+        solution: "Call FHE.allowThis() for contract use, and FHE.allow() for user decryption."
+      },
+      {
+        error: "Input mismatch",
+        cause: "Lengths of encryptedInputs, inputProofs, or users arrays do not match.",
+        solution: "Ensure all input arrays have the same length."
+      },
+      {
+        error: "Invalid user address",
+        cause: "Zero address passed as a user address.",
+        solution: "Ensure valid non-zero addresses are provided for users."
+      }
+    ]}
+  />
+);
+
+const EntropyPublicDecryptMultipleTutorial: React.FC = () => (
+  <GenericTutorial
+    name="EntropyPublicDecryptMultiple"
+    exampleId="public-decryption-publicdecryptmultiple"
+    category="Decryption"
+    description="Learn how to make multiple encrypted values publicly decryptable using FHE.makePubliclyDecryptable(). This example demonstrates batch public decryption patterns with entropy enhancement."
+    whatTeaches={[
+      "How to store multiple encrypted values on-chain",
+      "How to make multiple encrypted values publicly decryptable using FHE.makePubliclyDecryptable()",
+      "How to enhance batch public decryption with entropy from EntropyOracle",
+      "The importance of FHE.allowThis() for stored values",
+      "Efficient batch operations for multiple publicly decryptable values"
+    ]}
+    whyMatters={[
+      "Batch public decryption is useful when multiple encrypted data points need to be revealed to anyone, but with an added layer of randomness or unpredictability",
+      "With EntropyOracle, you can add randomness to encrypted values before making them publicly decryptable",
+      "Enhance security by mixing entropy with data that will be publicly revealed",
+      "Efficiently manage multiple publicly decryptable data points",
+      "Learn the foundation for more complex batch public decryption patterns"
+    ]}
+    contractLogic={[
+      {
+        title: "1. Store and Make Public Multiple",
+        code: `function storeAndMakePublicMultiple(
+    externalEuint64[] calldata encryptedInputs,
+    bytes[] calldata inputProofs
+) external {
+    require(encryptedInputs.length == inputProofs.length, "Input mismatch");
+    
+    encryptedValues = new euint64[](encryptedInputs.length);
+    
+    for (uint256 i = 0; i < encryptedInputs.length; i++) {
+        euint64 internalValue = FHE.fromExternal(encryptedInputs[i], inputProofs[i]);
+        FHE.allowThis(internalValue);
+        encryptedValues[i] = FHE.makePubliclyDecryptable(internalValue);
+    }
+}`,
+        explanation: "Stores multiple encrypted values and makes each publicly decryptable. Anyone can decrypt these values off-chain using FHEVM SDK."
+      },
+      {
+        title: "2. Store with Entropy and Make Public Multiple",
+        code: `function storeAndMakePublicMultipleWithEntropy(
+    externalEuint64[] calldata encryptedInputs,
+    bytes[] calldata inputProofs,
+    uint256 requestId
+) external {
+    euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+    FHE.allowThis(entropy);
+    
+    encryptedValues = new euint64[](encryptedInputs.length);
+    
+    for (uint256 i = 0; i < encryptedInputs.length; i++) {
+        euint64 internalValue = FHE.fromExternal(encryptedInputs[i], inputProofs[i]);
+        FHE.allowThis(internalValue);
+        euint64 enhancedValue = FHE.xor(internalValue, entropy);
+        FHE.allowThis(enhancedValue);
+        encryptedValues[i] = FHE.makePubliclyDecryptable(enhancedValue);
+    }
+}`,
+        explanation: "Combines each value with entropy using XOR, then makes each entropy-enhanced value publicly decryptable."
+      }
+    ]}
+    testSteps={[
+      { step: 1, title: "Deploy Contracts", description: "Test fixture deploys all required contracts." },
+      { step: 2, title: "Store and Make Public Multiple", description: "Create multiple encrypted inputs, encrypt them, and call storeAndMakePublicMultiple() with handles and proofs arrays." },
+      { step: 3, title: "Request Entropy", description: "Call requestEntropy() for entropy-enhanced batch storage." },
+      { step: 4, title: "Wait for Fulfillment", description: "Check isRequestFulfilled() until true." },
+      { step: 5, title: "Store with Entropy", description: "Call storeAndMakePublicMultipleWithEntropy() with encrypted inputs, proofs, and requestId." },
+      { step: 6, title: "Decrypt Off-Chain", description: "Anyone can decrypt all values off-chain using FHEVM SDK (no permission needed)." }
+    ]}
+    expectedOutputs={`✓ Should deploy successfully
+✓ Should store and make multiple values publicly decryptable
+✓ Should have correct array length
+✓ Should request entropy
+✓ Should store and make multiple publicly decryptable with entropy enhancement`}
+    commonErrors={[
+      {
+        error: "SenderNotAllowed()",
+        cause: "Missing FHE.allowThis() call on encrypted value or entropy.",
+        solution: "Always call FHE.allowThis() on all encrypted values and entropy before using them."
+      },
+      {
+        error: "Input mismatch",
+        cause: "Lengths of encryptedInputs and inputProofs arrays do not match.",
+        solution: "Ensure all input arrays have the same length."
       },
       {
         error: "Privacy Warning",
