@@ -187,11 +187,105 @@ ${examples.length} examples across ${categories.length} categories.
 `;
 }
 
+function generateExampleREADME(example: ExampleInfo, exampleDir: string): string {
+  const contractDocs = extractContractDocs(example.contractPath);
+  const contractCode = fs.readFileSync(example.contractPath, 'utf-8');
+  
+  // Extract example directory name for GitHub repo link
+  const exampleDirName = path.basename(exampleDir);
+  const repoName = `fhevm-example-${exampleDirName}`;
+  
+  return `# ${example.name}
+
+${example.description}
+
+## 🚀 Quick Start
+
+1. **Clone this repository:**
+   \`\`\`bash
+   git clone https://github.com/zacnider/${repoName}.git
+   cd ${repoName}
+   \`\`\`
+
+2. **Install dependencies:**
+   \`\`\`bash
+   npm install --legacy-peer-deps
+   \`\`\`
+
+3. **Setup environment:**
+   \`\`\`bash
+   npm run setup
+   \`\`\`
+   Then edit \`.env\` file with your credentials:
+   - \`SEPOLIA_RPC_URL\` - Your Sepolia RPC endpoint
+   - \`PRIVATE_KEY\` - Your wallet private key (for deployment)
+   - \`ETHERSCAN_API_KEY\` - Your Etherscan API key (for verification)
+
+4. **Compile contracts:**
+   \`\`\`bash
+   npm run compile
+   \`\`\`
+
+5. **Run tests:**
+   \`\`\`bash
+   npm test
+   \`\`\`
+
+6. **Deploy to Sepolia:**
+   \`\`\`bash
+   npm run deploy:sepolia
+   \`\`\`
+
+7. **Verify contract (after deployment):**
+   \`\`\`bash
+   npm run verify <CONTRACT_ADDRESS>
+   \`\`\`
+
+**Alternative:** Use the [Examples page](https://entrofhe.vercel.app/examples) for browser-based deployment and verification.
+
+---
+
+## 📋 Overview
+
+${contractDocs || 'No additional documentation available.'}
+
+## 🔍 Contract Code
+
+\`\`\`solidity
+${contractCode}
+\`\`\`
+
+${example.testPath ? `## 🧪 Tests
+
+See [test file](./test/${path.basename(example.testPath)}) for comprehensive test coverage.
+
+\`\`\`bash
+npm test
+\`\`\`
+` : ''}
+
+## 📚 Category
+
+**${example.category}**
+
+${example.chapter ? `## 📖 Chapter\n\n\`${example.chapter}\`` : ''}
+
+## 🔗 Related Examples
+
+- [All ${example.category} examples](https://github.com/zacnider/entrofhe/tree/main/examples)
+
+## 📝 License
+
+BSD-3-Clause-Clear
+`;
+}
+
 function main() {
   console.log('📚 Generating documentation...\n');
 
   const examples = findExamples();
   const docsDir = path.join(__dirname, '..', 'docs', 'examples');
+  const examplesDir = path.join(__dirname, '..', 'examples');
   
   // Create docs directory structure
   if (!fs.existsSync(docsDir)) {
@@ -205,10 +299,18 @@ function main() {
       fs.mkdirSync(categoryDir, { recursive: true });
     }
 
+    // Generate GitBook-compatible doc in docs/examples/
     const docPath = path.join(categoryDir, `${example.name}.md`);
     const docContent = generateExampleDoc(example);
     fs.writeFileSync(docPath, docContent);
     console.log(`✓ Generated: ${docPath}`);
+    
+    // Generate/Update README.md in each example directory (root, not contracts/)
+    const exampleDir = path.dirname(path.dirname(example.contractPath)); // Go up from contracts/ to example root
+    const readmePath = path.join(exampleDir, 'README.md');
+    const readmeContent = generateExampleREADME(example, exampleDir);
+    fs.writeFileSync(readmePath, readmeContent);
+    console.log(`✓ Updated README: ${readmePath}`);
   }
 
   // Generate category indices
