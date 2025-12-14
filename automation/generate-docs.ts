@@ -299,7 +299,7 @@ function main() {
       fs.mkdirSync(categoryDir, { recursive: true });
     }
 
-    // Generate GitBook-compatible doc in docs/examples/
+    // Generate GitBook-compatible doc in docs/examples/ (central hub docs)
     const docPath = path.join(categoryDir, `${example.name}.md`);
     const docContent = generateExampleDoc(example);
     fs.writeFileSync(docPath, docContent);
@@ -311,6 +311,15 @@ function main() {
     const readmeContent = generateExampleREADME(example, exampleDir);
     fs.writeFileSync(readmePath, readmeContent);
     console.log(`✓ Updated README: ${readmePath}`);
+    
+    // Generate GitBook-compatible docs in each example's own docs/ folder
+    const exampleDocsDir = path.join(exampleDir, 'docs');
+    if (!fs.existsSync(exampleDocsDir)) {
+      fs.mkdirSync(exampleDocsDir, { recursive: true });
+    }
+    const exampleDocPath = path.join(exampleDocsDir, `${example.name}.md`);
+    fs.writeFileSync(exampleDocPath, docContent);
+    console.log(`✓ Generated example docs: ${exampleDocPath}`);
   }
 
   // Generate category indices
