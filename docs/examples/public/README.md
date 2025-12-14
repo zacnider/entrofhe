@@ -2,9 +2,10 @@
 
 ## Examples
 
-- [PublicDecryptSingle](./PublicDecryptSingle.md) - Public decrypt single value using makePubliclyDecryptable
+- [EntropyOracle](./EntropyOracle.md) - Main oracle contract for entropy requests - Developer-friendly interface
+- [EntropyOracle](./EntropyOracle.md) - Main oracle contract for entropy requests - Developer-friendly interface
 
 ## Overview
 
-This category contains 1 example(s) demonstrating public concepts in FHEVM.
+This category contains 2 example(s) demonstrating public concepts in FHEVM.
 

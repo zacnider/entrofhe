@@ -7,7 +7,6 @@ ERC721 NFT with trait selection using entropy
 @title EntropyNFT
 @notice ERC721 NFT with trait selection using entropy
 @dev Real ERC721 NFT contract with trait selection using EntropyOracle
-@chapter advanced
 This example shows:
 - ERC721 NFT implementation
 - Using entropy oracle for trait selection
@@ -72,7 +71,6 @@ import "./IEntropyOracle.sol";
  * @title EntropyNFT
  * @notice ERC721 NFT with trait selection using entropy
  * @dev Real ERC721 NFT contract with trait selection using EntropyOracle
- * @chapter advanced
  * 
  * This example shows:
  * - ERC721 NFT implementation
@@ -305,9 +303,7 @@ npm test
 
 **advanced**
 
-## Chapter
 
-`advanced`
 
 ## Related Examples
 

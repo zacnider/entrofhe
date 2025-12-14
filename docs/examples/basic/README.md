@@ -2,9 +2,9 @@
 
 ## Examples
 
-- [Arithmetic](./Arithmetic.md) - FHE arithmetic operations (add, sub, mul)
-- [EqualityComparison](./EqualityComparison.md) - FHE equality comparison (FHE.eq)
-- [SimpleCounter](./SimpleCounter.md) - Simple counter using FHE encryption
+- [EntropyArithmetic](./EntropyArithmetic.md) - FHE arithmetic operations using EntropyOracle
+- [EntropyEqualityComparison](./EntropyEqualityComparison.md) - FHE equality comparison using EntropyOracle
+- [EntropyCounter](./EntropyCounter.md) - Counter using EntropyOracle for encrypted randomness
 
 ## Overview
 

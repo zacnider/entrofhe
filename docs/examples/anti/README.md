@@ -2,8 +2,8 @@
 
 ## Examples
 
-- [MissingAllowThis](./MissingAllowThis.md) - Missing FHE.allowThis() permissions
-- [ViewWithEncrypted](./ViewWithEncrypted.md) - View functions with encrypted values (not allowed)
+- [EntropyMissingAllowThis](./EntropyMissingAllowThis.md) - Missing FHE.allowThis() permissions with EntropyOracle
+- [EntropyOracle](./EntropyOracle.md) - Main oracle contract for entropy requests - Developer-friendly interface
 
 ## Overview
 

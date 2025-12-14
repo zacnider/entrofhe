@@ -2,7 +2,7 @@
 
 ## Examples
 
-- [HandleLifecycle](./HandleLifecycle.md) - Understanding handles and symbolic execution
+- [EntropyHandleLifecycle](./EntropyHandleLifecycle.md) - Understanding handles and symbolic execution with EntropyOracle
 
 ## Overview
 

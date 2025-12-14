@@ -8,10 +8,12 @@ Comprehensive collection of FHEVM examples demonstrating various concepts and pa
 - [Advanced](./docs/advanced/) (3 examples)
 - [Anti](./docs/anti/) (2 examples)
 - [Basic](./docs/basic/) (3 examples)
-- [Encryption](./docs/encryption/) (1 examples)
+- [Encryption](./docs/encryption/) (2 examples)
 - [Handles](./docs/handles/) (1 examples)
-- [Public](./docs/public/) (1 examples)
-- [User](./docs/user/) (1 examples)
+- [Input](./docs/input/) (1 examples)
+- [Openzeppelin](./docs/openzeppelin/) (5 examples)
+- [Public](./docs/public/) (2 examples)
+- [User](./docs/user/) (2 examples)
 
 ## Quick Start
 
@@ -22,5 +24,5 @@ Comprehensive collection of FHEVM examples demonstrating various concepts and pa
 
 ## Total Examples
 
-13 examples across 8 categories.
+22 examples across 10 categories.
 

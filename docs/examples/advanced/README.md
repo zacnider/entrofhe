@@ -3,8 +3,8 @@
 ## Examples
 
 - [EntropyNFT](./EntropyNFT.md) - ERC721 NFT with trait selection using entropy
-- [RandomNumberGenerator](./RandomNumberGenerator.md) - Random number generator using entropy
-- [SimpleLottery](./SimpleLottery.md) - Simple lottery using entropy oracle
+- [EntropyOracle](./EntropyOracle.md) - Main oracle contract for entropy requests - Developer-friendly interface
+- [EntropyOracle](./EntropyOracle.md) - Main oracle contract for entropy requests - Developer-friendly interface
 
 ## Overview
 

@@ -2,9 +2,10 @@
 
 ## Examples
 
-- [UserDecryptSingle](./UserDecryptSingle.md) - User decrypt single value using FHE.allow
+- [EntropyOracle](./EntropyOracle.md) - Main oracle contract for entropy requests - Developer-friendly interface
+- [EntropyOracle](./EntropyOracle.md) - Main oracle contract for entropy requests - Developer-friendly interface
 
 ## Overview
 
-This category contains 1 example(s) demonstrating user concepts in FHEVM.
+This category contains 2 example(s) demonstrating user concepts in FHEVM.
 
