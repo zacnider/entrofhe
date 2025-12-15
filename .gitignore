@@ -49,3 +49,12 @@ docs/MASTER_SEED_EXPLANATION.md
 
 *.backup
 examples/*.backup
+
+# Local development and bounty tracking files (not for GitHub)
+BOUNTY_COMPLIANCE_REPORT.md
+BOUNTY_CHECKLIST.md
+COMPLETION_REPORT.md
+NEW_EXAMPLES_SUMMARY.md
+SETUP_NEW_EXAMPLES.md
+README_DEVELOPMENT.md
+USER_GUIDE.md
