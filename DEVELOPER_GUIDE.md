@@ -9,6 +9,7 @@ This guide explains how to add new examples, update dependencies, and maintain t
 - [Testing Examples](#testing-examples)
 - [Documentation Standards](#documentation-standards)
 - [Category Guidelines](#category-guidelines)
+- [Working with Zama FHEVM](#working-with-zama-fhevm)
 
 ## 🚀 Adding a New Example
 
@@ -65,10 +66,21 @@ When FHEVM or Hardhat versions change:
 
 ### Bulk Updates
 
-To update all examples at once:
+To update all examples at once, use the automation script:
 
 ```bash
-# Script to update all examples (create this if needed)
+# Update all examples from base-template
+npm run update-examples
+```
+
+This script (`automation/update-all-examples.ts`) updates:
+- `package.json` dependencies
+- `hardhat.config.ts` configuration
+- `tsconfig.json` settings
+
+**Alternative (manual):**
+```bash
+# Manual update for all examples
 for dir in examples/*/; do
   cd "$dir"
   npm install
