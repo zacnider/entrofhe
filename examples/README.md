@@ -1,6 +1,24 @@
 # FHEVM Examples
 
-This directory contains standalone FHEVM examples organized by category.
+This directory contains standalone FHEVM examples organized by category. **All examples are built using Zama FHEVM** - a full-stack framework for integrating Fully Homomorphic Encryption (FHE) with blockchain applications.
+
+## 🔐 Built with Zama FHEVM
+
+All examples in this directory demonstrate real-world usage of **Zama FHEVM** features:
+
+- **ZamaEthereumConfig**: All contracts inherit from Zama's network configuration
+- **FHE Operations**: Using Zama's FHE library (FHE.add, FHE.sub, FHE.mul, FHE.eq, FHE.xor, etc.)
+- **Encrypted Types**: Using Zama's encrypted integer types (euint64, externalEuint64)
+- **Access Control**: Using Zama's permission system (FHE.allow, FHE.allowThis, FHE.allowTransient)
+- **Public Decryption**: Using FHE.makePubliclyDecryptable() for public decryption patterns
+- **Zama FHEVM Relayer**: All encrypted operations use Zama's relayer
+
+Each example's README includes a detailed **Zama FHEVM Usage** section explaining which Zama FHEVM features are used and how.
+
+**Learn more about Zama FHEVM:**
+- 📚 [Zama FHEVM Documentation](https://docs.zama.org/protocol)
+- 🎓 [Zama Developer Hub](https://www.zama.org/developer-hub)
+- 💻 [Zama FHEVM GitHub](https://github.com/zama-ai/fhevm)
 
 ## Categories
 
