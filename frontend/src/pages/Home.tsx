@@ -141,41 +141,6 @@ const Home: React.FC = () => {
               No external dependencies. All randomness generated from blockchain data
             </p>
           </div>
-          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-2xl p-8 border-2 border-blue-200 dark:border-cyan-700 hover:shadow-xl transition-shadow">
-            <div className="w-12 h-12 bg-blue-100 dark:bg-cyan-900/40 rounded-lg flex items-center justify-center mb-4">
-              <CodeBracketIcon className="h-6 w-6 text-blue-600 dark:text-cyan-400" />
-            </div>
-            <h3 className="text-xl font-bold text-blue-900 dark:text-cyan-100 mb-2">Built with Zama FHEVM</h3>
-            <p className="text-blue-700 dark:text-cyan-300 mb-3">
-              Built entirely using Zama FHEVM - the full-stack framework for integrating Fully Homomorphic Encryption with blockchain applications.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <a 
-                href="https://docs.zama.org/protocol" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-xs font-semibold text-blue-600 dark:text-cyan-400 hover:text-blue-800 dark:hover:text-cyan-300 transition-colors"
-              >
-                📚 Docs →
-              </a>
-              <a 
-                href="https://www.zama.org/developer-hub" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-xs font-semibold text-blue-600 dark:text-cyan-400 hover:text-blue-800 dark:hover:text-cyan-300 transition-colors"
-              >
-                🎓 Dev Hub →
-              </a>
-              <a 
-                href="https://github.com/zama-ai/fhevm" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-xs font-semibold text-blue-600 dark:text-cyan-400 hover:text-blue-800 dark:hover:text-cyan-300 transition-colors"
-              >
-                💻 GitHub →
-              </a>
-            </div>
-          </div>
         </div>
       </section>
 
