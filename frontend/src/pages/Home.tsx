@@ -66,6 +66,16 @@ const Home: React.FC = () => {
               <BookOpenIcon className="h-6 w-6" />
               <span>View Documentation</span>
             </Link>
+            <a
+              href="https://github.com/zacnider/entrofhe"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center space-x-2 px-8 py-4 bg-white dark:bg-slate-800 text-primary-700 dark:text-cyan-400 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-700 transition-all font-semibold text-lg border-2 border-primary-300 dark:border-cyan-700"
+            >
+              <CodeBracketIcon className="h-6 w-6" />
+              <span>View on GitHub</span>
+              <ArrowRightIcon className="h-5 w-5" />
+            </a>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-primary-500 dark:text-slate-500">
             <div className="flex items-center space-x-2">
@@ -135,7 +145,7 @@ const Home: React.FC = () => {
             <div className="w-12 h-12 bg-blue-100 dark:bg-cyan-900/40 rounded-lg flex items-center justify-center mb-4">
               <CodeBracketIcon className="h-6 w-6 text-blue-600 dark:text-cyan-400" />
             </div>
-            <h3 className="text-xl font-bold text-blue-900 dark:text-cyan-100 mb-2">Powered by Zama FHEVM</h3>
+            <h3 className="text-xl font-bold text-blue-900 dark:text-cyan-100 mb-2">Built with Zama FHEVM</h3>
             <p className="text-blue-700 dark:text-cyan-300 mb-3">
               Built entirely using Zama FHEVM - the full-stack framework for integrating Fully Homomorphic Encryption with blockchain applications.
             </p>
@@ -460,6 +470,15 @@ const Home: React.FC = () => {
               <BookOpenIcon className="h-6 w-6" />
               <span>Read Docs</span>
             </Link>
+            <a
+              href="https://github.com/zacnider/entrofhe"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center space-x-2 px-8 py-4 bg-transparent border-2 border-white text-white rounded-xl hover:bg-white/10 transition-all font-semibold text-lg"
+            >
+              <CodeBracketIcon className="h-6 w-6" />
+              <span>GitHub</span>
+            </a>
           </div>
         </div>
       </section>
