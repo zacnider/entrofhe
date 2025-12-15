@@ -4,12 +4,12 @@ This guide explains how to add new examples, update dependencies, and maintain t
 
 ## 📋 Table of Contents
 
-- [Adding a New Example](#adding-a-new-example)
-- [Updating Dependencies](#updating-dependencies)
-- [Testing Examples](#testing-examples)
-- [Documentation Standards](#documentation-standards)
-- [Category Guidelines](#category-guidelines)
-- [Working with Zama FHEVM](#working-with-zama-fhevm)
+- [Adding a New Example](#-adding-a-new-example)
+- [Updating Dependencies](#-updating-dependencies)
+- [Testing Examples](#-testing-examples)
+- [Documentation Standards](#-documentation-standards)
+- [Category Guidelines](#-category-guidelines)
+- [Working with Zama FHEVM](#-working-with-zama-fhevm)
 
 ## 🚀 Adding a New Example
 
