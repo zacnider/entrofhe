@@ -8,7 +8,7 @@ This repository provides a complete set of FHEVM examples organized by category,
 
 ### 🔑 Key Feature: EntropyOracle Integration
 
-**All 14 tutorial examples** demonstrate how to integrate and use **EntropyOracle** - an on-chain entropy oracle that provides cryptographically secure randomness using FHE technology. Unlike traditional VRF solutions, EntropyOracle keeps seeds encrypted at all times, ensuring maximum privacy and security.
+**All 22 tutorial examples** demonstrate how to integrate and use **EntropyOracle** - an on-chain entropy oracle that provides cryptographically secure randomness using FHE technology. Unlike traditional VRF solutions, EntropyOracle keeps seeds encrypted at all times, ensuring maximum privacy and security.
 
 **EntropyOracle Features:**
 - 🔒 **FHE-Based Privacy**: Seeds and entropy remain encrypted on-chain
@@ -90,13 +90,16 @@ done
 - **EntropyEqualityComparison**: FHE equality comparison using EntropyOracle
 
 ### Encryption (EntropyOracle Integration)
-- **EntropyEncryption**: Encrypt and store values using EntropyOracle
+- **EntropyEncryption**: Encrypt and store single value using EntropyOracle
+- **EntropyEncryptMultiple**: Encrypt and store multiple values using EntropyOracle
 
 ### User Decryption (EntropyOracle Integration)
-- **EntropyUserDecryption**: User decrypt using EntropyOracle and FHE.allow
+- **EntropyUserDecryption**: User decrypt single value using EntropyOracle and FHE.allow
+- **EntropyUserDecryptMultiple**: User decrypt multiple values using EntropyOracle and FHE.allow
 
 ### Public Decryption (EntropyOracle Integration)
-- **EntropyPublicDecryption**: Public decrypt using EntropyOracle and makePubliclyDecryptable
+- **EntropyPublicDecryption**: Public decrypt single value using EntropyOracle and makePubliclyDecryptable
+- **EntropyPublicDecryptMultiple**: Public decrypt multiple values using EntropyOracle and makePubliclyDecryptable
 
 ### Access Control (EntropyOracle Integration)
 - **EntropyAccessControl**: Access control with EntropyOracle, FHE.allow and FHE.allowTransient
@@ -298,15 +301,15 @@ All examples follow this Zama FHEVM integration pattern:
 
 ## 📊 Statistics
 
-- **Total Examples**: 19 examples (all with EntropyOracle integration)
+- **Total Examples**: 22 examples (all with EntropyOracle integration)
 - **Categories**: 10 categories
 - **EntropyOracle Integration**: ✅ All examples
 - **Test Coverage**: Comprehensive tests for each example
 - **Documentation**: Auto-generated from code
 - **Basic Examples**: 3 (EntropyCounter, EntropyArithmetic, EntropyEqualityComparison)
-- **Encryption Examples**: 1 (EntropyEncryption)
-- **User Decryption Examples**: 1 (EntropyUserDecryption)
-- **Public Decryption Examples**: 1 (EntropyPublicDecryption)
+- **Encryption Examples**: 2 (EntropyEncryption, EntropyEncryptMultiple)
+- **User Decryption Examples**: 2 (EntropyUserDecryption, EntropyUserDecryptMultiple)
+- **Public Decryption Examples**: 2 (EntropyPublicDecryption, EntropyPublicDecryptMultiple)
 - **Access Control Examples**: 1 (EntropyAccessControl)
 - **Input Proof Examples**: 1 (EntropyInputProof)
 - **Anti-Patterns Examples**: 2 (EntropyMissingAllowThis, EntropyViewWithEncrypted)
