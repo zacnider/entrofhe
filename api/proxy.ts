@@ -14,13 +14,39 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const targetUrl = `${BACKEND_URL}/api/${cleanPath}`;
   
   try {
-    const response = await fetch(targetUrl, {
-      method: req.method,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
-    });
+    console.log(`[Proxy] ${req.method} ${cleanPath} -> ${targetUrl}`);
+    
+    // For test and verify endpoints, increase timeout
+    const isLongRunning = cleanPath === 'test' || cleanPath === 'verify';
+    const timeout = isLongRunning ? 300000 : 30000; // 5 minutes for test/verify, 30s for others
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    
+    let response: Response;
+    try {
+      response = await fetch(targetUrl, {
+        method: req.method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : undefined,
+        signal: controller.signal,
+      });
+      clearTimeout(timeoutId);
+    } catch (fetchError: any) {
+      clearTimeout(timeoutId);
+      console.error(`[Proxy] Fetch error for ${cleanPath}:`, fetchError);
+      // If it's a network error, provide more details
+      if (fetchError.code === 'ECONNREFUSED' || fetchError.message?.includes('fetch failed')) {
+        return res.status(503).json({
+          error: 'Backend server unreachable',
+          message: `Cannot connect to backend server at ${BACKEND_URL}. Please check if the server is running.`,
+          details: fetchError.message,
+        });
+      }
+      throw fetchError;
+    }
     
     const contentType = response.headers.get('content-type');
     let data;

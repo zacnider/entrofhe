@@ -23,5 +23,6 @@
     "api/indexer-proxy.ts": {
       "maxDuration": 300
     }
-  }
+  },
+  "regions": ["iad1"]
 }
