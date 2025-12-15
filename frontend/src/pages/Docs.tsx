@@ -273,16 +273,47 @@ const Integration: React.FC = () => (
       </div>
 
     <section className="space-y-4">
-      <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">FHE Technology</h3>
+      <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Zama FHEVM Technology</h3>
       <p className="text-gray-700 dark:text-slate-300">
-        Entrofhe uses Zama Network's FHEVM (Fully Homomorphic Encryption Virtual Machine) to perform computations 
-        on encrypted data without ever decrypting it. This ensures that:
+        Entrofhe is built entirely using <strong>Zama FHEVM</strong> - a full-stack framework for integrating Fully Homomorphic Encryption (FHE) with blockchain applications. Zama FHEVM enables confidential smart contracts on EVM-compatible blockchains.
       </p>
+      
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+        <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">What is Zama FHEVM?</h4>
+        <p className="text-blue-700 dark:text-blue-300 mb-3">
+          Zama FHEVM is the core framework of the Zama Confidential Blockchain Protocol. It allows you to perform computations on encrypted data without ever decrypting it.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <a href="https://docs.zama.org/protocol" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
+            📚 Zama FHEVM Documentation →
+          </a>
+          <a href="https://www.zama.org/developer-hub" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
+            🎓 Zama Developer Hub →
+          </a>
+          <a href="https://github.com/zama-ai/fhevm" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
+            💻 Zama FHEVM GitHub →
+          </a>
+        </div>
+      </div>
+
+      <h4 className="font-semibold text-primary-800 dark:text-cyan-300 mt-4 mb-2">Zama FHEVM Features Used in This Project:</h4>
+      <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-slate-300 ml-4">
+        <li><strong>ZamaEthereumConfig</strong>: All contracts inherit from Zama's network configuration</li>
+        <li><strong>FHE Operations</strong>: Using Zama's FHE library (FHE.add, FHE.sub, FHE.mul, FHE.eq, etc.)</li>
+        <li><strong>Encrypted Types</strong>: Using Zama's encrypted integer types (euint64, externalEuint64)</li>
+        <li><strong>Access Control</strong>: Using Zama's permission system (FHE.allow, FHE.allowThis, FHE.allowTransient)</li>
+        <li><strong>Public Decryption</strong>: Using FHE.makePubliclyDecryptable() for public decryption patterns</li>
+        <li><strong>Zama FHEVM Relayer</strong>: All encrypted operations use Zama's relayer</li>
+      </ul>
+
+      <h4 className="font-semibold text-primary-800 dark:text-cyan-300 mt-4 mb-2">Zama FHEVM Benefits:</h4>
       <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-slate-300 ml-4">
         <li>Master seeds remain encrypted on-chain</li>
         <li>Entropy generation happens in encrypted form</li>
         <li>Results can be used in other FHE operations</li>
         <li>Decryption only happens when explicitly requested</li>
+        <li>Quantum-resistant cryptography</li>
+        <li>End-to-end encryption of transactions and state</li>
       </ul>
     </section>
 
@@ -566,6 +597,100 @@ const APIReference: React.FC = () => (
     bytes32 tag
 );`}
             </pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section className="space-y-4">
+      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Zama FHEVM Usage</h2>
+      <p className="text-gray-700 dark:text-slate-300">
+        This project is built entirely using <strong>Zama FHEVM</strong>. All examples demonstrate real-world usage of Zama FHEVM's core features.
+      </p>
+
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+        <h3 className="text-xl font-semibold text-blue-800 dark:text-blue-200 mb-3">What is Zama FHEVM?</h3>
+        <p className="text-blue-700 dark:text-blue-300 mb-4">
+          <strong>Zama FHEVM</strong> is the core framework of the Zama Confidential Blockchain Protocol. It enables confidential smart contracts on EVM-compatible blockchains by leveraging Fully Homomorphic Encryption (FHE).
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <a href="https://docs.zama.org/protocol" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
+            📚 Zama FHEVM Documentation →
+          </a>
+          <a href="https://www.zama.org/developer-hub" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
+            🎓 Zama Developer Hub →
+          </a>
+          <a href="https://github.com/zama-ai/fhevm" target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
+            💻 Zama FHEVM GitHub →
+          </a>
+        </div>
+      </div>
+
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-6">
+        <div>
+          <h3 className="text-xl font-semibold text-primary-700 dark:text-cyan-300 mb-3">Zama FHEVM Features Used</h3>
+          <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-slate-300 ml-4">
+            <li><strong>ZamaEthereumConfig</strong>: All contracts inherit from Zama's network configuration</li>
+            <li><strong>FHE Operations</strong>: Using Zama's FHE library (FHE.add, FHE.sub, FHE.mul, FHE.eq, FHE.xor, etc.)</li>
+            <li><strong>Encrypted Types</strong>: Using Zama's encrypted integer types (euint64, externalEuint64)</li>
+            <li><strong>Access Control</strong>: Using Zama's permission system (FHE.allow, FHE.allowThis, FHE.allowTransient)</li>
+            <li><strong>Public Decryption</strong>: Using FHE.makePubliclyDecryptable() for public decryption patterns</li>
+            <li><strong>Zama FHEVM Relayer</strong>: All encrypted operations use Zama's relayer</li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="text-xl font-semibold text-primary-700 dark:text-cyan-300 mb-3">Zama FHEVM Imports</h3>
+          <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
+{`// Zama FHEVM Core Library - FHE operations and encrypted types
+import {FHE, euint64, externalEuint64} from "@fhevm/solidity/lib/FHE.sol";
+
+// Zama Network Configuration - Provides network-specific settings
+import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";`}
+          </pre>
+        </div>
+
+        <div>
+          <h3 className="text-xl font-semibold text-primary-700 dark:text-cyan-300 mb-3">Zama FHEVM Contract Pattern</h3>
+          <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
+{`// All contracts inherit from ZamaEthereumConfig
+contract MyContract is ZamaEthereumConfig {
+    // Use Zama FHEVM encrypted types
+    euint64 private encryptedValue;
+    
+    // Use Zama FHEVM operations
+    function add(euint64 a, euint64 b) external returns (euint64) {
+        euint64 result = FHE.add(a, b);
+        FHE.allowThis(result); // Zama FHEVM permission system
+        return result;
+    }
+}`}
+          </pre>
+        </div>
+
+        <div>
+          <h3 className="text-xl font-semibold text-primary-700 dark:text-cyan-300 mb-3">Zama FHEVM Operations Reference</h3>
+          <div className="space-y-3">
+            <div>
+              <h4 className="font-semibold text-primary-600 dark:text-cyan-400">Arithmetic Operations</h4>
+              <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.add()</code>, <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.sub()</code>, <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.mul()</code>, <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.div()</code>
+            </div>
+            <div>
+              <h4 className="font-semibold text-primary-600 dark:text-cyan-400">Comparison Operations</h4>
+              <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.eq()</code>, <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.lt()</code>, <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.gt()</code>, <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.le()</code>, <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.ge()</code>
+            </div>
+            <div>
+              <h4 className="font-semibold text-primary-600 dark:text-cyan-400">Boolean Operations</h4>
+              <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.and()</code>, <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.or()</code>, <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.not()</code>, <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.xor()</code>
+            </div>
+            <div>
+              <h4 className="font-semibold text-primary-600 dark:text-cyan-400">Access Control</h4>
+              <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.allowThis()</code>, <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.allow()</code>, <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.allowTransient()</code>
+            </div>
+            <div>
+              <h4 className="font-semibold text-primary-600 dark:text-cyan-400">Type Conversion</h4>
+              <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.fromExternal()</code>, <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.asEuint64()</code>, <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded text-sm">FHE.makePubliclyDecryptable()</code>
+            </div>
           </div>
         </div>
       </div>

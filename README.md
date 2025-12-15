@@ -209,9 +209,90 @@ contract MyContract {
 
 See [docs/INTEGRATION.md](./docs/INTEGRATION.md) for detailed integration guide.
 
+## 🔐 Zama FHEVM Usage in This Project
+
+This project is built entirely using **Zama FHEVM** - a full-stack framework for integrating Fully Homomorphic Encryption (FHE) with blockchain applications. All examples demonstrate real-world usage of Zama FHEVM's core features.
+
+### Zama FHEVM Features Used
+
+All examples in this hub utilize the following Zama FHEVM capabilities:
+
+- **ZamaEthereumConfig**: All contracts inherit from `ZamaEthereumConfig` for network-specific configuration
+- **FHE Operations**: Extensive use of Zama's FHE library operations:
+  - Arithmetic: `FHE.add`, `FHE.sub`, `FHE.mul`, `FHE.div`
+  - Comparison: `FHE.eq`, `FHE.lt`, `FHE.gt`, `FHE.le`, `FHE.ge`
+  - Boolean: `FHE.and`, `FHE.or`, `FHE.not`, `FHE.xor`
+  - Ternary: `FHE.ifThenElse`
+- **Encrypted Types**: Using Zama's encrypted integer types (`euint64`, `euint32`, `euint16`, `euint8`)
+- **External Encryption**: Using `externalEuint64` with input proofs for user-provided encrypted values
+- **Access Control**: Zama's permission system:
+  - `FHE.allowThis()` - Allow contract to use encrypted value
+  - `FHE.allow()` - Allow specific user to decrypt
+  - `FHE.allowTransient()` - Temporary permission for single operation
+- **Public Decryption**: Using `FHE.makePubliclyDecryptable()` for public decryption patterns
+- **Zama FHEVM Relayer**: All examples use Zama's relayer for encrypted operations and decryption
+
+### Zama FHEVM Imports
+
+Every example uses these core Zama FHEVM imports:
+
+```solidity
+// Zama FHEVM Core Library - FHE operations and encrypted types
+import {FHE, euint64, externalEuint64} from "@fhevm/solidity/lib/FHE.sol";
+
+// Zama Network Configuration - Provides network-specific settings
+import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
+```
+
+### Zama FHEVM Integration Pattern
+
+All examples follow this Zama FHEVM integration pattern:
+
+1. **Inherit from ZamaEthereumConfig**: Provides network configuration
+   ```solidity
+   contract MyContract is ZamaEthereumConfig {
+       // Contract code
+   }
+   ```
+
+2. **Use Zama FHE Operations**: Perform computations on encrypted data
+   ```solidity
+   euint64 result = FHE.add(encryptedValue1, encryptedValue2);
+   ```
+
+3. **Handle Permissions**: Use Zama's access control system
+   ```solidity
+   FHE.allowThis(result);  // Allow contract to use
+   FHE.allow(result, user); // Allow user to decrypt
+   ```
+
+4. **Use Zama Relayer**: All encrypted operations are processed by Zama's relayer
+
+### Zama FHEVM Usage Statistics
+
+- **Total Zama FHEVM Operations Used**: 15+ different operations across all examples
+- **Zama FHEVM Features Demonstrated**: 
+  - ✅ Encrypted arithmetic operations
+  - ✅ Encrypted comparison operations
+  - ✅ Access control patterns
+  - ✅ Public decryption patterns
+  - ✅ External encryption with input proofs
+  - ✅ Handle lifecycle management
+- **Zama FHEVM Contracts**: 22 examples, all using `ZamaEthereumConfig`
+- **Zama FHEVM Relayer**: Used for all encrypted operations and decryption
+
+### Learn More About Zama FHEVM
+
+- 📚 [Zama FHEVM Documentation](https://docs.zama.org/protocol) - Complete protocol documentation
+- 🎓 [Zama Developer Hub](https://www.zama.org/developer-hub) - Learning resources and tutorials
+- 💻 [Zama FHEVM GitHub](https://github.com/zama-ai/fhevm) - Source code and examples
+- 🛠️ [Zama Hardhat Template](https://github.com/zama-ai/fhevm-hardhat-template) - Quick start template
+
 ## 🔗 Reference Repositories
 
 - [Zama FHEVM Documentation](https://docs.zama.org/protocol)
+- [Zama Developer Hub](https://www.zama.org/developer-hub)
+- [Zama FHEVM GitHub](https://github.com/zama-ai/fhevm)
 - [Zama Hardhat Template](https://github.com/zama-ai/fhevm-hardhat-template)
 - [OpenZeppelin Confidential Contracts](https://github.com/OpenZeppelin/openzeppelin-confidential-contracts)
 

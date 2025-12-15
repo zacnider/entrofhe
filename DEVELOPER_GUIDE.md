@@ -272,9 +272,178 @@ for dir in examples/*/; do
 done
 ```
 
+## 🔐 Working with Zama FHEVM
+
+This project is built entirely using **Zama FHEVM**. Understanding Zama FHEVM is essential for creating and maintaining examples.
+
+### What is Zama FHEVM?
+
+**Zama FHEVM** is the core framework of the Zama Confidential Blockchain Protocol. It enables confidential smart contracts on EVM-compatible blockchains by leveraging Fully Homomorphic Encryption (FHE).
+
+**Key Features:**
+- End-to-end encryption of transactions and state
+- Composability and data availability on-chain
+- No impact on existing dApps and state
+- Quantum-resistant cryptography
+
+Learn more: [Zama FHEVM Documentation](https://docs.zama.org/protocol)
+
+### Zama FHEVM Dependencies
+
+All examples use these Zama FHEVM packages:
+
+```json
+{
+  "dependencies": {
+    "@fhevm/solidity": "^0.9.1"
+  },
+  "devDependencies": {
+    "@fhevm/hardhat-plugin": "^0.3.0-1",
+    "@zama-fhe/relayer-sdk": "^0.3.0-6"
+  }
+}
+```
+
+### Zama FHEVM Imports
+
+Every contract must import Zama FHEVM libraries:
+
+```solidity
+// Zama FHEVM Core Library
+import {FHE, euint64, externalEuint64} from "@fhevm/solidity/lib/FHE.sol";
+
+// Zama Network Configuration
+import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
+```
+
+### Zama FHEVM Contract Structure
+
+All contracts must inherit from `ZamaEthereumConfig`:
+
+```solidity
+contract MyContract is ZamaEthereumConfig {
+    // Contract code
+}
+```
+
+### Zama FHEVM Operations
+
+Common Zama FHEVM operations used in examples:
+
+**Arithmetic:**
+```solidity
+euint64 result = FHE.add(a, b);
+euint64 diff = FHE.sub(a, b);
+euint64 product = FHE.mul(a, b);
+```
+
+**Comparison:**
+```solidity
+ebool isEqual = FHE.eq(a, b);
+ebool isLess = FHE.lt(a, b);
+```
+
+**Access Control:**
+```solidity
+FHE.allowThis(value);        // Allow contract to use
+FHE.allow(value, user);      // Allow user to decrypt
+FHE.allowTransient(value, user); // Temporary permission
+```
+
+**Type Conversion:**
+```solidity
+euint64 encrypted = FHE.asEuint64(42);
+euint64 internal = FHE.fromExternal(externalValue, inputProof);
+```
+
+### Zama FHEVM Relayer
+
+The Zama FHEVM relayer is required for:
+- Encrypting plaintext values
+- Decrypting encrypted values
+- Processing FHE operations
+
+The relayer is configured through Hardhat's FHEVM plugin:
+
+```typescript
+// hardhat.config.ts
+import "@fhevm/hardhat-plugin";
+
+export default {
+  fhevm: {
+    network: "sepolia", // or "localhost"
+  },
+};
+```
+
+### Zama FHEVM Best Practices
+
+1. **Always inherit from ZamaEthereumConfig**
+   ```solidity
+   contract MyContract is ZamaEthereumConfig {
+       // ✅ Good
+   }
+   ```
+
+2. **Handle permissions correctly**
+   ```solidity
+   euint64 result = FHE.add(a, b);
+   FHE.allowThis(result); // ✅ Required before using
+   ```
+
+3. **Validate external inputs**
+   ```solidity
+   euint64 internal = FHE.fromExternal(externalValue, inputProof);
+   FHE.allowThis(internal); // ✅ Required
+   ```
+
+4. **Use appropriate encrypted types**
+   ```solidity
+   euint64 value = FHE.asEuint64(42); // ✅ Use euint64 for most cases
+   ```
+
+### Zama FHEVM Testing
+
+Tests use Zama FHEVM's Hardhat plugin:
+
+```typescript
+import hre from "hardhat";
+
+describe("MyContract", function () {
+  it("Should work with encrypted values", async function () {
+    const contract = await deployContract();
+    const contractAddress = await contract.getAddress();
+    
+    // Initialize Zama FHEVM coprocessor
+    await hre.fhevm.assertCoprocessorInitialized(contract, "MyContract");
+    
+    // Create encrypted input using Zama FHEVM
+    const input = hre.fhevm.createEncryptedInput(contractAddress, owner.address);
+    input.add64(42);
+    const encryptedInput = await input.encrypt();
+    
+    // Use encrypted value
+    await contract.initialize(
+      encryptedInput.handles[0],
+      encryptedInput.inputProof
+    );
+  });
+});
+```
+
+### Zama FHEVM Resources
+
+- 📚 [Zama FHEVM Documentation](https://docs.zama.org/protocol)
+- 🎓 [Zama Developer Hub](https://www.zama.org/developer-hub)
+- 💻 [Zama FHEVM GitHub](https://github.com/zama-ai/fhevm)
+- 🛠️ [Zama Hardhat Template](https://github.com/zama-ai/fhevm-hardhat-template)
+- 📖 [Zama FHEVM Usage Guide](./docs/ZAMA_FHEVM_USAGE.md) - Detailed usage guide
+
 ## 📚 Resources
 
 - [Zama FHEVM Docs](https://docs.zama.org/protocol)
+- [Zama Developer Hub](https://www.zama.org/developer-hub)
+- [Zama FHEVM GitHub](https://github.com/zama-ai/fhevm)
 - [Hardhat Docs](https://hardhat.org/docs)
 - [Ethers.js Docs](https://docs.ethers.org/)
 
