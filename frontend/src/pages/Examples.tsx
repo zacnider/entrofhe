@@ -31,6 +31,7 @@ const Examples: React.FC = () => {
     { value: 'input-proof', label: 'Input Proof' },
     { value: 'anti-patterns', label: 'Anti-Patterns' },
     { value: 'handles', label: 'Handles' },
+    { value: 'advanced', label: 'Advanced' },
     { value: 'openzeppelin', label: 'OpenZeppelin' },
   ];
 
@@ -166,6 +167,27 @@ const Examples: React.FC = () => {
       description: "Vesting wallet with encrypted amounts and EntropyOracle integration",
       category: "openzeppelin",
       path: "openzeppelin-vestingwallet",
+      icon: <CubeIcon className="h-6 w-6" />,
+    },
+    {
+      title: "SimpleLottery",
+      description: "Simple lottery using EntropyOracle for winner selection",
+      category: "advanced",
+      path: "advanced-simplelottery",
+      icon: <TrophyIcon className="h-6 w-6" />,
+    },
+    {
+      title: "RandomNumberGenerator",
+      description: "Random number generator using EntropyOracle for encrypted randomness",
+      category: "advanced",
+      path: "advanced-randomnumbergenerator",
+      icon: <SparklesIcon className="h-6 w-6" />,
+    },
+    {
+      title: "EntropyNFT",
+      description: "ERC721 NFT with trait selection using EntropyOracle",
+      category: "advanced",
+      path: "advanced-entropynft",
       icon: <CubeIcon className="h-6 w-6" />,
     },
   ];
@@ -431,6 +453,9 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
       'anti-patterns-missingallowthis': 'EntropyMissingAllowThis',
       'anti-patterns-viewwithencrypted': 'EntropyViewWithEncrypted',
       'handles-handlelifecycle': 'EntropyHandleLifecycle',
+      'advanced-simplelottery': 'SimpleLottery',
+      'advanced-randomnumbergenerator': 'RandomNumberGenerator',
+      'advanced-entropynft': 'EntropyNFT',
       'openzeppelin-erc7984token': 'EntropyERC7984Token',
       'openzeppelin-erc7984toerc20wrapper': 'EntropyERC7984ToERC20Wrapper',
       'openzeppelin-swaperc7984toerc20': 'EntropySwapERC7984ToERC20',
@@ -540,6 +565,13 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
           throw new Error('Token addresses must be different');
         }
         args = [ENTROPY_ORACLE_ADDRESS, swapTokenAAddress.trim(), swapTokenBAddress.trim()];
+      } else if (path === 'advanced-entropynft') {
+        // EntropyNFT requires: (oracle, initialOwner)
+        if (!address) {
+          toast.error('Please connect your wallet first');
+          throw new Error('Wallet connection required');
+        }
+        args = [ENTROPY_ORACLE_ADDRESS, address];
       }
 
       // Encode constructor arguments
