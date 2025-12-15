@@ -32,10 +32,24 @@ const Home: React.FC = () => {
               For Your dApps
             </span>
           </h2>
-          <p className="text-xl md:text-2xl text-primary-600 dark:text-slate-400 mb-10 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-primary-600 dark:text-slate-400 mb-6 max-w-3xl mx-auto leading-relaxed">
             Get cryptographically secure, encrypted entropy using Fully Homomorphic Encryption. 
             Perfect for lotteries, NFT minting, gaming, and more.
           </p>
+          {/* Zama FHEVM Badge */}
+          <div className="mb-10 flex items-center justify-center">
+            <div className="inline-flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200 dark:border-cyan-700 rounded-full">
+              <span className="text-sm font-semibold text-blue-700 dark:text-cyan-300">Built with</span>
+              <a 
+                href="https://docs.zama.org/protocol" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-sm font-bold text-blue-600 dark:text-cyan-400 hover:text-blue-800 dark:hover:text-cyan-300 transition-colors"
+              >
+                Zama FHEVM
+              </a>
+            </div>
+          </div>
           <div className="flex flex-wrap items-center justify-center gap-4 mb-10">
             <Link
               to="/examples"
@@ -116,6 +130,117 @@ const Home: React.FC = () => {
             <p className="text-primary-600 dark:text-slate-400">
               No external dependencies. All randomness generated from blockchain data
             </p>
+          </div>
+          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-2xl p-8 border-2 border-blue-200 dark:border-cyan-700 hover:shadow-xl transition-shadow">
+            <div className="w-12 h-12 bg-blue-100 dark:bg-cyan-900/40 rounded-lg flex items-center justify-center mb-4">
+              <CodeBracketIcon className="h-6 w-6 text-blue-600 dark:text-cyan-400" />
+            </div>
+            <h3 className="text-xl font-bold text-blue-900 dark:text-cyan-100 mb-2">Powered by Zama FHEVM</h3>
+            <p className="text-blue-700 dark:text-cyan-300 mb-3">
+              Built entirely using Zama FHEVM - the full-stack framework for integrating Fully Homomorphic Encryption with blockchain applications.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <a 
+                href="https://docs.zama.org/protocol" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-xs font-semibold text-blue-600 dark:text-cyan-400 hover:text-blue-800 dark:hover:text-cyan-300 transition-colors"
+              >
+                📚 Docs →
+              </a>
+              <a 
+                href="https://www.zama.org/developer-hub" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-xs font-semibold text-blue-600 dark:text-cyan-400 hover:text-blue-800 dark:hover:text-cyan-300 transition-colors"
+              >
+                🎓 Dev Hub →
+              </a>
+              <a 
+                href="https://github.com/zama-ai/fhevm" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-xs font-semibold text-blue-600 dark:text-cyan-400 hover:text-blue-800 dark:hover:text-cyan-300 transition-colors"
+              >
+                💻 GitHub →
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Zama FHEVM Technology Section */}
+      <section className="py-12 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-slate-900 dark:to-slate-800 rounded-3xl">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-primary-900 dark:text-slate-100 mb-4">
+              Zama FHEVM Technology
+            </h2>
+            <p className="text-xl text-primary-600 dark:text-slate-400 max-w-3xl mx-auto">
+              This project is built entirely using <strong className="text-blue-600 dark:text-cyan-400">Zama FHEVM</strong> - a full-stack framework for integrating Fully Homomorphic Encryption (FHE) with blockchain applications.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-gray-200 dark:border-slate-700">
+              <h3 className="text-2xl font-bold text-primary-900 dark:text-slate-100 mb-4">What is Zama FHEVM?</h3>
+              <p className="text-primary-600 dark:text-slate-400 mb-4">
+                Zama FHEVM is the core framework of the Zama Confidential Blockchain Protocol. It enables confidential smart contracts on EVM-compatible blockchains by leveraging Fully Homomorphic Encryption (FHE).
+              </p>
+              <p className="text-primary-600 dark:text-slate-400">
+                All examples in this hub demonstrate real-world usage of Zama FHEVM's core features, including encrypted arithmetic operations, access control patterns, and public decryption.
+              </p>
+            </div>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-gray-200 dark:border-slate-700">
+              <h3 className="text-2xl font-bold text-primary-900 dark:text-slate-100 mb-4">Zama FHEVM Features Used</h3>
+              <ul className="space-y-2 text-primary-600 dark:text-slate-400">
+                <li className="flex items-start">
+                  <CheckCircleIcon className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <span><strong>ZamaEthereumConfig</strong>: All contracts inherit from Zama's network configuration</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircleIcon className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <span><strong>FHE Operations</strong>: Using Zama's FHE library (FHE.add, FHE.sub, FHE.mul, FHE.eq, FHE.xor, etc.)</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircleIcon className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <span><strong>Encrypted Types</strong>: Using Zama's encrypted integer types (euint64, externalEuint64)</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircleIcon className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <span><strong>Access Control</strong>: Using Zama's permission system (FHE.allow, FHE.allowThis, FHE.allowTransient)</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircleIcon className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                  <span><strong>Zama FHEVM Relayer</strong>: All encrypted operations use Zama's relayer</span>
+                </li>
+              </ul>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <a 
+                  href="https://docs.zama.org/protocol" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-2 px-4 py-2 bg-blue-600 dark:bg-cyan-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-cyan-700 transition-colors text-sm font-semibold"
+                >
+                  <span>📚 Documentation</span>
+                </a>
+                <a 
+                  href="https://www.zama.org/developer-hub" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 text-blue-600 dark:text-cyan-400 border border-blue-300 dark:border-cyan-700 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors text-sm font-semibold"
+                >
+                  <span>🎓 Developer Hub</span>
+                </a>
+                <a 
+                  href="https://github.com/zama-ai/fhevm" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center space-x-2 px-4 py-2 bg-white dark:bg-slate-800 text-blue-600 dark:text-cyan-400 border border-blue-300 dark:border-cyan-700 rounded-lg hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors text-sm font-semibold"
+                >
+                  <span>💻 GitHub</span>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </section>

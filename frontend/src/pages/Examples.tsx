@@ -265,9 +265,20 @@ const Examples: React.FC = () => {
             <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300 mb-4">
               Tutorial Examples
             </h2>
-            <p className="text-primary-600 dark:text-slate-400 mb-6">
+            <p className="text-primary-600 dark:text-slate-400 mb-4">
               Educational examples demonstrating EntropyOracle integration patterns. Each example shows how to use entropy in different FHEVM scenarios.
             </p>
+            {/* Zama FHEVM Notice */}
+            <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200 dark:border-cyan-700 rounded-lg">
+              <div className="flex items-start space-x-3">
+                <CodeBracketIcon className="h-5 w-5 text-blue-600 dark:text-cyan-400 mt-0.5 flex-shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm text-blue-800 dark:text-cyan-300">
+                    <strong>Built with Zama FHEVM:</strong> All examples use <a href="https://docs.zama.org/protocol" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 dark:text-cyan-400 hover:underline">Zama FHEVM</a> - the full-stack framework for integrating Fully Homomorphic Encryption with blockchain applications. Each example demonstrates real-world usage of Zama FHEVM's core features including encrypted operations, access control, and permission management.
+                  </p>
+                </div>
+              </div>
+            </div>
             
             {/* Category Dropdown */}
             <div className="mb-6">
