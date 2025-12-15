@@ -197,8 +197,197 @@ describe("${config.name}", function () {
   console.log(`✓ Created test: ${testPath}`);
 }
 
+function generateZamaSection(category: string): string {
+  const exampleFeatures: Record<string, {
+    operations: string[];
+    concepts: string[];
+    codeExample: string;
+  }> = {
+    'basic': {
+      operations: ['FHE.add()', 'FHE.sub()', 'FHE.mul()', 'FHE.eq()', 'FHE.xor()'],
+      concepts: ['Encrypted Arithmetic', 'Encrypted Comparison', 'External Encryption', 'Permission Management', 'Entropy Integration'],
+      codeExample: `// Using Zama FHEVM's encrypted integer type
+euint64 private encryptedValue;
+
+// Converting external encrypted value to internal (Zama FHEVM)
+euint64 internalValue = FHE.fromExternal(encryptedValue, inputProof);
+FHE.allowThis(internalValue); // Zama FHEVM permission system
+
+// Performing encrypted operations using Zama FHEVM
+euint64 result = FHE.add(encryptedValue, FHE.asEuint64(1));
+FHE.allowThis(result);`
+    },
+    'encryption': {
+      operations: ['FHE.fromExternal()', 'FHE.allowThis()', 'FHE.xor()'],
+      concepts: ['External Encryption', 'Input Proofs', 'Permission Management', 'Entropy Integration'],
+      codeExample: `// Handling user-provided encrypted values (Zama FHEVM)
+euint64 internalValue = FHE.fromExternal(encryptedInput, inputProof);
+FHE.allowThis(internalValue);
+
+// Mixing with entropy using Zama FHEVM operations
+euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+FHE.allowThis(entropy);
+euint64 enhancedValue = FHE.xor(internalValue, entropy);
+FHE.allowThis(enhancedValue);`
+    },
+    'user-decryption': {
+      operations: ['FHE.allow()', 'FHE.allowThis()', 'FHE.fromExternal()'],
+      concepts: ['User-Specific Decryption', 'Access Control', 'Permission Management', 'Entropy Integration'],
+      codeExample: `// Using Zama FHEVM's access control system
+euint64 internalValue = FHE.fromExternal(encryptedInput, inputProof);
+FHE.allowThis(internalValue);
+
+// Grant user decryption permission (Zama FHEVM)
+FHE.allow(internalValue, userAddress);
+
+// With entropy enhancement
+euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+FHE.allowThis(entropy);
+euint64 enhancedValue = FHE.xor(internalValue, entropy);
+FHE.allowThis(enhancedValue);
+FHE.allow(enhancedValue, userAddress);`
+    },
+    'public-decryption': {
+      operations: ['FHE.makePubliclyDecryptable()', 'FHE.allowThis()', 'FHE.fromExternal()'],
+      concepts: ['Public Decryption', 'Permission Management', 'Entropy Integration'],
+      codeExample: `// Using Zama FHEVM's public decryption feature
+euint64 internalValue = FHE.fromExternal(encryptedInput, inputProof);
+FHE.allowThis(internalValue);
+
+// Make publicly decryptable (Zama FHEVM)
+euint64 publicValue = FHE.makePubliclyDecryptable(internalValue);
+
+// With entropy enhancement
+euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+FHE.allowThis(entropy);
+euint64 enhancedValue = FHE.xor(internalValue, entropy);
+FHE.allowThis(enhancedValue);
+euint64 publicEnhancedValue = FHE.makePubliclyDecryptable(enhancedValue);`
+    },
+    'access-control': {
+      operations: ['FHE.allow()', 'FHE.allowTransient()', 'FHE.allowThis()'],
+      concepts: ['Access Control', 'Permission Management', 'Transient Permissions', 'Entropy Integration'],
+      codeExample: `// Using Zama FHEVM's access control system
+euint64 internalValue = FHE.fromExternal(encryptedInput, inputProof);
+FHE.allowThis(internalValue);
+
+// Grant permanent decryption permission (Zama FHEVM)
+FHE.allow(internalValue, userAddress);
+
+// Grant temporary permission for single operation (Zama FHEVM)
+FHE.allowTransient(internalValue, userAddress);`
+    },
+    'input-proof': {
+      operations: ['FHE.fromExternal()', 'FHE.allowThis()'],
+      concepts: ['Input Proofs', 'External Encryption', 'Permission Management'],
+      codeExample: `// Using Zama FHEVM's input proof system
+euint64 internalValue = FHE.fromExternal(encryptedInput, inputProof);
+FHE.allowThis(internalValue);
+
+// Input proofs validate encrypted values (Zama FHEVM feature)`
+    },
+    'anti-patterns': {
+      operations: ['FHE.allowThis()', 'FHE operations'],
+      concepts: ['Common Mistakes', 'Permission Management', 'Best Practices'],
+      codeExample: `// Zama FHEVM requires proper permission handling
+// ❌ Missing FHE.allowThis() will cause errors
+// ✅ Always call FHE.allowThis() before using encrypted values
+euint64 result = FHE.add(a, b);
+FHE.allowThis(result); // Required by Zama FHEVM`
+    },
+    'handles': {
+      operations: ['FHE operations', 'FHE.allowThis()'],
+      concepts: ['Handle Lifecycle', 'Symbolic Execution', 'Permission Management'],
+      codeExample: `// Zama FHEVM uses handles for encrypted values
+// Handles are managed automatically by Zama FHEVM
+euint64 value = FHE.fromExternal(encryptedInput, inputProof);
+FHE.allowThis(value); // Zama FHEVM permission system`
+    },
+    'advanced': {
+      operations: ['FHE.add()', 'FHE.sub()', 'FHE.mul()', 'FHE.eq()', 'FHE.xor()', 'FHE.allowThis()'],
+      concepts: ['Complex FHE Operations', 'Real-World Applications', 'Entropy Integration'],
+      codeExample: `// Advanced Zama FHEVM usage patterns
+euint64 result = FHE.add(value1, value2);
+FHE.allowThis(result);
+
+// Combining multiple Zama FHEVM operations
+euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+FHE.allowThis(entropy);
+euint64 finalResult = FHE.xor(result, entropy);
+FHE.allowThis(finalResult);`
+    },
+    'openzeppelin': {
+      operations: ['FHE operations', 'FHE.allowThis()', 'FHE.allow()'],
+      concepts: ['OpenZeppelin Integration', 'ERC7984 Confidential Tokens', 'FHE Operations'],
+      codeExample: `// Using Zama FHEVM with OpenZeppelin confidential contracts
+euint64 encryptedAmount = FHE.fromExternal(encryptedInput, inputProof);
+FHE.allowThis(encryptedAmount);
+
+// Zama FHEVM enables encrypted token operations
+// All amounts remain encrypted during transfers`
+    }
+  };
+
+  const features = exampleFeatures[category] || exampleFeatures['basic'];
+  
+  return `## 🔐 Zama FHEVM Usage
+
+This example demonstrates the following **Zama FHEVM** features:
+
+### Zama FHEVM Features Used
+
+- **ZamaEthereumConfig**: Inherits from Zama's network configuration
+  \`\`\`solidity
+  contract MyContract is ZamaEthereumConfig {
+      // Inherits network-specific FHEVM configuration
+  }
+  \`\`\`
+
+- **FHE Operations**: Uses Zama's FHE library for encrypted operations
+${features.operations.map(op => `  - \`${op}\` - Zama FHEVM operation`).join('\n')}
+
+- **Encrypted Types**: Uses Zama's encrypted integer types
+  - \`euint64\` - 64-bit encrypted unsigned integer
+  - \`externalEuint64\` - External encrypted value from user
+
+- **Access Control**: Uses Zama's permission system
+  - \`FHE.allowThis()\` - Allow contract to use encrypted values
+  - \`FHE.allow()\` - Allow specific user to decrypt
+  - \`FHE.allowTransient()\` - Temporary permission for single operation
+  - \`FHE.fromExternal()\` - Convert external encrypted values to internal
+
+### Zama FHEVM Imports
+
+\`\`\`solidity
+// Zama FHEVM Core Library - FHE operations and encrypted types
+import {FHE, euint64, externalEuint64} from "@fhevm/solidity/lib/FHE.sol";
+
+// Zama Network Configuration - Provides network-specific settings
+import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
+\`\`\`
+
+### Zama FHEVM Code Example
+
+\`\`\`solidity
+${features.codeExample}
+\`\`\`
+
+### Zama FHEVM Concepts Demonstrated
+
+${features.concepts.map((concept, i) => `${i + 1}. **${concept}**: Using Zama FHEVM to ${concept.toLowerCase()}`).join('\n')}
+
+### Learn More About Zama FHEVM
+
+- 📚 [Zama FHEVM Documentation](https://docs.zama.org/protocol)
+- 🎓 [Zama Developer Hub](https://www.zama.org/developer-hub)
+- 💻 [Zama FHEVM GitHub](https://github.com/zama-ai/fhevm)
+
+`;
+}
+
 function createREADME(config: ExampleConfig, dest: string) {
   const readmePath = path.join(__dirname, '..', 'examples', dest, 'README.md');
+  const zamaSection = generateZamaSection(config.category);
   const readmeContent = `# ${config.name}
 
 ${config.description}
@@ -214,12 +403,24 @@ This example demonstrates **${config.category}** concepts in FHEVM.
 - Node.js 18+
 - Hardhat
 - Sepolia Testnet (for FHEVM)
+- Zama FHEVM Relayer
 
 ### Installation
 
 \`\`\`bash
-npm install
+npm install --legacy-peer-deps
 \`\`\`
+
+### Setup Environment
+
+\`\`\`bash
+npm run setup
+\`\`\`
+
+Then edit \`.env\` file with your credentials:
+- \`SEPOLIA_RPC_URL\` - Your Sepolia RPC endpoint
+- \`PRIVATE_KEY\` - Your wallet private key (for deployment)
+- \`ETHERSCAN_API_KEY\` - Your Etherscan API key (for verification)
 
 ### Compile
 
@@ -233,6 +434,24 @@ npm run compile
 npm test
 \`\`\`
 
+### Deploy to Sepolia
+
+\`\`\`bash
+npm run deploy:sepolia
+\`\`\`
+
+### Verify Contract
+
+\`\`\`bash
+npm run verify <CONTRACT_ADDRESS>
+\`\`\`
+
+**Alternative:** Use the [Examples page](https://entrofhe.vercel.app/examples) for browser-based deployment and verification.
+
+---
+
+${zamaSection}
+
 ## 📖 Documentation
 
 See the contract code for detailed documentation and examples.
@@ -240,6 +459,7 @@ See the contract code for detailed documentation and examples.
 ## 🔗 Related Examples
 
 - [Category: ${config.category}](../)
+- [All examples](https://github.com/zacnider/entrofhe/tree/main/examples)
 
 ## 📝 License
 
