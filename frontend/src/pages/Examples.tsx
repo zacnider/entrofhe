@@ -1086,8 +1086,12 @@ const SimpleLotteryDemo: React.FC = () => {
   }, [status, hasParticipatedData, lotteryRoundData]);
 
   const { writeContract: enterLottery, isPending: isEntering, error: enterError } = useWriteContract();
-  const { writeContract: selectWinner, data: selectHash, isPending: isSelecting, error: selectError } = useWriteContract();
+  const { writeContract: requestEntropy, data: requestHash, isPending: isRequesting, error: requestError } = useWriteContract();
+  const { writeContract: selectWinnerWithEntropy, data: selectHash, isPending: isSelecting, error: selectError } = useWriteContract();
   const { writeContract: resetLottery, data: resetHash, isPending: isResetting, error: resetError } = useWriteContract();
+  const { data: requestReceipt, isLoading: isRequestConfirming, isSuccess: isRequested, isError: isRequestError, error: requestReceiptError } = useWaitForTransactionReceipt({
+    hash: requestHash,
+  });
   const { data: selectReceipt, isLoading: isSelectConfirming, isSuccess: isSelected, isError: isSelectError, error: selectReceiptError } = useWaitForTransactionReceipt({
     hash: selectHash,
   });
@@ -1095,12 +1099,35 @@ const SimpleLotteryDemo: React.FC = () => {
     hash: resetHash,
   });
   const [winningRequestId, setWinningRequestId] = useState<number | null>(null);
+  const [entropyRequested, setEntropyRequested] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (requestReceipt && requestReceipt.logs) {
+      try {
+        // Find EntropyRequested event from EntropyOracle
+        const eventSignature = keccak256(stringToBytes('EntropyRequested(uint256,bytes32,bytes32,uint256)'));
+        const entropyEvent = requestReceipt.logs.find((log: any) => 
+          log.topics && log.topics[0] === eventSignature
+        );
+        
+        if (entropyEvent && entropyEvent.topics && entropyEvent.topics.length >= 2) {
+          // requestId is in topics[1] (first indexed parameter)
+          const requestId = Number(BigInt(entropyEvent.topics[1]));
+          setWinningRequestId(requestId);
+          setEntropyRequested(true);
+          toast.success('Entropy requested! Waiting for fulfillment...');
+        }
+      } catch (error) {
+        console.error('Error parsing request ID:', error);
+      }
+    }
+  }, [requestReceipt]);
 
   useEffect(() => {
     if (selectReceipt && selectReceipt.logs) {
       try {
         // Find WinnerSelected event
-        const eventSignature = keccak256(stringToBytes('WinnerSelected(address,uint256)'));
+        const eventSignature = keccak256(stringToBytes('WinnerSelected(address,uint256,uint256)'));
         const winnerEvent = selectReceipt.logs.find((log: any) => 
           log.address.toLowerCase() === SIMPLE_LOTTERY_ADDRESS.toLowerCase() &&
           log.topics && log.topics[0] === eventSignature
@@ -1149,16 +1176,35 @@ const SimpleLotteryDemo: React.FC = () => {
     });
   };
 
+  const handleRequestEntropy = () => {
+    if (!isConnected) {
+      toast.error('Please connect your wallet');
+      return;
+    }
+    const tag = keccak256(stringToBytes('lottery-winner-selection'));
+    requestEntropy({
+      address: SIMPLE_LOTTERY_ADDRESS as `0x${string}`,
+      abi: SimpleLotteryABI.abi,
+      functionName: 'requestEntropy',
+      args: [tag],
+      value: parseEther('0.00001'),
+    });
+  };
+
   const handleSelectWinner = () => {
     if (!isConnected) {
       toast.error('Please connect your wallet');
       return;
     }
-    selectWinner({
+    if (winningRequestId === null) {
+      toast.error('Please request entropy first');
+      return;
+    }
+    selectWinnerWithEntropy({
       address: SIMPLE_LOTTERY_ADDRESS as `0x${string}`,
       abi: SimpleLotteryABI.abi,
-      functionName: 'selectWinner',
-      value: parseEther('0.00001'),
+      functionName: 'selectWinnerWithEntropy',
+      args: [BigInt(winningRequestId)],
     });
   };
 
@@ -1259,14 +1305,25 @@ const SimpleLotteryDemo: React.FC = () => {
               <UserPlusIcon className="h-5 w-5" />
               <span>{hasParticipated ? 'Already Participated' : 'Enter Lottery'}</span>
             </button>
-            <button
-              onClick={handleSelectWinner}
-              disabled={isSelecting || isSelectConfirming || lotteryComplete || participantCount === 0 || !isConnected}
-              className="w-full px-4 py-3 bg-amber-600 dark:bg-amber-600 text-white rounded-lg hover:bg-amber-700 dark:hover:bg-amber-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition flex items-center justify-center space-x-2"
-            >
-              <TrophyIcon className="h-5 w-5" />
-              <span>{isSelecting || isSelectConfirming ? 'Selecting...' : 'Select Winner (0.00001 ETH)'}</span>
-            </button>
+            {!entropyRequested ? (
+              <button
+                onClick={handleRequestEntropy}
+                disabled={isRequesting || isRequestConfirming || lotteryComplete || participantCount === 0 || !isConnected}
+                className="w-full px-4 py-3 bg-amber-600 dark:bg-amber-600 text-white rounded-lg hover:bg-amber-700 dark:hover:bg-amber-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition flex items-center justify-center space-x-2"
+              >
+                <TrophyIcon className="h-5 w-5" />
+                <span>{isRequesting || isRequestConfirming ? 'Requesting Entropy...' : 'Request Entropy (0.00001 ETH)'}</span>
+              </button>
+            ) : (
+              <button
+                onClick={handleSelectWinner}
+                disabled={isSelecting || isSelectConfirming || lotteryComplete || winningRequestId === null || !isConnected}
+                className="w-full px-4 py-3 bg-green-600 dark:bg-green-600 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-700 disabled:bg-gray-400 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition flex items-center justify-center space-x-2"
+              >
+                <TrophyIcon className="h-5 w-5" />
+                <span>{isSelecting || isSelectConfirming ? 'Selecting Winner...' : 'Select Winner with FHE'}</span>
+              </button>
+            )}
             <button
               onClick={handleResetLottery}
               disabled={isResetting || isResetConfirming || !lotteryComplete || !isConnected}
