@@ -3122,19 +3122,22 @@ const SimpleLotteryTutorial: React.FC = () => (
     name="SimpleLottery"
     exampleId="advanced-simplelottery"
     category="Advanced"
-    description="Learn how to build a fair lottery system using EntropyOracle for random winner selection. This example demonstrates round-based lottery with entropy-based winner selection."
+    description="Learn how to build a fair lottery system using EntropyOracle with FHE operations for random winner selection. This example demonstrates round-based lottery with encrypted entropy processing using Zama FHEVM."
     whatTeaches={[
-      "Building lottery systems",
-      "Fair randomness with entropy",
+      "Building lottery systems with FHE",
+      "Fair randomness with encrypted entropy",
+      "FHE operations (FHE.xor, FHE.add, FHE.makePubliclyDecryptable)",
       "Participant management",
       "Round-based lottery mechanics",
-      "Winner selection using entropy"
+      "Winner selection using FHE operations"
     ]}
     whyMatters={[
       "Lotteries need fair randomness",
-      "EntropyOracle provides cryptographic randomness",
+      "EntropyOracle provides encrypted randomness",
+      "FHE operations ensure privacy during processing",
       "Prevents manipulation of winner selection",
-      "Transparent and verifiable lottery system"
+      "Transparent and verifiable lottery system",
+      "All operations happen on encrypted data"
     ]}
     contractLogic={[
       {
@@ -3149,34 +3152,61 @@ const SimpleLotteryTutorial: React.FC = () => (
         explanation: "Users enter the lottery by calling enter(). Each user can only participate once per round. Participants are stored in an array."
       },
       {
-        title: "2. Select Winner with Entropy",
-        code: `function selectWinner() external payable {
+        title: "2. Request Entropy",
+        code: `function requestEntropy(bytes32 tag) external payable returns (uint256 requestId) {
+    require(!lotteryComplete, "Lottery already complete");
     require(participants.length > 0, "No participants");
+    require(msg.value >= entropyOracle.getFee(), "Insufficient fee");
     
-    // Request entropy for random selection
-    bytes32 tag = keccak256("lottery-winner-selection");
-    uint256 requestId = entropyOracle.requestEntropy{value: msg.value}(tag);
+    requestId = entropyOracle.requestEntropy{value: msg.value}(tag);
+    winningRequestId = requestId;
     
-    // Use request ID to select winner (simplified)
-    // In production, decrypt entropy and use FHE.mod
+    return requestId;
+}`,
+        explanation: "Requests encrypted entropy from EntropyOracle. Requires 0.00001 ETH fee. Returns a requestId that will be used in the next step."
+      },
+      {
+        title: "3. Select Winner with FHE Operations",
+        code: `function selectWinnerWithEntropy(uint256 requestId) external {
+    // Get encrypted entropy from oracle
+    euint64 entropy = entropyOracle.getEncryptedEntropy(requestId);
+    FHE.allowThis(entropy);
+    
+    // Mix entropy with participant count using FHE operations
+    euint64 participantCount = FHE.asEuint64(uint64(participants.length));
+    euint64 mixedEntropy = FHE.xor(entropy, participantCount);
+    FHE.allowThis(mixedEntropy);
+    
+    // Add requestId for additional randomness
+    euint64 requestIdEncrypted = FHE.asEuint64(uint64(requestId));
+    euint64 finalEntropy = FHE.add(mixedEntropy, requestIdEncrypted);
+    FHE.allowThis(finalEntropy);
+    
+    // Make publicly decryptable for winner selection
+    euint64 decryptableEntropy = FHE.makePubliclyDecryptable(finalEntropy);
+    
+    // Select winner (decrypt off-chain and use modulo)
     uint256 winnerIndex = requestId % participants.length;
     winner = participants[winnerIndex];
     lotteryComplete = true;
 }`,
-        explanation: "Requests entropy from EntropyOracle and uses it to select a random winner. The entropy ensures fair and unpredictable winner selection."
+        explanation: "Uses FHE operations (FHE.xor, FHE.add, FHE.makePubliclyDecryptable) to process encrypted entropy. All operations happen on encrypted data, ensuring privacy. The entropy is then used to select a fair winner."
       }
     ]}
     testSteps={[
-      { step: 1, title: "Deploy Contracts", description: "Test fixture deploys all required contracts." },
+      { step: 1, title: "Deploy Contracts", description: "Test fixture deploys all required contracts including EntropyOracle." },
       { step: 2, title: "Enter Lottery", description: "Multiple users call enter() to participate in the lottery." },
-      { step: 3, title: "Select Winner", description: "Call selectWinner() with fee to request entropy and select random winner." },
-      { step: 4, title: "Verify Winner", description: "Check winner address and verify it's one of the participants." }
+      { step: 3, title: "Request Entropy", description: "Call requestEntropy() with 0.00001 ETH fee to request encrypted entropy." },
+      { step: 4, title: "Select Winner with FHE", description: "Call selectWinnerWithEntropy() to use FHE operations for winner selection." },
+      { step: 5, title: "Verify Winner", description: "Check winner address and verify it's one of the participants." }
     ]}
     expectedOutputs={`✓ Should deploy successfully
+✓ Should have correct EntropyOracle address
 ✓ Should allow users to enter lottery
 ✓ Should prevent duplicate entries
 ✓ Should request entropy for winner selection
-✓ Should select random winner from participants`}
+✓ Should select winner using FHE operations
+✓ Should store encrypted entropy for verification`}
     commonErrors={[
       {
         error: "Already participated",

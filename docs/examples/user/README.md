@@ -2,8 +2,8 @@
 
 ## Examples
 
-- [EntropyOracle](./EntropyOracle.md) - Main oracle contract for entropy requests - Developer-friendly interface
-- [EntropyOracle](./EntropyOracle.md) - Main oracle contract for entropy requests - Developer-friendly interface
+- [EntropyUserDecryptMultiple](./EntropyUserDecryptMultiple.md) - User decrypt multiple values using EntropyOracle and FHE.allow
+- [EntropyUserDecryption](./EntropyUserDecryption.md) - User decrypt single value using EntropyOracle and FHE.allow
 
 ## Overview
 

@@ -7,7 +7,6 @@ Random number generator using entropy
 @title RandomNumberGenerator
 @notice Random number generator using entropy
 @dev Example demonstrating how to request entropy and use it for random number generation
-@chapter advanced
 This example shows:
 - Requesting entropy from oracle
 - Storing encrypted random numbers
@@ -44,7 +43,6 @@ import "./IEntropyOracle.sol";
  * @title RandomNumberGenerator
  * @notice Random number generator using entropy
  * @dev Example demonstrating how to request entropy and use it for random number generation
- * @chapter advanced
  * 
  * This example shows:
  * - Requesting entropy from oracle
@@ -137,9 +135,7 @@ npm test
 
 **advanced**
 
-## Chapter
 
-`advanced`
 
 ## Related Examples
 

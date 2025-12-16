@@ -39,7 +39,37 @@ function findExamples(): ExampleInfo[] {
       }
       
       const contractFiles = fs.readdirSync(contractsDir)
-        .filter(f => f.endsWith('.sol') && !f.startsWith('I')); // Ignore interface files
+        .filter(f => f.endsWith('.sol') && !f.startsWith('I') && !f.includes('Oracle') && !f.includes('ChaosEngine') && !f.includes('Library')); // Ignore interface files, oracle, engine, and library files
+      
+      // For advanced-simplelottery, prefer SimpleLottery.sol
+      if (entry.name === 'advanced-simplelottery') {
+        const simpleLotteryFile = contractFiles.find(f => f.includes('SimpleLottery') || f.includes('Lottery'));
+        if (simpleLotteryFile) {
+          const contractName = simpleLotteryFile.replace('.sol', '');
+          const contractPath = path.join(exampleDir, 'contracts', simpleLotteryFile);
+          const contractContent = fs.readFileSync(contractPath, 'utf-8');
+          
+          const chapterMatch = contractContent.match(/@chapter\s+(\w+)/);
+          const chapter = chapterMatch ? chapterMatch[1] : undefined;
+          
+          const noticeMatch = contractContent.match(/@notice\s+(.+?)(?:\n|$)/);
+          const description = noticeMatch ? noticeMatch[1].trim() : contractName;
+          
+          const category = entry.name.split('-')[0] || 'basic';
+
+          examples.push({
+            name: contractName,
+            category,
+            chapter,
+            description,
+            contractPath,
+            testPath: fs.existsSync(path.join(exampleDir, 'test', `${contractName}.test.ts`))
+              ? path.join(exampleDir, 'test', `${contractName}.test.ts`)
+              : undefined,
+          });
+          continue;
+        }
+      }
       
       if (contractFiles.length > 0) {
         const contractName = contractFiles[0].replace('.sol', '');
