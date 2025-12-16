@@ -1110,9 +1110,9 @@ const SimpleLotteryDemo: React.FC = () => {
           log.topics && log.topics[0] === eventSignature
         );
         
-        if (entropyEvent && entropyEvent.topics && entropyEvent.topics.length >= 2) {
+        if (entropyEvent && entropyEvent.topics && entropyEvent.topics.length >= 2 && entropyEvent.topics[1]) {
           // requestId is in topics[1] (first indexed parameter)
-          const requestId = Number(BigInt(entropyEvent.topics[1]));
+          const requestId = Number(BigInt(entropyEvent.topics[1] as string));
           setWinningRequestId(requestId);
           setEntropyRequested(true);
           toast.success('Entropy requested! Waiting for fulfillment...');
