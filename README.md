@@ -19,6 +19,7 @@ This repository provides a complete set of FHEVM examples organized by category,
 
 ## ✨ Features
 
+- **🛠️ CLI Tool**: Interactive command-line tool (`entrofhe-cli`) to generate EntropyOracle-integrated examples instantly
 - **Automated Scaffolding**: TypeScript CLI tools for generating example repositories
 - **Comprehensive Tests**: Test suites showing both correct usage and common pitfalls
 - **Documentation Generator**: Auto-generates GitBook-compatible documentation from code annotations
@@ -35,13 +36,50 @@ This repository provides a complete set of FHEVM examples organized by category,
 
 ## 🚀 Quick Start
 
-### Installation
+### Option 1: Using the CLI Tool (Recommended)
+
+The easiest way to get started is using the **EntroFHE CLI** tool:
+
+```bash
+# Install globally (optional, for easier access)
+npm install -g entrofhe-cli
+
+# Or use with npx (no installation needed)
+npx entrofhe-cli
+```
+
+**Interactive Mode:**
+```bash
+entrofhe
+# Shows numbered list of all 22 examples
+# Select by number, enter output directory, and create!
+```
+
+**Direct Mode:**
+```bash
+# Create by number
+entrofhe create 1 ./my-project
+
+# Create by key
+entrofhe create entropy-counter ./my-project
+
+# List all examples
+entrofhe list
+```
+
+The CLI automatically:
+- ✅ Generates standalone Hardhat project
+- ✅ Integrates EntropyOracle
+- ✅ Includes all necessary files and dependencies
+- ✅ Sets up tests and deployment scripts
+
+### Option 2: Manual Installation
 
 ```bash
 npm install
 ```
 
-### Create a New Example
+### Create a New Example (Manual)
 
 ```bash
 npm run create-example -- --name MyExample --category basic --description "My example description"
@@ -66,6 +104,9 @@ done
 
 ```
 .
+├── cli/                    # EntroFHE CLI tool (npm package)
+│   ├── src/               # CLI source code
+│   └── package.json       # CLI package configuration
 ├── base-template/          # Base Hardhat template for examples
 ├── examples/               # Standalone example repositories
 │   ├── basic-*/           # Basic FHE operations

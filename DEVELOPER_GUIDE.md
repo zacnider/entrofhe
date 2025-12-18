@@ -4,12 +4,62 @@ This guide explains how to add new examples, update dependencies, and maintain t
 
 ## 📋 Table of Contents
 
+- [Using the CLI Tool](#-using-the-cli-tool)
 - [Adding a New Example](#-adding-a-new-example)
 - [Updating Dependencies](#-updating-dependencies)
 - [Testing Examples](#-testing-examples)
 - [Documentation Standards](#-documentation-standards)
 - [Category Guidelines](#-category-guidelines)
 - [Working with Zama FHEVM](#-working-with-zama-fhevm)
+
+## 🛠️ Using the CLI Tool
+
+The **EntroFHE CLI** is the easiest way to generate EntropyOracle-integrated FHEVM examples.
+
+### Installation
+
+```bash
+# Install globally
+npm install -g entrofhe-cli
+
+# Or use with npx (no installation)
+npx entrofhe-cli
+```
+
+### Interactive Mode
+
+```bash
+entrofhe
+```
+
+This will:
+1. Show a numbered list of all 22 available examples
+2. Prompt you to select an example by number
+3. Ask for output directory
+4. Optionally configure EntropyOracle address
+5. Generate the complete project
+
+### Direct Mode
+
+```bash
+# Create by number
+entrofhe create 1 ./my-project
+
+# Create by key
+entrofhe create entropy-counter ./my-project
+
+# List all examples
+entrofhe list
+```
+
+### CLI Features
+
+- ✅ **22 Pre-built Examples**: All examples from the hub
+- ✅ **Automatic EntropyOracle Integration**: IEntropyOracle interface included
+- ✅ **Standalone Projects**: Each generated example is a complete Hardhat project
+- ✅ **Ready to Use**: Dependencies installed, tests included
+
+For more details, see [cli/README.md](./cli/README.md).
 
 ## 🚀 Adding a New Example
 
