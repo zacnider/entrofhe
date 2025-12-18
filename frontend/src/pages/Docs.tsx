@@ -29,6 +29,7 @@ const Docs: React.FC = () => {
 
   const sections = [
     { id: 'quick-start', title: 'Quick Start', icon: RocketLaunchIcon },
+    { id: 'cli-tool', title: 'CLI Tool', icon: CpuChipIcon },
     { id: 'tutorials', title: 'Tutorials', icon: AcademicCapIcon },
     { id: 'integration', title: 'Integration', icon: CodeBracketIcon },
     { id: 'api-reference', title: 'API Reference', icon: DocumentTextIcon },
@@ -39,6 +40,8 @@ const Docs: React.FC = () => {
     switch (activeSection) {
       case 'quick-start':
         return <QuickStart />;
+      case 'cli-tool':
+        return <CLITool />;
       case 'tutorials':
         return <FullTutorialTrack />;
       case 'integration':
@@ -101,6 +104,24 @@ const Docs: React.FC = () => {
 // Quick Start Section
 const QuickStart: React.FC = () => (
   <div className="space-y-6">
+    {/* CLI Tool Highlight */}
+    <div className="bg-gradient-to-r from-primary-500 to-cyan-500 dark:from-primary-600 dark:to-cyan-600 rounded-lg p-6 text-white">
+      <h2 className="text-2xl font-bold mb-3">🚀 New: EntroFHE CLI Tool</h2>
+      <p className="mb-4 text-primary-50">
+        Generate EntropyOracle-integrated FHEVM examples instantly! No setup required.
+      </p>
+      <div className="flex flex-wrap gap-3">
+        <a 
+          href="/docs?section=cli-tool" 
+          className="bg-white text-primary-600 px-4 py-2 rounded-lg font-semibold hover:bg-primary-50 transition-colors"
+        >
+          Learn More →
+        </a>
+        <code className="bg-primary-600/50 text-white px-4 py-2 rounded-lg">
+          npx entrofhe-cli
+        </code>
+      </div>
+    </div>
     <div>
       <h1 className="text-4xl font-bold text-primary-900 dark:text-slate-100 mb-4">
         Quick Start
