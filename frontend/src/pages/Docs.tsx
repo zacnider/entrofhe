@@ -13,6 +13,9 @@ import {
 
 const Docs: React.FC = () => {
   const [activeSection, setActiveSection] = useState<string>('quick-start');
+  
+  // Expose setActiveSection for QuickStart component
+  (window as any).setDocsActiveSection = setActiveSection;
 
   // Listen for navigation events
   React.useEffect(() => {
