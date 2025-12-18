@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import figlet from 'figlet';
 import gradient from 'gradient-string';
 import { scanExamples, ExampleInfo } from './utils.js';
-import { selectExample, promptOutputDirectory, promptEntropyOracle } from './prompts.js';
+import { selectExampleByNumber, promptOutputDirectory, promptEntropyOracle } from './prompts.js';
 import { generateExample } from './generator.js';
 
 const ENTROPY_ORACLE_ADDRESS = '0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361';
@@ -68,8 +68,8 @@ export async function runInteractive(): Promise<void> {
     process.exit(1);
   }
 
-  // Select example
-  const example = await selectExample(examples);
+  // Select example by number
+  const example = await selectExampleByNumber(examples);
   if (!example) {
     outro(chalk.yellow('Operation cancelled'));
     process.exit(0);
@@ -167,15 +167,17 @@ export function listExamples(): void {
 
   console.log(chalk.cyan('\n📋 Available EntropyOracle FHEVM Examples:\n'));
 
+  let currentNumber = 1;
   for (const [category, categoryExamples] of Object.entries(grouped)) {
     const categoryName = category.charAt(0).toUpperCase() + category.slice(1).replace(/-/g, ' ');
     console.log(chalk.bold.yellow(`\n${categoryName}:`));
     categoryExamples.forEach(ex => {
-      console.log(`  ${chalk.green(ex.key.padEnd(40))} ${chalk.gray('-')} ${ex.name}`);
-      console.log(`  ${' '.repeat(42)}${chalk.dim(ex.description)}`);
+      console.log(`  ${chalk.green(String(currentNumber).padStart(3) + '.')} ${chalk.cyan(ex.name.padEnd(35))} ${chalk.gray('-')} ${ex.description}`);
+      currentNumber++;
     });
   }
 
-  console.log(chalk.cyan(`\n\nTotal: ${examples.length} examples\n`));
+  console.log(chalk.cyan(`\n\nTotal: ${examples.length} examples`));
+  console.log(chalk.yellow(`\n💡 Tip: Use number to create example (e.g., "entrofhe create 1")\n`));
 }
 
