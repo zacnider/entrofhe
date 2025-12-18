@@ -22,7 +22,7 @@ export async function showBanner(): Promise<void> {
   const fhevmGradient = gradient(['#ffaa00', '#e0c068', '#ffaa00']);
   
   await new Promise<void>((resolve) => {
-    figlet.text('ENTROPY', {
+    figlet.text('ENTROFHE', {
       font: 'ANSI Shadow',
       horizontalLayout: 'default',
       verticalLayout: 'default',
@@ -30,7 +30,7 @@ export async function showBanner(): Promise<void> {
       whitespaceBreak: true
     }, (err: any, data: any) => {
       if (err) {
-        console.log('EntropyOracle FHEVM CLI');
+        console.log('EntroFHE FHEVM CLI');
         resolve();
         return;
       }
