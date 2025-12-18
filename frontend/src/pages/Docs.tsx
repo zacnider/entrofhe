@@ -236,6 +236,182 @@ euint64 entropy = oracle.getEncryptedEntropy(requestId);`}
   </div>
 );
 
+// CLI Tool Section
+const CLITool: React.FC = () => (
+  <div className="space-y-6">
+    <div>
+      <h1 className="text-4xl font-bold text-primary-900 dark:text-slate-100 mb-4">
+        EntroFHE CLI Tool
+      </h1>
+      <p className="text-lg text-gray-600 dark:text-slate-400">
+        Generate EntropyOracle-integrated FHEVM examples instantly with our command-line tool.
+      </p>
+    </div>
+
+    {/* Installation */}
+    <section className="space-y-4">
+      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Installation</h2>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 border border-gray-200 dark:border-slate-700">
+        <h3 className="font-semibold text-primary-800 dark:text-cyan-300 mb-3">Option 1: Using npx (Recommended)</h3>
+        <pre className="bg-slate-900 dark:bg-slate-950 text-green-400 p-4 rounded-lg overflow-x-auto">
+          <code>{`npx entrofhe-cli`}</code>
+        </pre>
+        <p className="text-sm text-gray-600 dark:text-slate-400 mt-2">
+          No installation required! Run directly with npx.
+        </p>
+      </div>
+
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 border border-gray-200 dark:border-slate-700">
+        <h3 className="font-semibold text-primary-800 dark:text-cyan-300 mb-3">Option 2: Global Installation</h3>
+        <pre className="bg-slate-900 dark:bg-slate-950 text-green-400 p-4 rounded-lg overflow-x-auto">
+          <code>{`npm install -g entrofhe-cli`}</code>
+        </pre>
+        <p className="text-sm text-gray-600 dark:text-slate-400 mt-2">
+          Install globally for easier access from anywhere.
+        </p>
+      </div>
+    </section>
+
+    {/* Interactive Mode */}
+    <section className="space-y-4">
+      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Interactive Mode</h2>
+      <p className="text-gray-700 dark:text-slate-300">
+        The easiest way to create an example. Just run the CLI and follow the prompts:
+      </p>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 border border-gray-200 dark:border-slate-700">
+        <pre className="bg-slate-900 dark:bg-slate-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
+          <code>{`$ entrofhe
+
+📋 Available Examples:
+
+Basic:
+    1. Counter                             - EntropyCounter
+    2. Arithmetic                          - EntropyArithmetic
+    ...
+
+Enter example number to create: 1
+Enter output directory: ./my-project
+
+✅ Example created successfully!`}</code>
+        </pre>
+      </div>
+    </section>
+
+    {/* Direct Mode */}
+    <section className="space-y-4">
+      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Direct Mode</h2>
+      <p className="text-gray-700 dark:text-slate-300">
+        Create examples directly without interactive prompts:
+      </p>
+      
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 border border-gray-200 dark:border-slate-700">
+        <h3 className="font-semibold text-primary-800 dark:text-cyan-300 mb-3">Create by Number</h3>
+        <pre className="bg-slate-900 dark:bg-slate-950 text-green-400 p-4 rounded-lg overflow-x-auto">
+          <code>{`entrofhe create 1 ./my-project`}</code>
+        </pre>
+      </div>
+
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 border border-gray-200 dark:border-slate-700">
+        <h3 className="font-semibold text-primary-800 dark:text-cyan-300 mb-3">Create by Key</h3>
+        <pre className="bg-slate-900 dark:bg-slate-950 text-green-400 p-4 rounded-lg overflow-x-auto">
+          <code>{`entrofhe create entropy-counter ./my-project`}</code>
+        </pre>
+      </div>
+
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 border border-gray-200 dark:border-slate-700">
+        <h3 className="font-semibold text-primary-800 dark:text-cyan-300 mb-3">List All Examples</h3>
+        <pre className="bg-slate-900 dark:bg-slate-950 text-green-400 p-4 rounded-lg overflow-x-auto">
+          <code>{`entrofhe list`}</code>
+        </pre>
+      </div>
+    </section>
+
+    {/* Features */}
+    <section className="space-y-4">
+      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Features</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-primary-50 dark:bg-cyan-900/20 rounded-lg p-4 border border-primary-200 dark:border-cyan-800">
+          <h3 className="font-semibold text-primary-800 dark:text-cyan-300 mb-2">✅ 22 Pre-built Examples</h3>
+          <p className="text-sm text-gray-700 dark:text-slate-300">
+            All examples from the hub, ready to use with EntropyOracle integration.
+          </p>
+        </div>
+        <div className="bg-primary-50 dark:bg-cyan-900/20 rounded-lg p-4 border border-primary-200 dark:border-cyan-800">
+          <h3 className="font-semibold text-primary-800 dark:text-cyan-300 mb-2">✅ Automatic Integration</h3>
+          <p className="text-sm text-gray-700 dark:text-slate-300">
+            IEntropyOracle interface automatically included in all generated projects.
+          </p>
+        </div>
+        <div className="bg-primary-50 dark:bg-cyan-900/20 rounded-lg p-4 border border-primary-200 dark:border-cyan-800">
+          <h3 className="font-semibold text-primary-800 dark:text-cyan-300 mb-2">✅ Standalone Projects</h3>
+          <p className="text-sm text-gray-700 dark:text-slate-300">
+            Each generated example is a complete, independent Hardhat project.
+          </p>
+        </div>
+        <div className="bg-primary-50 dark:bg-cyan-900/20 rounded-lg p-4 border border-primary-200 dark:border-cyan-800">
+          <h3 className="font-semibold text-primary-800 dark:text-cyan-300 mb-2">✅ Ready to Use</h3>
+          <p className="text-sm text-gray-700 dark:text-slate-300">
+            Dependencies installed, tests included, deployment scripts ready.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    {/* What Gets Generated */}
+    <section className="space-y-4">
+      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">What Gets Generated</h2>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 border border-gray-200 dark:border-slate-700">
+        <pre className="bg-slate-900 dark:bg-slate-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
+          <code>{`my-project/
+├── contracts/
+│   ├── EntropyCounter.sol      # Your contract with EntropyOracle
+│   └── interfaces/
+│       └── IEntropyOracle.sol  # Automatically included
+├── test/
+│   └── EntropyCounter.test.ts  # Complete test suite
+├── scripts/
+│   ├── deploy.ts               # Deployment script
+│   └── verify.ts               # Verification script
+├── hardhat.config.ts           # Hardhat configuration
+├── package.json                # Dependencies configured
+└── README.md                   # Project documentation`}</code>
+        </pre>
+      </div>
+    </section>
+
+    {/* Next Steps */}
+    <section className="space-y-4">
+      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Next Steps</h2>
+      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-800">
+        <ol className="list-decimal list-inside space-y-3 text-gray-700 dark:text-slate-300">
+          <li>Navigate to your project: <code className="bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded">cd my-project</code></li>
+          <li>Run tests: <code className="bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded">npm test</code></li>
+          <li>Deploy to Sepolia: <code className="bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded">npm run deploy:sepolia</code></li>
+          <li>Verify on Etherscan: <code className="bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded">npm run verify</code></li>
+        </ol>
+      </div>
+    </section>
+
+    {/* Learn More */}
+    <section className="space-y-4">
+      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Learn More</h2>
+      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 border border-gray-200 dark:border-slate-700">
+        <ul className="space-y-2 text-gray-700 dark:text-slate-300">
+          <li>
+            📚 <a href="https://github.com/zacnider/entrofhe/tree/main/cli" className="text-primary-600 dark:text-cyan-400 underline" target="_blank" rel="noopener noreferrer">CLI Source Code</a>
+          </li>
+          <li>
+            📖 <a href="/docs?section=tutorials" className="text-primary-600 dark:text-cyan-400 underline">Full Tutorial Track</a>
+          </li>
+          <li>
+            🔗 <a href="/docs?section=integration" className="text-primary-600 dark:text-cyan-400 underline">EntropyOracle Integration Guide</a>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </div>
+);
+
 // Integration Section (combines How It Works + Integration Guide)
 const Integration: React.FC = () => (
   <div className="space-y-6">
