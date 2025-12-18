@@ -79,7 +79,7 @@ npm run create-example -- --name my-example --category basic --description "My e
 
 ### Manual Creation
 
-1. Copy `base-template/` to `examples/<category>-<name>/`
+1. Copy `base-template/` to `examples/<category>-<name>/` (Note: `base-template/` is based on Zama's official `fhevm-hardhat-template`)
 2. Create your contract in `contracts/<Name>.sol`
 3. Write tests in `test/<Name>.test.ts`
 4. Update `README.md` with example-specific documentation
@@ -105,8 +105,9 @@ examples/
 
 When FHEVM or Hardhat versions change:
 
-1. Update `base-template/package.json` with new versions
-2. Test the template:
+1. Check Zama's official template (`fhevm-hardhat-template/` submodule) for updates
+2. Update `base-template/package.json` with new versions (keeping customizations)
+3. Test the template:
    ```bash
    cd base-template
    npm install

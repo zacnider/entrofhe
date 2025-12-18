@@ -377,7 +377,8 @@ This repository is submitted for the **Zama Bounty Track December 2025: Build Th
 
 ### Deliverables
 
-✅ **base-template/**: Complete Hardhat template with @fhevm/solidity  
+✅ **base-template/**: Complete Hardhat template with @fhevm/solidity (based on Zama's fhevm-hardhat-template)  
+✅ **fhevm-hardhat-template/**: Zama's official template as submodule (reference)  
 ✅ **Automation scripts**: create-fhevm-example and related tools in TypeScript  
 ✅ **Example repositories**: Multiple fully working example repos  
 ✅ **Documentation**: Auto-generated documentation per example  

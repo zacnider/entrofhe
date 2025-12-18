@@ -64,3 +64,6 @@
 [submodule "examples/openzeppelin-vestingwallet"]
 	path = examples/openzeppelin-vestingwallet
 	url = https://github.com/zacnider/fhevm-example-openzeppelin-vestingwallet.git
+[submodule "fhevm-hardhat-template"]
+	path = fhevm-hardhat-template
+	url = https://github.com/zama-ai/fhevm-hardhat-template.git

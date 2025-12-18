@@ -1,7 +1,7 @@
 {
   "name": "fhevm-example-template",
   "version": "1.0.0",
-  "description": "Base template for FHEVM examples",
+  "description": "Base template for FHEVM examples - Based on Zama's fhevm-hardhat-template",
   "main": "index.js",
   "scripts": {
     "clean": "rimraf ./artifacts ./cache ./coverage ./types ./coverage.json && npm run typechain",
@@ -24,7 +24,8 @@
     "fhe",
     "blockchain",
     "ethereum",
-    "solidity"
+    "solidity",
+    "zama"
   ],
   "author": "",
   "license": "BSD-3-Clause-Clear",
@@ -64,4 +65,3 @@
     "dotenv": "^16.3.1"
   }
 }
-
