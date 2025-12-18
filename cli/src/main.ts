@@ -1,9 +1,9 @@
-import { intro, outro, spinner, note } from '@clack/prompts';
+import { intro, outro, spinner, note, text, isCancel, cancel } from '@clack/prompts';
 import chalk from 'chalk';
 import figlet from 'figlet';
 import gradient from 'gradient-string';
-import { scanExamples, ExampleInfo } from './utils.js';
-import { selectExampleByNumber, promptOutputDirectory, promptEntropyOracle } from './prompts.js';
+import { scanExamples, ExampleInfo, getExamplesByCategory, getCategoryDisplayName } from './utils.js';
+import { promptOutputDirectory, promptEntropyOracle } from './prompts.js';
 import { generateExample } from './generator.js';
 
 const ENTROPY_ORACLE_ADDRESS = '0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361';
@@ -68,12 +68,54 @@ export async function runInteractive(): Promise<void> {
     process.exit(1);
   }
 
+  // Display numbered list and select by number
+  console.log(chalk.cyan('\n📋 Available Examples:\n'));
+  
+  const grouped = getExamplesByCategory(examples);
+  let currentNumber = 1;
+  const numberedExamples: Array<{ number: number; example: ExampleInfo }> = [];
+  
+  for (const [category, categoryExamples] of Object.entries(grouped)) {
+    const categoryName = getCategoryDisplayName(category);
+    console.log(chalk.bold.yellow(`\n${categoryName}:`));
+    
+    for (const ex of categoryExamples) {
+      numberedExamples.push({ number: currentNumber, example: ex });
+      console.log(`  ${chalk.green(String(currentNumber).padStart(3))}. ${chalk.cyan(ex.name.padEnd(35))} ${chalk.gray('-')} ${ex.description}`);
+      currentNumber++;
+    }
+  }
+  
+  console.log(chalk.cyan('\n'));
+
   // Select example by number
-  const example = await selectExampleByNumber(examples);
-  if (!example) {
+  const selectedNumber = await text({
+    message: 'Enter example number to create:',
+    placeholder: `1-${examples.length}`,
+    validate: (value) => {
+      const num = parseInt(value || '');
+      if (isNaN(num) || num < 1 || num > examples.length) {
+        return `Please enter a number between 1 and ${examples.length}`;
+      }
+      return undefined;
+    }
+  });
+
+  if (isCancel(selectedNumber)) {
+    cancel('Operation cancelled');
     outro(chalk.yellow('Operation cancelled'));
     process.exit(0);
   }
+
+  const num = parseInt(selectedNumber as string);
+  const selected = numberedExamples.find(n => n.number === num);
+  
+  if (!selected) {
+    outro(chalk.red('Invalid selection'));
+    process.exit(1);
+  }
+
+  const example = selected.example;
 
   // Prompt for output directory
   const defaultName = `fhevm-example-${example.key}`;
