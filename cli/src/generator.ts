@@ -74,6 +74,10 @@ export async function generateExample(
   const readmeContent = generateREADME(example, options);
   writeFileSync(path.join(outputPath, 'README.md'), readmeContent);
 
+  // Create .env.example
+  const envExampleContent = generateEnvExample();
+  writeFileSync(path.join(outputPath, '.env.example'), envExampleContent);
+
   // Install dependencies
   try {
     execSync('npm install --legacy-peer-deps', {
@@ -155,6 +159,25 @@ contract ${example.contractName} is ZamaEthereumConfig {
 ## 📝 License
 
 BSD-3-Clause-Clear
+`;
+}
+
+function generateEnvExample(): string {
+  return `# Network Configuration
+SEPOLIA_RPC_URL=https://eth-sepolia.g.alchemy.com/v2/YOUR_API_KEY
+# Or use Infura:
+# SEPOLIA_RPC_URL=https://sepolia.infura.io/v3/YOUR_INFURA_KEY
+
+# Private Key (for deployment)
+# ⚠️  Never commit this file with a real private key!
+PRIVATE_KEY=your_private_key_here
+
+# Etherscan API Key (for contract verification)
+ETHERSCAN_API_KEY=your_etherscan_api_key_here
+
+# Optional: Gas Reporter
+# REPORT_GAS=true
+# COINMARKETCAP_API_KEY=your_coinmarketcap_api_key
 `;
 }
 
