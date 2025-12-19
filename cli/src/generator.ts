@@ -65,6 +65,28 @@ export async function generateExample(
     await fs.copy(interfaceSource, interfaceDest);
   }
 
+  // Copy FHEChaosEngine and EntropyOracle contracts if they exist in the example
+  const exampleContractsDir = path.dirname(example.contractPath);
+  const chaosEngineSource = path.join(exampleContractsDir, 'FHEChaosEngine.sol');
+  const entropyOracleSource = path.join(exampleContractsDir, 'EntropyOracle.sol');
+  
+  if (existsSync(chaosEngineSource)) {
+    const chaosEngineDest = path.join(outputPath, 'contracts', 'FHEChaosEngine.sol');
+    await fs.copy(chaosEngineSource, chaosEngineDest);
+  }
+  
+  if (existsSync(entropyOracleSource)) {
+    const entropyOracleDest = path.join(outputPath, 'contracts', 'EntropyOracle.sol');
+    await fs.copy(entropyOracleSource, entropyOracleDest);
+  }
+  
+  // Copy libraries if they exist (for FHEChaosEngine)
+  const librariesDir = path.join(exampleContractsDir, 'libraries');
+  if (existsSync(librariesDir)) {
+    const librariesDest = path.join(outputPath, 'contracts', 'libraries');
+    await fs.copy(librariesDir, librariesDest);
+  }
+
   // Write contract
   const contractDest = path.join(outputPath, 'contracts', path.basename(example.contractPath));
   await fs.ensureDir(path.dirname(contractDest));
