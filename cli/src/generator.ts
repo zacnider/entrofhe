@@ -19,12 +19,20 @@ export async function generateExample(
 ): Promise<void> {
   const projectRoot = getProjectRoot();
   const baseTemplatePath = path.join(projectRoot, 'base-template');
-  const outputPath = path.resolve(options.outputDir);
+  
+  // Resolve output path relative to current working directory
+  const currentDir = process.cwd();
+  const outputPath = path.isAbsolute(options.outputDir) 
+    ? options.outputDir 
+    : path.resolve(currentDir, options.outputDir);
 
   // Check if output directory exists
   if (existsSync(outputPath)) {
     throw new Error(`Directory ${outputPath} already exists`);
   }
+  
+  // Ensure parent directory exists
+  await fs.ensureDir(path.dirname(outputPath));
 
   // Copy base template
   await fs.copy(baseTemplatePath, outputPath, {
@@ -80,11 +88,20 @@ export async function generateExample(
 
   // Install dependencies
   try {
+    // Ensure output directory exists before running npm install
+    if (!existsSync(outputPath)) {
+      throw new Error(`Output directory ${outputPath} does not exist`);
+    }
     execSync('npm install --legacy-peer-deps', {
       cwd: outputPath,
-      stdio: 'inherit'
+      stdio: 'inherit',
+      env: { ...process.env }
     });
-  } catch (error) {
+  } catch (error: any) {
+    // If it's a cwd error, provide helpful message
+    if (error.code === 'ENOENT' && error.message.includes('uv_cwd')) {
+      throw new Error(`Cannot access directory ${outputPath}. Make sure the path is valid and you have permissions.`);
+    }
     console.warn('Warning: npm install failed, but project structure is ready');
   }
 }
