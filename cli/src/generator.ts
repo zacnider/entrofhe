@@ -45,7 +45,7 @@ export async function generateExample(
 
   // Copy IEntropyOracle interface
   const interfaceSource = path.join(projectRoot, 'contracts', 'interfaces', 'IEntropyOracle.sol');
-  const interfaceDest = path.join(outputPath, 'contracts', 'interfaces', 'IEntropyOracle.sol');
+  const interfaceDest = path.join(outputPath, 'contracts', 'IEntropyOracle.sol');
   if (existsSync(interfaceSource)) {
     await fs.ensureDir(path.dirname(interfaceDest));
     await fs.copy(interfaceSource, interfaceDest);
