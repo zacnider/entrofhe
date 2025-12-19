@@ -21,7 +21,13 @@ export async function generateExample(
   const baseTemplatePath = path.join(projectRoot, 'base-template');
   
   // Resolve output path relative to current working directory
-  const currentDir = process.cwd();
+  let currentDir: string;
+  try {
+    currentDir = process.cwd();
+  } catch (error: any) {
+    throw new Error(`Cannot access current working directory: ${error.message}. Please navigate to a valid directory.`);
+  }
+  
   const outputPath = path.isAbsolute(options.outputDir) 
     ? options.outputDir 
     : path.resolve(currentDir, options.outputDir);
