@@ -48,6 +48,8 @@ npm install -g entrofhe-cli
 npx entrofhe-cli
 ```
 
+**After global installation, use the `entrofhe` command:**
+
 **Interactive Mode:**
 ```bash
 entrofhe
@@ -66,6 +68,8 @@ entrofhe create entropy-counter ./my-project
 # List all examples
 entrofhe list
 ```
+
+**Note:** If you haven't installed globally, use `npx entrofhe-cli` instead of `entrofhe`.
 
 The CLI automatically:
 - ✅ Generates standalone Hardhat project

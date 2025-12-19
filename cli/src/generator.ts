@@ -94,9 +94,14 @@ export async function generateExample(
 
   // Write test if exists
   if (testContent) {
-    const testDest = path.join(outputPath, 'test', path.basename(example.testPath));
-    await fs.ensureDir(path.dirname(testDest));
+    const testDir = path.join(outputPath, 'test');
+    await fs.ensureDir(testDir);
+    const testDest = path.join(testDir, path.basename(example.testPath));
     writeFileSync(testDest, testContent);
+  } else {
+    // Ensure test directory exists even if no test file (base-template has Example.test.ts)
+    const testDir = path.join(outputPath, 'test');
+    await fs.ensureDir(testDir);
   }
 
   // Update package.json
