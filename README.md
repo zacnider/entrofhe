@@ -1,4 +1,4 @@
-# FHEVM Example Hub with EntropyOracle Integration
+# EntroFHE — FHE-Native Encrypted Randomness Example
 
 A comprehensive collection of standalone, Hardhat-based FHEVM examples demonstrating various concepts and patterns for building privacy-preserving smart contracts using Fully Homomorphic Encryption. **All examples are integrated with EntropyOracle** - a production-ready FHE-based entropy and randomness infrastructure.
 
