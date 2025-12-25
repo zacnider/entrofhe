@@ -53,7 +53,8 @@ function findExamples(): ExampleInfo[] {
           const chapter = chapterMatch ? chapterMatch[1] : undefined;
           
           const noticeMatch = contractContent.match(/@notice\s+(.+?)(?:\n|$)/);
-          const description = noticeMatch ? noticeMatch[1].trim() : contractName;
+          const rawDescription = noticeMatch ? noticeMatch[1].trim() : contractName;
+          const description = convertToEducationalDescription(rawDescription);
           
           const category = entry.name.split('-')[0] || 'basic';
 
@@ -80,9 +81,10 @@ function findExamples(): ExampleInfo[] {
         const chapterMatch = contractContent.match(/@chapter\s+(\w+)/);
         const chapter = chapterMatch ? chapterMatch[1] : undefined;
         
-        // Extract description from @notice
+        // Extract description from @notice and convert to educational format
         const noticeMatch = contractContent.match(/@notice\s+(.+?)(?:\n|$)/);
-        const description = noticeMatch ? noticeMatch[1].trim() : contractName;
+        const rawDescription = noticeMatch ? noticeMatch[1].trim() : contractName;
+        const description = convertToEducationalDescription(rawDescription);
         
         // Determine category from directory name
         const category = entry.name.split('-')[0] || 'basic';
@@ -102,6 +104,133 @@ function findExamples(): ExampleInfo[] {
   }
 
   return examples;
+}
+
+function convertToEducationalDescription(description: string): string {
+  // Convert product-focused descriptions to educational format
+  const lowerDesc = description.toLowerCase();
+  
+  // Common patterns to convert - check most specific first
+  if (lowerDesc.includes('counter') && lowerDesc.includes('entropyoracle')) {
+    return 'Learn how to create and increment encrypted counters using FHE.add';
+  }
+  if (lowerDesc.includes('counter')) {
+    return 'Learn how to create and increment encrypted counters using FHE.add';
+  }
+  if (lowerDesc.includes('arithmetic') && lowerDesc.includes('entropyoracle')) {
+    return 'Learn how to perform encrypted arithmetic operations (FHE.add, FHE.sub)';
+  }
+  if (lowerDesc.includes('encrypt') && lowerDesc.includes('entropyoracle')) {
+    if (lowerDesc.includes('multiple')) {
+      return 'Learn how to encrypt multiple values using FHE.fromExternal';
+    }
+    return 'Learn how to encrypt a single value using FHE.fromExternal';
+  }
+  if (lowerDesc.includes('access control') && lowerDesc.includes('entropyoracle')) {
+    return 'Learn how to implement access control for encrypted values using FHE.allow and FHE.allowTransient';
+  }
+  if (lowerDesc.includes('view with encrypted')) {
+    return 'Learn why view functions cannot return encrypted values (anti-pattern)';
+  }
+  if (lowerDesc.includes('missing allowthis')) {
+    return 'Learn why FHE.allowThis() is required before using encrypted values (anti-pattern)';
+  }
+  // Remove EntropyOracle references and convert to educational
+  if (lowerDesc.includes('entropyoracle')) {
+    const cleaned = description.replace(/using EntropyOracle for encrypted randomness/gi, '').replace(/EntropyOracle/gi, 'encrypted randomness').replace(/using encrypted randomness/gi, 'using encrypted randomness').trim();
+    if (cleaned && !cleaned.toLowerCase().startsWith('learn')) {
+      return `Learn how to ${cleaned.toLowerCase()}`;
+    }
+    return cleaned || 'Learn how to use encrypted randomness in FHEVM';
+  }
+  if (lowerDesc.includes('arithmetic')) {
+    return 'Learn how to perform encrypted arithmetic operations (FHE.add, FHE.sub)';
+  }
+  if (lowerDesc.includes('equality')) {
+    return 'Learn how to compare encrypted values using FHE.eq';
+  }
+  if (lowerDesc.includes('encrypt single')) {
+    return 'Learn how to encrypt a single value using FHE.fromExternal';
+  }
+  if (lowerDesc.includes('encrypt multiple')) {
+    return 'Learn how to encrypt multiple values using FHE.fromExternal';
+  }
+  if (lowerDesc.includes('user decrypt single')) {
+    return 'Learn how to allow users to decrypt a single encrypted value using FHE.allow';
+  }
+  if (lowerDesc.includes('user decrypt multiple')) {
+    return 'Learn how to allow users to decrypt multiple encrypted values using FHE.allow';
+  }
+  if (lowerDesc.includes('public decrypt single')) {
+    return 'Learn how to make a single encrypted value publicly decryptable using FHE.makePubliclyDecryptable';
+  }
+  if (lowerDesc.includes('public decrypt multiple')) {
+    return 'Learn how to make multiple encrypted values publicly decryptable using FHE.makePubliclyDecryptable';
+  }
+  if (lowerDesc.includes('access control')) {
+    return 'Learn how to implement access control for encrypted values using FHE.allow and FHE.allowTransient';
+  }
+  if (lowerDesc.includes('input proof')) {
+    return 'Learn what input proofs are and why they are needed in FHEVM';
+  }
+  if (lowerDesc.includes('view with encrypted')) {
+    return 'Learn why view functions cannot return encrypted values (anti-pattern)';
+  }
+  if (lowerDesc.includes('missing allowthis')) {
+    return 'Learn why FHE.allowThis() is required before using encrypted values (anti-pattern)';
+  }
+  if (lowerDesc.includes('handle lifecycle')) {
+    return 'Learn how handles are generated and managed in FHEVM';
+  }
+  if (lowerDesc.includes('lottery')) {
+    return 'Learn how to build a simple lottery system using encrypted randomness';
+  }
+  if (lowerDesc.includes('random number')) {
+    return 'Learn how to generate encrypted random numbers';
+  }
+  if (lowerDesc.includes('nft')) {
+    return 'Learn how to create NFTs with encrypted metadata';
+  }
+  if (lowerDesc.includes('erc7984')) {
+    return 'Learn how to use OpenZeppelin ERC7984 confidential tokens';
+  }
+  if (lowerDesc.includes('vesting')) {
+    return 'Learn how to create a vesting wallet with encrypted amounts';
+  }
+  if (lowerDesc.includes('swap')) {
+    return 'Learn how to swap between confidential and public tokens';
+  }
+  
+  // Default: add "Learn how to" prefix if not already present
+  if (!lowerDesc.startsWith('learn')) {
+    return `Learn how to ${description.toLowerCase()}`;
+  }
+  
+  return description;
+}
+
+function convertDocsToEducational(docs: string): string {
+  // Convert contract documentation to educational format
+  if (!docs) return 'This example teaches you how to use FHEVM to build privacy-preserving smart contracts.';
+  
+  let educationalDocs = docs
+    // Remove product-focused language
+    .replace(/Example demonstrating EntropyOracle integration/gi, 'This example teaches you how to integrate encrypted randomness into your FHEVM contracts')
+    .replace(/How to integrate with EntropyOracle/gi, 'How to integrate encrypted randomness')
+    .replace(/Using entropy to enhance/gi, 'How to use encrypted randomness to enhance')
+    .replace(/EntropyOracle/gi, 'encrypted randomness')
+    .replace(/entropy oracle/gi, 'encrypted randomness')
+    .replace(/for encrypted randomness/gi, 'for encrypted randomness')
+    // Add educational context
+    .replace(/This example shows:/gi, 'In this example, you will learn:')
+    .replace(/This example demonstrates:/gi, 'In this example, you will learn:');
+  
+  // If docs don't have educational context, add it
+  if (!educationalDocs.toLowerCase().includes('learn') && !educationalDocs.toLowerCase().includes('teach')) {
+    educationalDocs = `This example teaches you how to use FHEVM to build privacy-preserving smart contracts.\n\n${educationalDocs}`;
+  }
+  
+  return educationalDocs;
 }
 
 function extractContractDocs(contractPath: string): string {
@@ -127,7 +256,7 @@ function extractContractDocs(contractPath: string): string {
     }
   }
 
-  return docs;
+  return convertDocsToEducational(docs);
 }
 
 function generateExampleDoc(example: ExampleInfo): string {
@@ -138,9 +267,9 @@ function generateExampleDoc(example: ExampleInfo): string {
 
 ${example.description}
 
-## Overview
+## 📚 Overview
 
-${contractDocs || 'No additional documentation available.'}
+${contractDocs || 'This example teaches you how to use FHEVM to build privacy-preserving smart contracts.'}
 
 ## Contract Code
 
@@ -350,11 +479,11 @@ FHE.allowThis(encryptedAmount);
 
   const features = exampleFeatures[category] || exampleFeatures['basic'];
   
-  return `## 🔐 Zama FHEVM Usage
+  return `## 🔐 Learn Zama FHEVM Through This Example
 
-This example demonstrates the following **Zama FHEVM** features:
+This example teaches you how to use the following **Zama FHEVM** features:
 
-### Zama FHEVM Features Used
+### What You'll Learn About
 
 - **ZamaEthereumConfig**: Inherits from Zama's network configuration
   \`\`\`solidity
@@ -392,9 +521,9 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 ${features.codeExample}
 \`\`\`
 
-### Zama FHEVM Concepts Demonstrated
+### FHEVM Concepts You'll Learn
 
-${features.concepts.map((concept, i) => `${i + 1}. **${concept}**: Using Zama FHEVM to ${concept.toLowerCase()}`).join('\n')}
+${features.concepts.map((concept, i) => `${i + 1}. **${concept}**: Learn how to use Zama FHEVM for ${concept.toLowerCase()}`).join('\n')}
 
 ### Learn More About Zama FHEVM
 
@@ -417,6 +546,10 @@ function generateExampleREADME(example: ExampleInfo, exampleDir: string): string
   return `# ${example.name}
 
 ${example.description}
+
+## 🎓 What You'll Learn
+
+This example teaches you how to use FHEVM to build privacy-preserving smart contracts. You'll learn step-by-step how to implement encrypted operations, manage permissions, and work with encrypted data.
 
 ## 🚀 Quick Start
 
@@ -464,9 +597,9 @@ ${example.description}
 
 ---
 
-## 📋 Overview
+## 📚 Overview
 
-${contractDocs || 'No additional documentation available.'}
+${contractDocs || 'This example teaches you how to use FHEVM to build privacy-preserving smart contracts.'}
 
 ${zamaSection}
 
