@@ -1,37 +1,55 @@
-# EntroFHE — FHE-Native Encrypted Randomness Example
+# EntroFHE FHEVM Example Hub - Learn How to Build Privacy-Preserving Smart Contracts
 
-A comprehensive collection of standalone, Hardhat-based FHEVM examples demonstrating various concepts and patterns for building privacy-preserving smart contracts using Fully Homomorphic Encryption. **All examples are integrated with EntropyOracle** - a production-ready FHE-based entropy and randomness infrastructure.
+A comprehensive educational collection of **22 standalone, Hardhat-based FHEVM examples** that teach you how to build privacy-preserving smart contracts using Fully Homomorphic Encryption. Each example demonstrates **one clear FHEVM concept** with step-by-step code, tests, and documentation.
 
-**❌ VRF → result is public
+## 🎓 What You'll Learn
 
-**❌ Commit-reveal → manipulable
+This repository teaches you **how to use Zama FHEVM** through practical, hands-on examples. Each example focuses on answering **"How do I do this?"** rather than just showing what's possible.
 
-**✅ FHE → entropy is never observable
+**Learning Path:**
+- ✅ **Basic Operations**: Learn FHE arithmetic, comparisons, and counters
+- ✅ **Encryption Patterns**: Understand how to encrypt and store values on-chain
+- ✅ **Decryption Patterns**: Learn user decryption and public decryption
+- ✅ **Access Control**: Master FHE permissions (FHE.allow, FHE.allowTransient)
+- ✅ **Input Proofs**: Learn how to handle user-provided encrypted inputs
+- ✅ **Common Pitfalls**: See what NOT to do and why
+- ✅ **Handle Management**: Understand symbolic execution and handle lifecycle
+- ✅ **Real-World Patterns**: Advanced examples like lotteries, NFTs, and token swaps
 
 ## 🎯 Overview
 
-This repository provides a complete set of FHEVM examples organized by category, with automated scaffolding tools, comprehensive tests, and auto-generated documentation. Each example is a standalone Hardhat project demonstrating one clear FHEVM concept **with EntropyOracle integration** for encrypted randomness.
+This educational hub provides **22 standalone example repositories**, each teaching a specific FHEVM concept. Every example is:
 
-### 🔑 Key Feature: EntropyOracle Integration
+- ✅ **One repo per example**: Each example is a **separate GitHub repository** (managed as Git submodules)
+- ✅ **Standalone Hardhat project**: Complete, independent project you can clone and learn from
+- ✅ **Real-world context**: Examples use a practical use case (encrypted randomness) to teach FHEVM concepts
+- ✅ **Step-by-step**: Clear code, comprehensive tests, and detailed documentation
+- ✅ **Automated scaffolding**: CLI tool to generate examples and learn the structure
 
-**All 22 tutorial examples** demonstrate how to integrate and use **EntropyOracle** - an on-chain entropy oracle that provides cryptographically secure randomness using FHE technology. Unlike traditional VRF solutions, EntropyOracle keeps seeds encrypted at all times, ensuring maximum privacy and security.
+### 📚 Teaching Approach: Learning Through Examples
 
-**EntropyOracle Features:**
-- 🔒 **FHE-Based Privacy**: Seeds and entropy remain encrypted on-chain
-- 💰 **Low Cost**: Only 0.00001 ETH per entropy request
-- 🛠️ **Developer-Friendly**: Simple interface for easy integration
-- ⛓️ **On-Chain**: No external dependencies or oracles
-- 📍 **Deployed on Sepolia**: `0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361`
+**All 22 examples** use a practical scenario (encrypted randomness/entropy) to teach FHEVM concepts. This approach helps you:
 
-## ✨ Features
+1. **See FHEVM in context**: Learn how FHE operations work in real applications
+2. **Understand patterns**: Each example demonstrates a specific FHEVM pattern
+3. **Learn best practices**: See correct usage and common mistakes side-by-side
+4. **Build confidence**: Start with simple examples and progress to advanced patterns
 
-- **🛠️ CLI Tool**: Interactive command-line tool (`entrofhe-cli`) to generate EntropyOracle-integrated examples instantly
-- **Automated Scaffolding**: TypeScript CLI tools for generating example repositories
-- **Comprehensive Tests**: Test suites showing both correct usage and common pitfalls
-- **Documentation Generator**: Auto-generates GitBook-compatible documentation from code annotations
-- **Base Template**: Reusable Hardhat template for quick example creation
-- **Category Organization**: Examples organized by concept (basic, encryption, decryption, etc.)
-- **Developer Guide**: Complete guide for adding new examples and maintaining the hub
+**Example Structure:**
+- Each example demonstrates **one FHEVM concept** (e.g., "How to use FHE.allow for user decryption")
+- All examples use the same practical context (encrypted randomness) so you can focus on learning FHEVM, not the domain
+- Tests show both **correct usage** and **common pitfalls**
+- Documentation explains **why** each pattern works, not just **what** it does
+
+## ✨ Learning Tools
+
+- **🛠️ CLI Tool**: Interactive command-line tool (`entrofhe-cli`) to generate example projects and study their structure
+- **Automated Scaffolding**: TypeScript scripts showing how to structure FHEVM projects
+- **Comprehensive Tests**: Test suites teaching correct usage patterns and common mistakes
+- **Documentation Generator**: Auto-generates educational documentation from code annotations
+- **Base Template**: Learn from a well-structured Hardhat template based on Zama's official template
+- **Category Organization**: Examples organized by learning path (basic → advanced)
+- **Developer Guide**: Learn how to create your own FHEVM examples
 
 ## 📋 Requirements
 
@@ -77,11 +95,11 @@ entrofhe list
 
 **Note:** If you haven't installed globally, use `npx entrofhe-cli` instead of `entrofhe`.
 
-The CLI automatically:
-- ✅ Generates standalone Hardhat project
-- ✅ Integrates EntropyOracle
-- ✅ Includes all necessary files and dependencies
-- ✅ Sets up tests and deployment scripts
+The CLI generates a complete learning project:
+- ✅ Standalone Hardhat project structure
+- ✅ Example contract demonstrating FHEVM patterns
+- ✅ Comprehensive tests showing how to use it
+- ✅ Documentation explaining the concepts
 
 ### Option 2: Manual Installation
 
@@ -103,79 +121,155 @@ npm run generate-docs
 
 ### Run Tests
 
+**For Individual Example (Recommended):**
 ```bash
-# Test all examples
+# Clone a specific example repository
+git clone https://github.com/zacnider/fhevm-example-basic-simplecounter.git
+cd fhevm-example-basic-simplecounter
+npm install --legacy-peer-deps
+npm test
+```
+
+**For All Examples (Using Submodules):**
+```bash
+# First, initialize submodules
+git submodule update --init --recursive
+
+# Then test all examples
 for dir in examples/*/; do
-  cd "$dir" && npm test && cd ../..
+  cd "$dir" && npm install --legacy-peer-deps && npm test && cd ../..
 done
 ```
 
 ## 📂 Project Structure
+
+**Important:** This repository follows the bounty requirement of **"one repo per example"**. Each example is a **standalone GitHub repository** managed as a Git submodule. This means:
+
+- ✅ Each example is a **separate, independent repository** on GitHub
+- ✅ Each example can be cloned and used independently
+- ✅ Each example is a **standalone Hardhat project** with its own `package.json`, `hardhat.config.ts`, etc.
+- ✅ Examples are organized in this hub repository as **Git submodules** for easy access and maintenance
 
 ```
 .
 ├── cli/                    # EntroFHE CLI tool (npm package)
 │   ├── src/               # CLI source code
 │   └── package.json       # CLI package configuration
-├── base-template/          # Base Hardhat template for examples
-├── examples/               # Standalone example repositories
-│   ├── basic-*/           # Basic FHE operations
-│   ├── encryption-*/      # Encryption examples
-│   ├── user-decryption-*/ # User decryption examples
-│   └── ...
-├── automation/            # Automation scripts
+├── base-template/          # Base Hardhat template (based on Zama's fhevm-hardhat-template)
+├── examples/               # Git submodules - Each is a standalone GitHub repository
+│   ├── basic-*/           # Basic FHE operations (separate repos)
+│   ├── encryption-*/      # Encryption examples (separate repos)
+│   ├── user-decryption-*/ # User decryption examples (separate repos)
+│   └── ...                # All 22 examples are separate GitHub repositories
+├── automation/            # Automation scripts (TypeScript)
 │   ├── create-fhevm-example.ts
 │   ├── create-fhevm-category.ts
 │   └── generate-docs.ts
-├── docs/                  # Auto-generated documentation
-└── DEVELOPER_GUIDE.md     # Guide for contributors
+├── docs/                  # Auto-generated GitBook-compatible documentation
+└── DEVELOPER_GUIDE.md     # Guide for adding examples and updating dependencies
 ```
 
-## 📚 Example Categories
+### Using Examples
 
-**All examples below are integrated with EntropyOracle** and demonstrate how to use encrypted entropy in different FHEVM scenarios.
+**Option 1: Clone Individual Example (Recommended)**
+```bash
+# Each example is a standalone repository
+git clone https://github.com/zacnider/fhevm-example-basic-simplecounter.git
+cd fhevm-example-basic-simplecounter
+npm install --legacy-peer-deps
+npm test
+```
 
-### Basic (EntropyOracle Integration)
-- **EntropyCounter**: Counter using EntropyOracle for encrypted randomness
-- **EntropyArithmetic**: FHE arithmetic operations using EntropyOracle
-- **EntropyEqualityComparison**: FHE equality comparison using EntropyOracle
+**Option 2: Use This Hub Repository with Submodules**
+```bash
+# Clone the hub repository
+git clone https://github.com/zacnider/entrofhe.git
+cd entrofhe
 
-### Encryption (EntropyOracle Integration)
-- **EntropyEncryption**: Encrypt and store single value using EntropyOracle
-- **EntropyEncryptMultiple**: Encrypt and store multiple values using EntropyOracle
+# Initialize and update submodules (downloads all 22 example repositories)
+git submodule update --init --recursive
 
-### User Decryption (EntropyOracle Integration)
-- **EntropyUserDecryption**: User decrypt single value using EntropyOracle and FHE.allow
-- **EntropyUserDecryptMultiple**: User decrypt multiple values using EntropyOracle and FHE.allow
+# Navigate to any example
+cd examples/basic-simplecounter
+npm install --legacy-peer-deps
+npm test
+```
 
-### Public Decryption (EntropyOracle Integration)
-- **EntropyPublicDecryption**: Public decrypt single value using EntropyOracle and makePubliclyDecryptable
-- **EntropyPublicDecryptMultiple**: Public decrypt multiple values using EntropyOracle and makePubliclyDecryptable
+## 📚 Learning Path: Example Categories
 
-### Access Control (EntropyOracle Integration)
-- **EntropyAccessControl**: Access control with EntropyOracle, FHE.allow and FHE.allowTransient
+Each category teaches specific FHEVM concepts. Start with **Basic** and progress to **Advanced** as you build your understanding.
 
-### Input Proof (EntropyOracle Integration)
-- **EntropyInputProof**: Input proofs with EntropyOracle integration
+### 🟢 Basic - Learn Core FHE Operations
 
-### Anti-Patterns (EntropyOracle Integration)
-- **EntropyMissingAllowThis**: Missing FHE.allowThis() permissions with EntropyOracle
-- **EntropyViewWithEncrypted**: View functions with encrypted values and EntropyOracle
+**What you'll learn:** Fundamental FHE operations and how to use them
 
-### Handles (EntropyOracle Integration)
-- **EntropyHandleLifecycle**: Understanding handles and symbolic execution with EntropyOracle
+- **EntropyCounter**: Learn how to create and increment encrypted counters using `FHE.add`
+- **EntropyArithmetic**: Learn FHE arithmetic operations (`FHE.add`, `FHE.sub`, `FHE.mul`, `FHE.div`)
+- **EntropyEqualityComparison**: Learn how to compare encrypted values using `FHE.eq`
 
-### Advanced (Live Contracts with EntropyOracle)
-- **SimpleLottery**: Simple lottery using EntropyOracle (deployed on Sepolia)
-- **RandomNumberGenerator**: Random number generator using EntropyOracle (deployed on Sepolia)
-- **EntropyNFT**: ERC721 NFT with trait selection using EntropyOracle (deployed on Sepolia)
+### 🔐 Encryption - Learn How to Encrypt and Store Values
 
-### OpenZeppelin Confidential Contracts (EntropyOracle Integration)
-- **EntropyERC7984Token**: Basic ERC7984 confidential token implementation with EntropyOracle
-- **EntropyERC7984ToERC20Wrapper**: Wrapper contract to convert ERC7984 to ERC20 tokens
-- **EntropySwapERC7984ToERC20**: Swap ERC7984 confidential tokens to ERC20 tokens
-- **EntropySwapERC7984ToERC7984**: Swap between two ERC7984 tokens
-- **EntropyVestingWallet**: Vesting wallet with encrypted amounts and EntropyOracle
+**What you'll learn:** How to encrypt values and store them on-chain
+
+- **EntropyEncryption**: Learn how to encrypt a single value and store it in contract state
+- **EntropyEncryptMultiple**: Learn how to encrypt and manage multiple encrypted values
+
+### 👤 User Decryption - Learn Access Control Patterns
+
+**What you'll learn:** How to allow specific users to decrypt values using `FHE.allow`
+
+- **EntropyUserDecryption**: Learn how to use `FHE.allow()` to let a specific user decrypt a value
+- **EntropyUserDecryptMultiple**: Learn how to manage permissions for multiple encrypted values
+
+### 🌐 Public Decryption - Learn Public Decryption Patterns
+
+**What you'll learn:** How to make encrypted values publicly decryptable
+
+- **EntropyPublicDecryption**: Learn how to use `FHE.makePubliclyDecryptable()` for public decryption
+- **EntropyPublicDecryptMultiple**: Learn how to manage multiple publicly decryptable values
+
+### 🔒 Access Control - Master FHE Permissions
+
+**What you'll learn:** Advanced permission patterns with `FHE.allow` and `FHE.allowTransient`
+
+- **EntropyAccessControl**: Learn the difference between `FHE.allow()`, `FHE.allowTransient()`, and `FHE.allowThis()`
+
+### 📝 Input Proof - Learn User-Provided Encrypted Inputs
+
+**What you'll learn:** How to handle encrypted values provided by users
+
+- **EntropyInputProof**: Learn how to use `externalEuint64` and input proofs to accept encrypted user inputs
+
+### ⚠️ Anti-Patterns - Learn What NOT to Do
+
+**What you'll learn:** Common mistakes and how to avoid them
+
+- **EntropyMissingAllowThis**: Learn why `FHE.allowThis()` is required and what happens when it's missing
+- **EntropyViewWithEncrypted**: Learn why view functions can't return encrypted values and how to work around it
+
+### 🔄 Handles - Understand Symbolic Execution
+
+**What you'll learn:** How handles work, symbolic execution, and handle lifecycle
+
+- **EntropyHandleLifecycle**: Learn how handles are generated, used, and managed in FHEVM
+
+### 🚀 Advanced - Real-World Patterns
+
+**What you'll learn:** How to build complete applications using FHEVM
+
+- **SimpleLottery**: Learn how to build a lottery system with encrypted randomness
+- **RandomNumberGenerator**: Learn how to generate and use encrypted random numbers
+- **EntropyNFT**: Learn how to build an NFT with encrypted trait selection
+
+### 🏛️ OpenZeppelin Confidential Contracts - Learn Standard Patterns
+
+**What you'll learn:** How to use OpenZeppelin's confidential contracts library
+
+- **EntropyERC7984Token**: Learn how to create confidential tokens using ERC7984
+- **EntropyERC7984ToERC20Wrapper**: Learn how to wrap confidential tokens into ERC20
+- **EntropySwapERC7984ToERC20**: Learn how to swap confidential tokens for ERC20 tokens
+- **EntropySwapERC7984ToERC7984**: Learn how to swap between two confidential tokens
+- **EntropyVestingWallet**: Learn how to build a vesting wallet with encrypted amounts
 
 ## 🛠️ Automation Scripts
 
@@ -235,33 +329,36 @@ See [DEVELOPER_GUIDE.md](./DEVELOPER_GUIDE.md) for detailed instructions on:
 - Category guidelines
 - Updating dependencies
 
-## 🔗 EntropyOracle
+## 🎓 How Examples Use Encrypted Randomness
 
-**EntropyOracle** is a production-ready FHE-based entropy oracle deployed on Sepolia testnet.
+**Why encrypted randomness?** All examples use a practical scenario (encrypted randomness/entropy) to teach FHEVM concepts. This gives you a **real-world context** while learning, rather than abstract examples.
 
-- **Contract Address**: `0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361`
-- **Network**: Sepolia Testnet (Chain ID: 11155111)
-- **Fee per Request**: 0.00001 ETH
-- **Interface**: `IEntropyOracle.sol` (included in all examples)
+**What you'll learn:**
+- How to interact with external contracts that return encrypted values
+- How to use encrypted values from external sources in your FHE operations
+- How to structure contracts that work with encrypted data
 
-### Quick Integration
-
+**Example Pattern:**
 ```solidity
+// Learn how to get encrypted values from external contracts
 import "./interfaces/IEntropyOracle.sol";
 
 contract MyContract {
+    // Learn how to reference external contracts
     IEntropyOracle public constant ENTROPY_ORACLE = 
         IEntropyOracle(0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361);
     
+    // Learn how to request and use encrypted values
     function useEntropy(bytes32 tag) external payable {
         uint256 requestId = ENTROPY_ORACLE.requestEntropy{value: 0.00001 ether}(tag);
         euint64 entropy = ENTROPY_ORACLE.getEncryptedEntropy(requestId);
-        // Use entropy in your FHE operations...
+        // Learn how to use encrypted values in FHE operations
+        // This is where you'll practice FHE.add, FHE.eq, FHE.allow, etc.
     }
 }
 ```
 
-See [docs/INTEGRATION.md](./docs/INTEGRATION.md) for detailed integration guide.
+**Note:** The examples use a deployed contract on Sepolia (`0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361`) to provide encrypted randomness. This is just a **teaching tool** - the focus is on learning FHEVM patterns, not the randomness contract itself.
 
 ## 🔐 Zama FHEVM Usage in This Project
 
@@ -350,23 +447,22 @@ All examples follow this Zama FHEVM integration pattern:
 - [Zama Hardhat Template](https://github.com/zama-ai/fhevm-hardhat-template)
 - [OpenZeppelin Confidential Contracts](https://github.com/OpenZeppelin/openzeppelin-confidential-contracts)
 
-## 📊 Statistics
+## 📊 Learning Resources
 
-- **Total Examples**: 22 examples (all with EntropyOracle integration)
-- **Categories**: 10 categories
-- **EntropyOracle Integration**: ✅ All examples
-- **Test Coverage**: Comprehensive tests for each example
-- **Documentation**: Auto-generated from code
-- **Basic Examples**: 3 (EntropyCounter, EntropyArithmetic, EntropyEqualityComparison)
-- **Encryption Examples**: 2 (EntropyEncryption, EntropyEncryptMultiple)
-- **User Decryption Examples**: 2 (EntropyUserDecryption, EntropyUserDecryptMultiple)
-- **Public Decryption Examples**: 2 (EntropyPublicDecryption, EntropyPublicDecryptMultiple)
-- **Access Control Examples**: 1 (EntropyAccessControl)
-- **Input Proof Examples**: 1 (EntropyInputProof)
-- **Anti-Patterns Examples**: 2 (EntropyMissingAllowThis, EntropyViewWithEncrypted)
-- **Handles Examples**: 1 (EntropyHandleLifecycle)
-- **Advanced Examples**: 3 (SimpleLottery, RandomNumberGenerator, EntropyNFT)
-- **OpenZeppelin Examples**: 5 (ERC7984Token, ERC7984ToERC20Wrapper, SwapERC7984ToERC20, SwapERC7984ToERC7984, VestingWallet)
+- **Total Examples**: 22 standalone example repositories
+- **Learning Categories**: 10 categories covering all FHEVM concepts
+- **Test Coverage**: Comprehensive tests for each example (correct usage + common pitfalls)
+- **Documentation**: Auto-generated educational docs from code annotations
+- **Basic Examples**: 3 examples teaching core FHE operations
+- **Encryption Examples**: 2 examples teaching encryption patterns
+- **User Decryption Examples**: 2 examples teaching access control with FHE.allow
+- **Public Decryption Examples**: 2 examples teaching public decryption patterns
+- **Access Control Examples**: 1 example teaching FHE permissions
+- **Input Proof Examples**: 1 example teaching user-provided encrypted inputs
+- **Anti-Patterns Examples**: 2 examples teaching what NOT to do
+- **Handles Examples**: 1 example teaching handle lifecycle and symbolic execution
+- **Advanced Examples**: 3 examples teaching real-world application patterns
+- **OpenZeppelin Examples**: 5 examples teaching standard confidential contract patterns
 
 ## 🤝 Contributing
 
@@ -385,21 +481,46 @@ BSD-3-Clause-Clear
 
 This repository is submitted for the **Zama Bounty Track December 2025: Build The FHEVM Example Hub**.
 
+### Educational Approach
+
+This hub focuses on **teaching FHEVM** through practical examples. Each example answers **"How do I do this?"** rather than just showing what's possible.
+
+**Teaching Philosophy:**
+- ✅ **Didactic examples**: Each example teaches one clear concept
+- ✅ **Progressive learning**: Start simple, build to advanced patterns
+- ✅ **Real-world context**: Examples use practical scenarios (encrypted randomness)
+- ✅ **Learn by doing**: Complete, runnable examples with tests
+- ✅ **Learn from mistakes**: Anti-pattern examples show what NOT to do
+
 ### Deliverables
 
 ✅ **base-template/**: Complete Hardhat template with @fhevm/solidity (based on Zama's fhevm-hardhat-template)  
 ✅ **fhevm-hardhat-template/**: Zama's official template as submodule (reference)  
 ✅ **Automation scripts**: create-fhevm-example and related tools in TypeScript  
-✅ **Example repositories**: Multiple fully working example repos  
-✅ **Documentation**: Auto-generated documentation per example  
-✅ **Developer guide**: Guide for adding new examples and updating dependencies  
-✅ **Automation tools**: Complete set of tools for scaffolding and documentation generation
+✅ **Example repositories**: 22 fully working standalone example repos (one repo per example, managed as Git submodules)  
+✅ **Documentation**: Auto-generated GitBook-compatible documentation per example  
+✅ **Developer guide**: Complete guide for adding new examples and updating dependencies  
+✅ **Automation tools**: Complete set of tools for scaffolding and documentation generation  
+✅ **CLI tool**: Interactive CLI tool (entrofhe-cli) for generating examples
 
-### Features
+### Bounty Requirements Compliance
 
-- Standalone example repositories (one repo per example concept)
-- Automated scaffolding with TypeScript CLI
-- Comprehensive test coverage
-- Auto-generated GitBook-compatible documentation
-- Category-based organization
-- Developer-friendly tools and guides
+✅ **One repo per example**: Each of the 22 examples is a **separate GitHub repository** managed as Git submodules  
+✅ **Standalone Hardhat projects**: Each example is a complete, independent Hardhat project  
+✅ **Base template**: Uses Zama's fhevm-hardhat-template as the base  
+✅ **Automated scaffolding**: TypeScript CLI tool and automation scripts for generating examples  
+✅ **Comprehensive tests**: Test suites showing correct usage and common pitfalls  
+✅ **Auto-generated documentation**: GitBook-compatible docs generated from JSDoc/TSDoc annotations  
+✅ **Category organization**: Examples organized by learning path (basic → advanced)  
+✅ **All required example types**: Basic, encryption, decryption, access control, input proof, anti-patterns, handles, OpenZeppelin, advanced
+
+### Learning Features
+
+- **22 Standalone Example Repositories**: Each example is a separate GitHub repository (one repo per example)
+- **Progressive Learning Path**: Examples organized from basic to advanced
+- **Git Submodules**: Examples managed as submodules for easy hub access
+- **Automated Scaffolding**: TypeScript CLI tool (`entrofhe-cli`) and automation scripts
+- **Comprehensive Test Coverage**: Tests demonstrating correct usage, pitfalls, and edge cases
+- **Auto-generated Documentation**: GitBook-compatible docs from code annotations
+- **Category-based Organization**: 10 categories covering all FHEVM concepts
+- **Developer-friendly Tools**: CLI, automation scripts, and comprehensive guides
