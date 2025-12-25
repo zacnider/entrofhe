@@ -2,7 +2,7 @@
 
 ## Examples
 
-- [EntropyAccessControl](./EntropyAccessControl.md) - Access control with EntropyOracle, FHE.allow and FHE.allowTransient
+- [EntropyAccessControl](./EntropyAccessControl.md) - Learn how to implement access control for encrypted values using FHE.allow and FHE.allowTransient
 
 ## Overview
 

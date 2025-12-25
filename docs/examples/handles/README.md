@@ -2,7 +2,7 @@
 
 ## Examples
 
-- [EntropyHandleLifecycle](./EntropyHandleLifecycle.md) - Understanding handles and symbolic execution with EntropyOracle
+- [EntropyHandleLifecycle](./EntropyHandleLifecycle.md) - Learn how to understanding handles and symbolic execution with encrypted randomness
 
 ## Overview
 

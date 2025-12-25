@@ -2,7 +2,7 @@
 
 ## Examples
 
-- [EntropyInputProof](./EntropyInputProof.md) - Input proofs with EntropyOracle integration
+- [EntropyInputProof](./EntropyInputProof.md) - Learn how to input proofs with encrypted randomness integration
 
 ## Overview
 

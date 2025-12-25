@@ -1,32 +1,34 @@
 # EntropyViewWithEncrypted
 
-View functions with encrypted values and EntropyOracle (not allowed)
+Learn how to encrypt a single value using FHE.fromExternal
 
-## Overview
+## 📚 Overview
+
+This example teaches you how to use FHEVM to build privacy-preserving smart contracts.
 
 @title EntropyViewWithEncrypted
-@notice View functions with encrypted values and EntropyOracle (not allowed)
-@dev ANTI-PATTERN: This demonstrates what NOT to do with EntropyOracle
+@notice View functions with encrypted values and encrypted randomness (not allowed)
+@dev ANTI-PATTERN: This demonstrates what NOT to do with encrypted randomness
 ⚠️ ANTI-PATTERN WARNING:
 View functions cannot return encrypted values (euint64) directly.
 FHE operations are considered state-modifying, so they cannot be in view functions.
-EntropyOracle operations also cannot be in view functions.
+encrypted randomness operations also cannot be in view functions.
 Common Mistakes:
 1. Trying to return euint64 from view functions
 2. Using FHE operations in view functions
-3. Trying to get entropy from EntropyOracle in view functions
+3. Trying to get entropy from encrypted randomness in view functions
 4. Expecting encrypted values to work in pure/view contexts
 Correct Approach:
 - Use regular functions (not view) to return encrypted values
 - Or return the encrypted value handle as bytes/string
 - Or use events to emit encrypted values
 
-@notice Constructor - sets EntropyOracle address
-@param _entropyOracle Address of EntropyOracle contract
+@notice Constructor - sets encrypted randomness address
+@param _encrypted randomness Address of encrypted randomness contract
 
 @notice Request entropy
 @param tag Unique tag for this request
-@return requestId Request ID from EntropyOracle
+@return requestId Request ID from encrypted randomness
 
 @notice Initialize encrypted value
 @param encryptedInput Encrypted value
@@ -42,12 +44,12 @@ Error you'll get:
 @return Encrypted value
 
 ❌ ANTI-PATTERN: View function trying to get entropy
-@dev This will NOT compile - view functions cannot call EntropyOracle
+@dev This will NOT compile - view functions cannot call encrypted randomness
 
 ✅ ALTERNATIVE: Return as bytes (if you need view-like behavior)
 @dev You can return the handle as bytes, but this loses FHE capabilities
 
-@notice Get EntropyOracle address
+@notice Get encrypted randomness address
 
 
 

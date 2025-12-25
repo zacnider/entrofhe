@@ -1,20 +1,20 @@
 # EntropyPublicDecryptMultiple
 
-Public decrypt multiple values using EntropyOracle and makePubliclyDecryptable
+Learn how to public decrypt multiple values using encrypted randomness and makepubliclydecryptable
 
-## Overview
+## 📚 Overview
 
 @title EntropyPublicDecryptMultiple
-@notice Public decrypt multiple values using EntropyOracle and makePubliclyDecryptable
-@dev Example demonstrating EntropyOracle integration: using entropy for public decryption of multiple values
-This example shows:
-- How to integrate with EntropyOracle
-- Using entropy to enhance public decryption patterns for multiple values
+@notice Public decrypt multiple values using encrypted randomness and makePubliclyDecryptable
+@dev This example teaches you how to integrate encrypted randomness into your FHEVM contracts: using entropy for public decryption of multiple values
+In this example, you will learn:
+- How to integrate encrypted randomness
+- How to use encrypted randomness to enhance public decryption patterns for multiple values
 - Combining entropy with public decryption for batch operations
 - Entropy-based public key generation for multiple values
 
-@notice Constructor - sets EntropyOracle address
-@param _entropyOracle Address of EntropyOracle contract
+@notice Constructor - sets encrypted randomness address
+@param _encrypted randomness Address of encrypted randomness contract
 
 @notice Store encrypted value and make it publicly decryptable
 @param key Key/index for storing the value
@@ -30,7 +30,7 @@ This example shows:
 
 @notice Request entropy for enhanced public decryption
 @param tag Unique tag for this request
-@return requestId Request ID from EntropyOracle
+@return requestId Request ID from encrypted randomness
 @dev Requires 0.00001 ETH fee
 
 @notice Store value with entropy enhancement and make publicly decryptable
@@ -58,7 +58,7 @@ This example shows:
 @notice Get total number of values stored
 @return Total count of initialized values
 
-@notice Get EntropyOracle address
+@notice Get encrypted randomness address
 
 
 

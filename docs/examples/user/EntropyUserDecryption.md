@@ -1,20 +1,20 @@
 # EntropyUserDecryption
 
-User decrypt single value using EntropyOracle and FHE.allow
+Learn how to user decrypt single value using encrypted randomness and fhe.allow
 
-## Overview
+## 📚 Overview
 
 @title EntropyUserDecryption
-@notice User decrypt single value using EntropyOracle and FHE.allow
-@dev Example demonstrating EntropyOracle integration: using entropy for user-specific decryption
-This example shows:
-- How to integrate with EntropyOracle
-- Using entropy to enhance user decryption patterns
+@notice User decrypt single value using encrypted randomness and FHE.allow
+@dev This example teaches you how to integrate encrypted randomness into your FHEVM contracts: using entropy for user-specific decryption
+In this example, you will learn:
+- How to integrate encrypted randomness
+- How to use encrypted randomness to enhance user decryption patterns
 - Combining entropy with user-specific access control
 - Entropy-based decryption key generation
 
-@notice Constructor - sets EntropyOracle address
-@param _entropyOracle Address of EntropyOracle contract
+@notice Constructor - sets encrypted randomness address
+@param _encrypted randomness Address of encrypted randomness contract
 
 @notice Store encrypted value and allow specific user to decrypt
 @param encryptedInput Encrypted value from user
@@ -23,7 +23,7 @@ This example shows:
 
 @notice Request entropy for enhanced decryption
 @param tag Unique tag for this request
-@return requestId Request ID from EntropyOracle
+@return requestId Request ID from encrypted randomness
 @dev Requires 0.00001 ETH fee
 
 @notice Store value with entropy enhancement and allow user to decrypt
@@ -41,7 +41,7 @@ This example shows:
 
 @notice Check if initialized
 
-@notice Get EntropyOracle address
+@notice Get encrypted randomness address
 
 
 

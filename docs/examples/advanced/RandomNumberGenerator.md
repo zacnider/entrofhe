@@ -1,20 +1,20 @@
 # RandomNumberGenerator
 
-Random number generator using entropy
+Learn how to generate encrypted random numbers
 
-## Overview
+## 📚 Overview
 
 @title RandomNumberGenerator
 @notice Random number generator using entropy
 @dev Example demonstrating how to request entropy and use it for random number generation
-This example shows:
+In this example, you will learn:
 - Requesting entropy from oracle
 - Storing encrypted random numbers
 - Retrieving encrypted values
 
 @notice Request a random number
 @param tag Unique tag for this request
-@return requestId The request ID from entropy oracle
+@return requestId The request ID from encrypted randomness
 @dev Requires 0.00001 ETH fee for entropy request
 
 @notice Get encrypted random number for a request
@@ -37,6 +37,7 @@ This example shows:
 pragma solidity ^0.8.27;
 
 import {FHE, euint64} from "@fhevm/solidity/lib/FHE.sol";
+import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 import "./IEntropyOracle.sol";
 
 /**
@@ -49,7 +50,7 @@ import "./IEntropyOracle.sol";
  * - Storing encrypted random numbers
  * - Retrieving encrypted values
  */
-contract RandomNumberGenerator {
+contract RandomNumberGenerator is ZamaEthereumConfig {
     IEntropyOracle public entropyOracle;
     
     // Store generated random numbers

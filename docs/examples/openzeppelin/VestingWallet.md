@@ -1,16 +1,16 @@
 # VestingWallet
 
-Vesting wallet with encrypted amounts and EntropyOracle integration
+Learn how to encrypt a single value using FHE.fromExternal
 
-## Overview
+## 📚 Overview
 
 @title EntropyVestingWallet
-@notice Vesting wallet with encrypted amounts and EntropyOracle integration
+@notice Vesting wallet with encrypted amounts and encrypted randomness integration
 @dev Demonstrates vesting with confidential amounts
-This example shows:
+In this example, you will learn:
 - Encrypted vesting amounts
 - Time-based vesting schedules
-- EntropyOracle integration for random vesting operations
+- encrypted randomness integration for random vesting operations
 
 @notice Request entropy for creating vesting with randomness
 @param tag Unique tag for entropy request
@@ -36,8 +36,8 @@ This example shows:
 @param beneficiary Address to query
 @return Vesting schedule
 
-@notice Get EntropyOracle address
-@return EntropyOracle contract address
+@notice Get encrypted randomness address
+@return encrypted randomness contract address
 
 
 

@@ -1,4 +1,4 @@
-# EntroFHE FHEVM Example Hub - Learn How to Build Privacy-Preserving Smart Contracts
+# FHEVM Example Hub - Learn How to Build Privacy-Preserving Smart Contracts
 
 A comprehensive educational collection of **22 standalone, Hardhat-based FHEVM examples** that teach you how to build privacy-preserving smart contracts using Fully Homomorphic Encryption. Each example demonstrates **one clear FHEVM concept** with step-by-step code, tests, and documentation.
 

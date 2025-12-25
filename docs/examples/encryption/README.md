@@ -2,8 +2,8 @@
 
 ## Examples
 
-- [EncryptMultiple](./EncryptMultiple.md) - Encrypt and store multiple values using EntropyOracle
-- [EntropyEncryption](./EntropyEncryption.md) - Encrypt and store values using EntropyOracle
+- [EncryptMultiple](./EncryptMultiple.md) - Learn how to encrypt multiple values using FHE.fromExternal
+- [EntropyEncryption](./EntropyEncryption.md) - Learn how to encrypt a single value using FHE.fromExternal
 
 ## Overview
 

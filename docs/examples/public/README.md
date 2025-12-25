@@ -2,8 +2,8 @@
 
 ## Examples
 
-- [EntropyPublicDecryptMultiple](./EntropyPublicDecryptMultiple.md) - Public decrypt multiple values using EntropyOracle and makePubliclyDecryptable
-- [EntropyPublicDecryption](./EntropyPublicDecryption.md) - Public decrypt single value using EntropyOracle and makePubliclyDecryptable
+- [EntropyPublicDecryptMultiple](./EntropyPublicDecryptMultiple.md) - Learn how to public decrypt multiple values using encrypted randomness and makepubliclydecryptable
+- [EntropyPublicDecryption](./EntropyPublicDecryption.md) - Learn how to public decrypt single value using encrypted randomness and makepubliclydecryptable
 
 ## Overview
 

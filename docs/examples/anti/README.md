@@ -2,8 +2,8 @@
 
 ## Examples
 
-- [EntropyMissingAllowThis](./EntropyMissingAllowThis.md) - Missing FHE.allowThis() permissions with EntropyOracle
-- [EntropyViewWithEncrypted](./EntropyViewWithEncrypted.md) - View functions with encrypted values and EntropyOracle (not allowed)
+- [EntropyMissingAllowThis](./EntropyMissingAllowThis.md) - Learn how to missing fhe.allowthis() permissions with encrypted randomness
+- [EntropyViewWithEncrypted](./EntropyViewWithEncrypted.md) - Learn how to encrypt a single value using FHE.fromExternal
 
 ## Overview
 

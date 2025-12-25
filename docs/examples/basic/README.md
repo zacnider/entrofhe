@@ -2,9 +2,9 @@
 
 ## Examples
 
-- [EntropyArithmetic](./EntropyArithmetic.md) - FHE arithmetic operations using EntropyOracle
-- [EntropyEqualityComparison](./EntropyEqualityComparison.md) - FHE equality comparison using EntropyOracle
-- [EntropyCounter](./EntropyCounter.md) - Counter using EntropyOracle for encrypted randomness
+- [EntropyArithmetic](./EntropyArithmetic.md) - Learn how to perform encrypted arithmetic operations (FHE.add, FHE.sub)
+- [EntropyEqualityComparison](./EntropyEqualityComparison.md) - Learn how to fhe equality comparison using encrypted randomness
+- [EntropyCounter](./EntropyCounter.md) - Learn how to create and increment encrypted counters using FHE.add
 
 ## Overview
 

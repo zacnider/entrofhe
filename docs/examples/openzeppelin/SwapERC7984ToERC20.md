@@ -1,16 +1,16 @@
 # SwapERC7984ToERC20
 
-Swap contract for exchanging ERC7984 confidential tokens to ERC20 tokens
+Learn how to use OpenZeppelin ERC7984 confidential tokens
 
-## Overview
+## 📚 Overview
 
 @title EntropySwapERC7984ToERC20
 @notice Swap contract for exchanging ERC7984 confidential tokens to ERC20 tokens
 @dev Demonstrates swapping confidential tokens to standard tokens
-This example shows:
+In this example, you will learn:
 - Swapping ERC7984 tokens to ERC20
 - Exchange rate management
-- EntropyOracle integration for random swap operations
+- encrypted randomness integration for random swap operations
 
 @notice Request entropy for swap with randomness
 @param tag Unique tag for entropy request
@@ -29,8 +29,8 @@ This example shows:
 @param account Address to query
 @return Encrypted balance
 
-@notice Get EntropyOracle address
-@return EntropyOracle contract address
+@notice Get encrypted randomness address
+@return encrypted randomness contract address
 
 
 

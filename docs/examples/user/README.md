@@ -2,8 +2,8 @@
 
 ## Examples
 
-- [EntropyUserDecryptMultiple](./EntropyUserDecryptMultiple.md) - User decrypt multiple values using EntropyOracle and FHE.allow
-- [EntropyUserDecryption](./EntropyUserDecryption.md) - User decrypt single value using EntropyOracle and FHE.allow
+- [EntropyUserDecryptMultiple](./EntropyUserDecryptMultiple.md) - Learn how to user decrypt multiple values using encrypted randomness and fhe.allow
+- [EntropyUserDecryption](./EntropyUserDecryption.md) - Learn how to user decrypt single value using encrypted randomness and fhe.allow
 
 ## Overview
 

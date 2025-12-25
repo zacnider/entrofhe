@@ -2,9 +2,9 @@
 
 ## Examples
 
-- [EntropyNFT](./EntropyNFT.md) - ERC721 NFT with trait selection using entropy
-- [RandomNumberGenerator](./RandomNumberGenerator.md) - Random number generator using entropy
-- [SimpleLottery](./SimpleLottery.md) - Simple lottery using entropy oracle with FHE operations
+- [EntropyNFT](./EntropyNFT.md) - Learn how to create NFTs with encrypted metadata
+- [RandomNumberGenerator](./RandomNumberGenerator.md) - Learn how to generate encrypted random numbers
+- [SimpleLottery](./SimpleLottery.md) - Learn how to build a simple lottery system using encrypted randomness
 
 ## Overview
 

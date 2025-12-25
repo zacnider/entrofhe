@@ -1,11 +1,13 @@
 # EncryptMultiple
 
-Encrypt and store multiple values using EntropyOracle
+Learn how to encrypt multiple values using FHE.fromExternal
 
-## Overview
+## 📚 Overview
+
+This example teaches you how to use FHEVM to build privacy-preserving smart contracts.
 
 @title EncryptMultiple
-@notice Encrypt and store multiple values using EntropyOracle
+@notice Encrypt and store multiple values using encrypted randomness
 @dev Example demonstrating FHEVM encryption concepts
 
 
