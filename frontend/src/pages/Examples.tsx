@@ -38,154 +38,154 @@ const Examples: React.FC = () => {
   const tutorialExamples = [
     {
       title: "EntropyCounter",
-      description: "Counter using EntropyOracle for encrypted randomness",
+      description: "Learn how to create and increment encrypted counters using FHE.add",
       category: "basic",
       path: "basic-simplecounter",
       icon: <CalculatorIcon className="h-6 w-6" />,
     },
     {
       title: "EntropyArithmetic",
-      description: "FHE arithmetic operations using EntropyOracle",
+      description: "Learn FHE arithmetic operations (FHE.add, FHE.sub, FHE.mul, FHE.div)",
       category: "basic",
       path: "basic-arithmetic",
       icon: <CalculatorIcon className="h-6 w-6" />,
     },
     {
       title: "EntropyEqualityComparison",
-      description: "FHE equality comparison using EntropyOracle",
+      description: "Learn how to compare encrypted values using FHE.eq",
       category: "basic",
       path: "basic-equalitycomparison",
       icon: <CalculatorIcon className="h-6 w-6" />,
     },
     {
       title: "EntropyEncryption",
-      description: "Encrypt and store values using EntropyOracle",
+      description: "Learn how to encrypt and store values on-chain using FHE",
       category: "encryption",
       path: "encryption-encryptsingle",
       icon: <LockClosedIcon className="h-6 w-6" />,
     },
     {
       title: "EntropyEncryptMultiple",
-      description: "Encrypt and store multiple values using EntropyOracle",
+      description: "Learn how to encrypt and manage multiple encrypted values",
       category: "encryption",
       path: "encryption-encryptmultiple",
       icon: <LockClosedIcon className="h-6 w-6" />,
     },
     {
       title: "EntropyUserDecryption",
-      description: "User decrypt using EntropyOracle and FHE.allow",
+      description: "Learn how to use FHE.allow() to let a specific user decrypt a value",
       category: "user-decryption",
       path: "user-decryption-userdecryptsingle",
       icon: <KeyIcon className="h-6 w-6" />,
     },
     {
       title: "EntropyUserDecryptMultiple",
-      description: "User decrypt multiple values using EntropyOracle and FHE.allow",
+      description: "Learn how to manage permissions for multiple encrypted values",
       category: "user-decryption",
       path: "user-decryption-userdecryptmultiple",
       icon: <KeyIcon className="h-6 w-6" />,
     },
     {
       title: "EntropyPublicDecryption",
-      description: "Public decrypt using EntropyOracle and makePubliclyDecryptable",
+      description: "Learn how to use FHE.makePubliclyDecryptable() for public decryption",
       category: "public-decryption",
       path: "public-decryption-publicdecryptsingle",
       icon: <KeyIcon className="h-6 w-6" />,
     },
     {
       title: "EntropyPublicDecryptMultiple",
-      description: "Public decrypt multiple values using EntropyOracle and makePubliclyDecryptable",
+      description: "Learn how to manage multiple publicly decryptable values",
       category: "public-decryption",
       path: "public-decryption-publicdecryptmultiple",
       icon: <KeyIcon className="h-6 w-6" />,
     },
     {
       title: "EntropyAccessControl",
-      description: "Access control with EntropyOracle, FHE.allow and allowTransient",
+      description: "Learn the difference between FHE.allow(), FHE.allowTransient(), and FHE.allowThis()",
       category: "access-control",
       path: "access-control-accesscontrol",
       icon: <ShieldCheckIcon className="h-6 w-6" />,
     },
     {
       title: "EntropyInputProof",
-      description: "Input proofs with EntropyOracle integration",
+      description: "Learn how to use externalEuint64 and input proofs to accept encrypted user inputs",
       category: "input-proof",
       path: "input-proof-inputproofexplanation",
       icon: <DocumentTextIcon className="h-6 w-6" />,
     },
     {
       title: "EntropyMissingAllowThis",
-      description: "Missing FHE.allowThis() permissions with EntropyOracle (ANTI-PATTERN)",
+      description: "Learn why FHE.allowThis() is required and what happens when it's missing (ANTI-PATTERN)",
       category: "anti-patterns",
       path: "anti-patterns-missingallowthis",
       icon: <ExclamationTriangleIcon className="h-6 w-6" />,
     },
     {
       title: "EntropyViewWithEncrypted",
-      description: "View functions with encrypted values and EntropyOracle (ANTI-PATTERN)",
+      description: "Learn why view functions can't return encrypted values and how to work around it (ANTI-PATTERN)",
       category: "anti-patterns",
       path: "anti-patterns-viewwithencrypted",
       icon: <EyeIcon className="h-6 w-6" />,
     },
     {
       title: "EntropyHandleLifecycle",
-      description: "Understanding handles and symbolic execution with EntropyOracle",
+      description: "Learn how handles are generated, used, and managed in FHEVM",
       category: "handles",
       path: "handles-handlelifecycle",
       icon: <LinkIcon className="h-6 w-6" />,
     },
     {
       title: "EntropyERC7984Token",
-      description: "Basic ERC7984 confidential token implementation with EntropyOracle",
+      description: "Learn how to create confidential tokens using ERC7984",
       category: "openzeppelin",
       path: "openzeppelin-erc7984token",
       icon: <CubeIcon className="h-6 w-6" />,
     },
     {
       title: "EntropyERC7984ToERC20Wrapper",
-      description: "Wrapper contract to convert ERC7984 to ERC20 tokens with EntropyOracle",
+      description: "Learn how to wrap confidential tokens into ERC20",
       category: "openzeppelin",
       path: "openzeppelin-erc7984toerc20wrapper",
       icon: <CubeIcon className="h-6 w-6" />,
     },
     {
       title: "EntropySwapERC7984ToERC20",
-      description: "Swap ERC7984 confidential tokens to ERC20 tokens with EntropyOracle",
+      description: "Learn how to swap confidential tokens for ERC20 tokens",
       category: "openzeppelin",
       path: "openzeppelin-swaperc7984toerc20",
       icon: <CubeIcon className="h-6 w-6" />,
     },
     {
       title: "EntropySwapERC7984ToERC7984",
-      description: "Swap between two ERC7984 tokens with EntropyOracle integration",
+      description: "Learn how to swap between two confidential tokens",
       category: "openzeppelin",
       path: "openzeppelin-swaperc7984toerc7984",
       icon: <CubeIcon className="h-6 w-6" />,
     },
     {
       title: "EntropyVestingWallet",
-      description: "Vesting wallet with encrypted amounts and EntropyOracle integration",
+      description: "Learn how to build a vesting wallet with encrypted amounts",
       category: "openzeppelin",
       path: "openzeppelin-vestingwallet",
       icon: <CubeIcon className="h-6 w-6" />,
     },
     {
       title: "SimpleLottery",
-      description: "Simple lottery using EntropyOracle for winner selection",
+      description: "Learn how to build a lottery system with encrypted randomness",
       category: "advanced",
       path: "advanced-simplelottery",
       icon: <TrophyIcon className="h-6 w-6" />,
     },
     {
       title: "RandomNumberGenerator",
-      description: "Random number generator using EntropyOracle for encrypted randomness",
+      description: "Learn how to generate and use encrypted random numbers",
       category: "advanced",
       path: "advanced-randomnumbergenerator",
       icon: <SparklesIcon className="h-6 w-6" />,
     },
     {
       title: "EntropyNFT",
-      description: "ERC721 NFT with trait selection using EntropyOracle",
+      description: "Learn how to build an NFT with encrypted trait selection",
       category: "advanced",
       path: "advanced-entropynft",
       icon: <CubeIcon className="h-6 w-6" />,
@@ -200,10 +200,10 @@ const Examples: React.FC = () => {
     <div className="max-w-7xl mx-auto">
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-primary-900 dark:text-slate-100 mb-4">
-          Example Contracts
+          Learn FHEVM Through Examples
         </h1>
         <p className="text-lg text-primary-600 dark:text-slate-400">
-          Test and interact with deployed example contracts that use Entrofhe entropy oracle
+          22 standalone examples teaching you step-by-step. Each example demonstrates one clear FHEVM concept with code, tests, and documentation.
         </p>
       </div>
 
@@ -243,14 +243,14 @@ const Examples: React.FC = () => {
               Live Examples
             </h2>
             <p className="text-primary-600 dark:text-slate-400 mb-6">
-              Interact with deployed contracts on Sepolia testnet
+              Try deployed example contracts on Sepolia testnet. See FHEVM patterns in action.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <ExampleCard
               id="lottery"
               title="Simple Lottery"
-              description="Enter and select a winner using entropy"
+              description="Learn how to build a lottery system with encrypted randomness"
               icon={<TrophyIcon className="h-8 w-8" />}
               isSelected={selectedExample === 'lottery'}
               onClick={() => setSelectedExample('lottery')}
@@ -258,7 +258,7 @@ const Examples: React.FC = () => {
             <ExampleCard
               id="random"
               title="Random Number Generator"
-              description="Generate encrypted random numbers"
+              description="Learn how to generate and use encrypted random numbers"
               icon={<SparklesIcon className="h-8 w-8" />}
               isSelected={selectedExample === 'random'}
               onClick={() => setSelectedExample('random')}
@@ -266,7 +266,7 @@ const Examples: React.FC = () => {
             <ExampleCard
               id="entropy-nft"
               title="EntropyNFT"
-              description="Mint real NFTs with IPFS metadata"
+              description="Learn how to build an NFT with encrypted trait selection"
               icon={<CubeIcon className="h-8 w-8" />}
               isSelected={selectedExample === 'entropy-nft'}
               onClick={() => setSelectedExample('entropy-nft')}
@@ -288,7 +288,8 @@ const Examples: React.FC = () => {
               Tutorial Examples
             </h2>
             <p className="text-primary-600 dark:text-slate-400 mb-4">
-              Educational examples demonstrating EntropyOracle integration patterns. Each example shows how to use entropy in different FHEVM scenarios.
+              Learn FHEVM step-by-step with 22 standalone examples. Each example teaches one clear concept with code, tests, and documentation. 
+              Examples use a practical scenario (encrypted randomness) to teach FHEVM patterns.
             </p>
             {/* Zama FHEVM Notice */}
             <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200 dark:border-cyan-700 rounded-lg">
@@ -296,7 +297,7 @@ const Examples: React.FC = () => {
                 <CodeBracketIcon className="h-5 w-5 text-blue-600 dark:text-cyan-400 mt-0.5 flex-shrink-0" />
                 <div className="flex-1">
                   <p className="text-sm text-blue-800 dark:text-cyan-300">
-                    <strong>Built with Zama FHEVM:</strong> All examples use <a href="https://docs.zama.org/protocol" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 dark:text-cyan-400 hover:underline">Zama FHEVM</a> - the full-stack framework for integrating Fully Homomorphic Encryption with blockchain applications. Each example demonstrates real-world usage of Zama FHEVM's core features including encrypted operations, access control, and permission management.
+                    <strong>Learn Zama FHEVM:</strong> All examples demonstrate real-world usage of <a href="https://docs.zama.org/protocol" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 dark:text-cyan-400 hover:underline">Zama FHEVM</a> - the full-stack framework for integrating Fully Homomorphic Encryption with blockchain applications. Each example teaches you how to use Zama FHEVM's core features including encrypted operations, access control, and permission management.
                   </p>
                 </div>
               </div>
@@ -805,11 +806,11 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
           <div className="mb-4 p-3 bg-primary-50 dark:bg-slate-900 rounded-lg text-xs text-primary-700 dark:text-slate-300">
             {path === 'openzeppelin-erc7984token' || path === 'openzeppelin-erc7984toerc20wrapper' ? (
               <>
-                Constructor args: EntropyOracle ({ENTROPY_ORACLE_ADDRESS}), Name, Symbol
+                Constructor args: Example contract ({ENTROPY_ORACLE_ADDRESS}), Name, Symbol
               </>
             ) : (
               <>
-                Constructor args are fixed to EntropyOracle address: {ENTROPY_ORACLE_ADDRESS}
+                Constructor args: Example contract address ({ENTROPY_ORACLE_ADDRESS}) - used in examples to teach FHEVM patterns
               </>
             )}
           </div>
@@ -887,11 +888,11 @@ const TutorialExampleCard: React.FC<TutorialExampleCardProps> = ({ title, descri
               <div className="p-3 bg-primary-50 dark:bg-slate-900 rounded-lg text-xs text-primary-700 dark:text-slate-300">
                 {path === 'openzeppelin-erc7984token' || path === 'openzeppelin-erc7984toerc20wrapper' ? (
                   <>
-                    Constructor args: EntropyOracle ({ENTROPY_ORACLE_ADDRESS}), Name, Symbol
+                    Constructor args: Example contract ({ENTROPY_ORACLE_ADDRESS}), Name, Symbol
                   </>
                 ) : (
                   <>
-                    Constructor args are fixed to EntropyOracle address: {ENTROPY_ORACLE_ADDRESS}
+                    Constructor args: Example contract address ({ENTROPY_ORACLE_ADDRESS}) - used in examples to teach FHEVM patterns
                   </>
                 )}
               </div>

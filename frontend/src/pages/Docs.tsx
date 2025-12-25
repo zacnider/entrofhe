@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { 
   BookOpenIcon, 
   CodeBracketIcon, 
-  QuestionMarkCircleIcon,
   RocketLaunchIcon,
   CpuChipIcon,
   ShieldCheckIcon,
@@ -36,7 +35,6 @@ const Docs: React.FC = () => {
     { id: 'tutorials', title: 'Tutorials', icon: AcademicCapIcon },
     { id: 'integration', title: 'Integration', icon: CodeBracketIcon },
     { id: 'api-reference', title: 'API Reference', icon: DocumentTextIcon },
-    { id: 'faq', title: 'FAQ', icon: QuestionMarkCircleIcon },
   ];
 
   const renderContent = () => {
@@ -51,8 +49,6 @@ const Docs: React.FC = () => {
         return <Integration />;
       case 'api-reference':
         return <APIReference />;
-      case 'faq':
-        return <FAQ />;
       default:
         return <QuickStart />;
     }
@@ -112,37 +108,40 @@ const QuickStart: React.FC = () => (
         Quick Start
       </h1>
       <p className="text-lg text-gray-600 dark:text-slate-400">
-        Get started with Entrofhe in minutes. Learn the basics and start building confidential smart contracts with encrypted randomness.
+        Learn FHEVM step-by-step with 22 standalone examples. Each example teaches one clear concept with code, tests, and documentation.
       </p>
     </div>
 
     <section className="space-y-4">
-      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">What is Entrofhe?</h2>
+      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">What is EntroFHE?</h2>
       <p className="text-gray-700 dark:text-slate-300">
-        Entrofhe is an on-chain entropy oracle that provides cryptographically secure randomness using FHE technology. 
-        Unlike traditional VRF (Verifiable Random Function) solutions, Entrofhe keeps seeds encrypted at all times, 
-        ensuring maximum privacy and security.
+        EntroFHE is an <strong>educational hub</strong> providing 22 standalone FHEVM examples that teach you how to build privacy-preserving smart contracts. 
+        This is <strong>not a product or service</strong> - it's a comprehensive learning resource for mastering Zama FHEVM through hands-on examples.
+      </p>
+      <p className="text-gray-700 dark:text-slate-300 mt-3">
+        All examples use a practical scenario (encrypted randomness) to teach FHEVM concepts. This gives you real-world context while learning, 
+        rather than abstract examples.
       </p>
     </section>
 
     <section className="space-y-4">
-      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Key Features</h2>
+      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">What You'll Learn</h2>
       <ul className="space-y-2 text-gray-700 dark:text-slate-300">
         <li className="flex items-start">
           <ShieldCheckIcon className="h-5 w-5 text-primary-600 dark:text-cyan-400 mr-2 mt-0.5 flex-shrink-0" />
-          <span><strong>FHE-Based Privacy:</strong> Seeds and entropy remain encrypted on-chain</span>
+          <span><strong>Basic FHE Operations:</strong> Learn arithmetic, comparisons, and counters with step-by-step examples</span>
         </li>
         <li className="flex items-start">
           <ShieldCheckIcon className="h-5 w-5 text-primary-600 dark:text-cyan-400 mr-2 mt-0.5 flex-shrink-0" />
-          <span><strong>Low Cost:</strong> Only 0.00001 ETH per entropy request</span>
+          <span><strong>Encryption Patterns:</strong> Understand how to encrypt and store values on-chain using FHE</span>
         </li>
         <li className="flex items-start">
           <ShieldCheckIcon className="h-5 w-5 text-primary-600 dark:text-cyan-400 mr-2 mt-0.5 flex-shrink-0" />
-          <span><strong>Developer-Friendly:</strong> Simple interface for easy integration</span>
+          <span><strong>Access Control:</strong> Master FHE permissions (FHE.allow, FHE.allowTransient) with practical examples</span>
         </li>
         <li className="flex items-start">
           <ShieldCheckIcon className="h-5 w-5 text-primary-600 dark:text-cyan-400 mr-2 mt-0.5 flex-shrink-0" />
-          <span><strong>On-Chain:</strong> No external dependencies or oracles</span>
+          <span><strong>Real-World Patterns:</strong> Build complete applications like lotteries, NFTs, and token swaps</span>
         </li>
       </ul>
     </section>
@@ -150,42 +149,49 @@ const QuickStart: React.FC = () => (
     <section className="space-y-4">
       <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">3-Step Quick Start</h2>
       <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <h3 className="text-lg font-semibold mb-3 text-primary-800 dark:text-cyan-300">1. Install Dependencies</h3>
+        <h3 className="text-lg font-semibold mb-3 text-primary-800 dark:text-cyan-300">1. Clone an Example</h3>
         <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto">
-{`npm install @fhevm/solidity
-npm install ethers`}
+{`git clone https://github.com/zacnider/fhevm-example-basic-simplecounter.git
+cd fhevm-example-basic-simplecounter`}
         </pre>
+        <p className="text-sm text-gray-600 dark:text-slate-400 mt-2">
+          Each example is a standalone GitHub repository you can clone and study.
+        </p>
       </div>
 
       <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <h3 className="text-lg font-semibold mb-3 text-primary-800 dark:text-cyan-300">2. Import Interface</h3>
+        <h3 className="text-lg font-semibold mb-3 text-primary-800 dark:text-cyan-300">2. Install Dependencies</h3>
         <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto">
-{`import "./interfaces/IEntropyOracle.sol";`}
+{`npm install --legacy-peer-deps`}
         </pre>
+        <p className="text-sm text-gray-600 dark:text-slate-400 mt-2">
+          Install dependencies for the example project.
+        </p>
       </div>
 
       <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <h3 className="text-lg font-semibold mb-3 text-primary-800 dark:text-cyan-300">3. Request Entropy</h3>
+        <h3 className="text-lg font-semibold mb-3 text-primary-800 dark:text-cyan-300">3. Run Tests and Learn</h3>
         <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto">
-{`IEntropyOracle oracle = IEntropyOracle(0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361);
-bytes32 tag = keccak256("my-unique-tag");
-uint256 requestId = oracle.requestEntropy{value: 0.00001 ether}(tag);
-euint64 entropy = oracle.getEncryptedEntropy(requestId);`}
+{`npm test`}
         </pre>
+        <p className="text-sm text-gray-600 dark:text-slate-400 mt-2">
+          Run tests to see how FHEVM patterns work. Study the code to understand each concept.
+        </p>
       </div>
     </section>
 
     <section className="space-y-4">
-      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Network Information</h2>
+      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Example Context</h2>
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-        <p className="text-blue-800 dark:text-blue-200">
-          <strong>Network:</strong> Sepolia Testnet (Chain ID: 11155111)
+        <p className="text-blue-800 dark:text-blue-200 mb-2">
+          <strong>Note:</strong> All examples use a practical scenario (encrypted randomness) to teach FHEVM concepts. 
+          This is a <strong>teaching tool</strong>, not a product or service.
         </p>
         <p className="text-blue-800 dark:text-blue-200 mt-2">
-          <strong>EntropyOracle Address:</strong> <code className="bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361</code>
+          <strong>Example Contract:</strong> <code className="bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded text-xs">0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361</code> (Sepolia Testnet)
         </p>
-        <p className="text-blue-800 dark:text-blue-200 mt-2">
-          <strong>Fee per Request:</strong> 0.00001 ETH (10,000,000,000,000 wei)
+        <p className="text-blue-800 dark:text-blue-200 mt-2 text-sm">
+          The focus is on learning <strong>FHEVM patterns</strong>, not the randomness contract itself.
         </p>
       </div>
     </section>
@@ -226,7 +232,7 @@ const CLITool: React.FC = () => (
         EntroFHE CLI Tool
       </h1>
       <p className="text-lg text-gray-600 dark:text-slate-400">
-        Generate EntropyOracle-integrated FHEVM examples instantly with our command-line tool.
+        Generate FHEVM example projects instantly with our command-line tool. Learn from the structure and code.
       </p>
     </div>
 
@@ -315,13 +321,13 @@ Enter output directory: ./my-project
         <div className="bg-primary-50 dark:bg-cyan-900/20 rounded-lg p-4 border border-primary-200 dark:border-cyan-800">
           <h3 className="font-semibold text-primary-800 dark:text-cyan-300 mb-2">✅ 22 Pre-built Examples</h3>
           <p className="text-sm text-gray-700 dark:text-slate-300">
-            All examples from the hub, ready to use with EntropyOracle integration.
+            All 22 examples from the hub, ready to learn from.
           </p>
         </div>
         <div className="bg-primary-50 dark:bg-cyan-900/20 rounded-lg p-4 border border-primary-200 dark:border-cyan-800">
           <h3 className="font-semibold text-primary-800 dark:text-cyan-300 mb-2">✅ Automatic Integration</h3>
           <p className="text-sm text-gray-700 dark:text-slate-300">
-            IEntropyOracle interface automatically included in all generated projects.
+            Example contracts and interfaces automatically included in all generated projects.
           </p>
         </div>
         <div className="bg-primary-50 dark:bg-cyan-900/20 rounded-lg p-4 border border-primary-200 dark:border-cyan-800">
@@ -346,7 +352,7 @@ Enter output directory: ./my-project
         <pre className="bg-slate-900 dark:bg-slate-950 text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
           <code>{`my-project/
 ├── contracts/
-│   ├── EntropyCounter.sol      # Your contract with EntropyOracle
+│   ├── EntropyCounter.sol      # Your example contract
 │   └── interfaces/
 │       └── IEntropyOracle.sol  # Automatically included
 ├── test/
@@ -386,7 +392,7 @@ Enter output directory: ./my-project
             📖 <a href="/docs?section=tutorials" className="text-primary-600 dark:text-cyan-400 underline">Full Tutorial Track</a>
           </li>
           <li>
-            🔗 <a href="/docs?section=integration" className="text-primary-600 dark:text-cyan-400 underline">EntropyOracle Integration Guide</a>
+            🔗 <a href="/docs?section=integration" className="text-primary-600 dark:text-cyan-400 underline">Learning Pattern Guide</a>
           </li>
         </ul>
       </div>
@@ -402,62 +408,62 @@ const Integration: React.FC = () => (
         Integration
       </h1>
       <p className="text-lg text-gray-600 dark:text-slate-400">
-        Learn how Entrofhe works and integrate it into your smart contracts.
+        Learn how examples are structured and how to use FHEVM patterns in your own contracts.
       </p>
     </div>
 
-    {/* How It Works Section */}
+    {/* How Examples Work Section */}
     <section className="space-y-4">
-      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">How It Works</h2>
+      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">How Examples Work</h2>
       <p className="text-gray-700 dark:text-slate-300 mb-4">
-        Understanding the architecture and flow of Entrofhe.
+        Understanding the structure and learning approach of examples.
       </p>
 
-      <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Architecture</h3>
+      <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Example Structure</h3>
       <div className="bg-gradient-to-r from-primary-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 rounded-lg p-6">
         <div className="space-y-4">
           <div className="flex items-start space-x-4">
             <div className="flex-shrink-0 w-8 h-8 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
             <div>
-              <h3 className="font-semibold text-primary-900 dark:text-slate-100">Master Seed Initialization</h3>
-              <p className="text-gray-700 dark:text-slate-300">Contract owner initializes an encrypted master seed using FHEVM.</p>
+              <h3 className="font-semibold text-primary-900 dark:text-slate-100">Clone Example</h3>
+              <p className="text-gray-700 dark:text-slate-300">Each example is a standalone GitHub repository you can clone and study independently.</p>
             </div>
           </div>
           <div className="flex items-start space-x-4">
             <div className="flex-shrink-0 w-8 h-8 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold">2</div>
             <div>
-              <h3 className="font-semibold text-primary-900 dark:text-slate-100">Entropy Request</h3>
-              <p className="text-gray-700 dark:text-slate-300">Developer calls <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">requestEntropy()</code> with a unique tag and pays 0.00001 ETH fee.</p>
+              <h3 className="font-semibold text-primary-900 dark:text-slate-100">Study Code</h3>
+              <p className="text-gray-700 dark:text-slate-300">Learn from well-documented contracts that demonstrate one clear FHEVM concept.</p>
             </div>
           </div>
           <div className="flex items-start space-x-4">
             <div className="flex-shrink-0 w-8 h-8 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold">3</div>
             <div>
-              <h3 className="font-semibold text-primary-900 dark:text-slate-100">Seed Collection</h3>
-              <p className="text-gray-700 dark:text-slate-300">System collects internal seeds from blockchain data (timestamp, prevrandao, blockhash, etc.) and combines with master seed.</p>
+              <h3 className="font-semibold text-primary-900 dark:text-slate-100">Run Tests</h3>
+              <p className="text-gray-700 dark:text-slate-300">See correct usage patterns and common pitfalls demonstrated in comprehensive test files.</p>
             </div>
           </div>
           <div className="flex items-start space-x-4">
             <div className="flex-shrink-0 w-8 h-8 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold">4</div>
             <div>
-              <h3 className="font-semibold text-primary-900 dark:text-slate-100">Chaos Generation</h3>
-              <p className="text-gray-700 dark:text-slate-300">Logistic map function iterates on combined seeds to generate entropy, all while remaining encrypted.</p>
+              <h3 className="font-semibold text-primary-900 dark:text-slate-100">Read Documentation</h3>
+              <p className="text-gray-700 dark:text-slate-300">Each example includes auto-generated documentation explaining the concepts and patterns.</p>
             </div>
           </div>
           <div className="flex items-start space-x-4">
             <div className="flex-shrink-0 w-8 h-8 bg-primary-600 dark:bg-cyan-500 rounded-full flex items-center justify-center text-white font-bold">5</div>
             <div>
-              <h3 className="font-semibold text-primary-900 dark:text-slate-100">Return Encrypted Entropy</h3>
-              <p className="text-gray-700 dark:text-slate-300">Encrypted entropy (euint64) is returned and can be used in FHE operations or decrypted if needed.</p>
+              <h3 className="font-semibold text-primary-900 dark:text-slate-100">Build Your Own</h3>
+              <p className="text-gray-700 dark:text-slate-300">Apply what you learned to your own privacy-preserving smart contracts.</p>
             </div>
           </div>
         </div>
       </div>
 
     <section className="space-y-4">
-      <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Zama FHEVM Technology</h3>
+      <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Learning Zama FHEVM</h3>
       <p className="text-gray-700 dark:text-slate-300">
-        Entrofhe is built entirely using <strong>Zama FHEVM</strong> - a full-stack framework for integrating Fully Homomorphic Encryption (FHE) with blockchain applications. Zama FHEVM enables confidential smart contracts on EVM-compatible blockchains.
+        All examples demonstrate real-world usage of <strong>Zama FHEVM</strong> - a full-stack framework for integrating Fully Homomorphic Encryption (FHE) with blockchain applications. Learn by doing with hands-on examples.
       </p>
       
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
@@ -478,7 +484,7 @@ const Integration: React.FC = () => (
         </div>
       </div>
 
-      <h4 className="font-semibold text-primary-800 dark:text-cyan-300 mt-4 mb-2">Zama FHEVM Features Used in This Project:</h4>
+      <h4 className="font-semibold text-primary-800 dark:text-cyan-300 mt-4 mb-2">What You'll Learn About Zama FHEVM:</h4>
       <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-slate-300 ml-4">
         <li><strong>ZamaEthereumConfig</strong>: All contracts inherit from Zama's network configuration</li>
         <li><strong>FHE Operations</strong>: Using Zama's FHE library (FHE.add, FHE.sub, FHE.mul, FHE.eq, etc.)</li>
@@ -504,7 +510,7 @@ const Integration: React.FC = () => (
       <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
         <h4 className="font-semibold text-green-800 dark:text-green-200 mb-2">Internal Seeds Only</h4>
         <p className="text-green-700 dark:text-green-300">
-          Entrofhe generates entropy using only on-chain data. No external oracles or user-provided seeds are used, 
+          Examples demonstrate how to work with encrypted values from external contracts. This teaches you how to interact with contracts that return encrypted data. 
           ensuring deterministic yet unpredictable randomness.
         </p>
       </div>
@@ -522,7 +528,7 @@ const Integration: React.FC = () => (
     <section className="space-y-4">
       <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">Step 1: Add Interface</h3>
       <p className="text-gray-700 dark:text-slate-300">
-        Copy the <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">IEntropyOracle</code> interface to your project:
+        Examples use this interface to demonstrate how to work with external contracts that return encrypted values:
       </p>
       <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
         <pre className="bg-gray-900 dark:bg-black text-green-400 p-4 rounded-lg overflow-x-auto text-sm">
@@ -642,12 +648,17 @@ const APIReference: React.FC = () => (
         API Reference
       </h1>
       <p className="text-lg text-gray-600 dark:text-slate-400">
-        Complete API documentation for Entrofhe contracts.
+        Learn about FHEVM patterns and interfaces used in examples.
       </p>
     </div>
 
     <section className="space-y-4">
-      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">IEntropyOracle Interface</h2>
+      <h2 className="text-2xl font-semibold text-primary-800 dark:text-cyan-300">Example Contract Interface</h2>
+      <p className="text-gray-700 dark:text-slate-300 mb-4">
+        <strong>Note:</strong> Examples use a practical scenario (encrypted randomness) to teach FHEVM concepts. 
+        The interface below is used in examples as a <strong>teaching tool</strong>, not as a product or service.
+      </p>
+      <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300">IEntropyOracle Interface</h3>
       
       <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6 space-y-6">
         <div>
@@ -1921,97 +1932,6 @@ const EntropyCounterTutorial: React.FC = () => (
   </div>
 );
 
-// FAQ Section
-const FAQ: React.FC = () => (
-  <div className="space-y-6">
-    <div>
-      <h1 className="text-4xl font-bold text-primary-900 dark:text-slate-100 mb-4">
-        Frequently Asked Questions
-      </h1>
-    </div>
-
-    <div className="space-y-4">
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 mb-2">
-          What is the fee for requesting entropy?
-        </h3>
-        <p className="text-gray-700 dark:text-slate-300">
-          The fee is fixed at 0.00001 ETH (10,000,000,000,000 wei) per entropy request. This fee covers the cost of FHE operations and maintains the oracle infrastructure.
-        </p>
-      </div>
-
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 mb-2">
-          How do I decrypt the entropy?
-        </h3>
-        <p className="text-gray-700 dark:text-slate-300">
-          Entropy is returned as <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">euint64</code> (encrypted uint64). 
-          You can decrypt it using FHEVM's relayer SDK in your frontend, or use it directly in FHE operations without decryption.
-        </p>
-      </div>
-
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 mb-2">
-          What network is Entrofhe deployed on?
-        </h3>
-        <p className="text-gray-700 dark:text-slate-300">
-          Currently, Entrofhe is deployed on Sepolia Testnet (Chain ID: 11155111). Mainnet deployment will be available in the future.
-        </p>
-      </div>
-
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 mb-2">
-          Can I use entropy in multiple FHE operations?
-        </h3>
-        <p className="text-gray-700 dark:text-slate-300">
-          Yes! The encrypted entropy can be used in any FHE operation (add, mul, xor, etc.) without needing to decrypt it first. 
-          This is one of the key advantages of FHE technology.
-        </p>
-      </div>
-
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 mb-2">
-          How unique is each entropy value?
-        </h3>
-        <p className="text-gray-700 dark:text-slate-300">
-          Each entropy value is unique because it combines:
-          <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
-            <li>Master seed (encrypted, initialized once)</li>
-            <li>Blockchain data (timestamp, prevrandao, blockhash)</li>
-            <li>Request-specific data (request ID, consumer address, tag)</li>
-            <li>Chaos function iterations</li>
-          </ul>
-        </p>
-      </div>
-
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 mb-2">
-          What happens if I send the wrong fee amount?
-        </h3>
-        <p className="text-gray-700 dark:text-slate-300">
-          The transaction will revert with an <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">InsufficientFee</code> error. 
-          You must send exactly 0.00001 ETH for the request to succeed.
-        </p>
-      </div>
-
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 mb-2">
-          Is the entropy truly random?
-        </h3>
-        <p className="text-gray-700 dark:text-slate-300">
-          Yes! Entropy is generated using a combination of:
-          <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
-            <li>Cryptographically secure master seed</li>
-            <li>Blockchain randomness (prevrandao, blockhash)</li>
-            <li>Chaos theory (logistic map function)</li>
-            <li>Request-specific data</li>
-          </ul>
-          This ensures high-quality randomness suitable for cryptographic applications.
-        </p>
-      </div>
-    </div>
-  </div>
-);
 
 // GitHub repo mapping for submodules
 const getExampleRepoUrl = (exampleId: string): string => {
