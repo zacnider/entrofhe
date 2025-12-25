@@ -11,7 +11,11 @@ import {
   ArrowRightIcon,
   CheckCircleIcon,
   ChartBarIcon,
-  GlobeAltIcon
+  GlobeAltIcon,
+  AcademicCapIcon,
+  LightBulbIcon,
+  RocketLaunchIcon,
+  CalculatorIcon
 } from '@heroicons/react/24/outline';
 
 const Home: React.FC = () => {
@@ -26,15 +30,15 @@ const Home: React.FC = () => {
             </h1>
           </div>
           <h2 className="text-5xl md:text-7xl font-bold text-primary-900 dark:text-slate-100 mb-6 leading-tight">
-            Encrypted Randomness
+            Learn How to Build
             <br />
             <span className="bg-gradient-to-r from-primary-600 to-cyan-600 dark:from-cyan-400 dark:to-primary-400 bg-clip-text text-transparent">
-              For Your dApps
+              Privacy-Preserving Smart Contracts
             </span>
           </h2>
           <p className="text-xl md:text-2xl text-primary-600 dark:text-slate-400 mb-6 max-w-3xl mx-auto leading-relaxed">
-            Get cryptographically secure, encrypted entropy using Fully Homomorphic Encryption. 
-            Perfect for lotteries, NFT minting, gaming, and more.
+            22 standalone FHEVM examples teaching you step-by-step. 
+            Each example demonstrates one clear concept with code, tests, and documentation.
           </p>
           {/* Zama FHEVM Badge */}
           <div className="mb-10 flex items-center justify-center">
@@ -55,8 +59,8 @@ const Home: React.FC = () => {
               to="/examples"
               className="inline-flex items-center space-x-2 px-8 py-4 bg-primary-600 dark:bg-cyan-600 text-white rounded-xl hover:bg-primary-700 dark:hover:bg-cyan-700 transition-all font-semibold text-lg shadow-lg hover:shadow-xl"
             >
-              <SparklesIcon className="h-6 w-6" />
-              <span>Try Live Examples</span>
+              <AcademicCapIcon className="h-6 w-6" />
+              <span>Start Learning</span>
               <ArrowRightIcon className="h-5 w-5" />
             </Link>
             <Link
@@ -64,7 +68,7 @@ const Home: React.FC = () => {
               className="inline-flex items-center space-x-2 px-8 py-4 bg-white dark:bg-slate-800 text-primary-700 dark:text-cyan-400 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-700 transition-all font-semibold text-lg border-2 border-primary-300 dark:border-cyan-700"
             >
               <BookOpenIcon className="h-6 w-6" />
-              <span>View Documentation</span>
+              <span>Read Tutorials</span>
             </Link>
             <a
               href="https://github.com/zacnider/entrofhe"
@@ -73,72 +77,72 @@ const Home: React.FC = () => {
               className="inline-flex items-center space-x-2 px-8 py-4 bg-white dark:bg-slate-800 text-primary-700 dark:text-cyan-400 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-700 transition-all font-semibold text-lg border-2 border-primary-300 dark:border-cyan-700"
             >
               <CodeBracketIcon className="h-6 w-6" />
-              <span>View on GitHub</span>
+              <span>View Source Code</span>
               <ArrowRightIcon className="h-5 w-5" />
             </a>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-primary-500 dark:text-slate-500">
             <div className="flex items-center space-x-2">
               <CheckCircleIcon className="h-5 w-5 text-green-500" />
-              <span>Only 0.00001 ETH per request</span>
+              <span>22 Standalone Examples</span>
             </div>
             <div className="flex items-center space-x-2">
               <CheckCircleIcon className="h-5 w-5 text-green-500" />
-              <span>Sepolia Testnet</span>
+              <span>10 Learning Categories</span>
             </div>
             <div className="flex items-center space-x-2">
               <CheckCircleIcon className="h-5 w-5 text-green-500" />
-              <span>Fully Encrypted</span>
+              <span>Step-by-Step Tutorials</span>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* What You'll Learn Section */}
       <section className="py-12">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-primary-900 dark:text-slate-100 mb-4">
-            Why Choose Entrofhe?
+            What You'll Learn
           </h2>
           <p className="text-xl text-primary-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Built with cutting-edge FHE technology for maximum security and privacy
+            Progressive learning path from basic FHE operations to advanced real-world patterns
           </p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-gray-200 dark:border-slate-700 hover:shadow-xl transition-shadow">
             <div className="w-12 h-12 bg-primary-100 dark:bg-cyan-900/30 rounded-lg flex items-center justify-center mb-4">
+              <CalculatorIcon className="h-6 w-6 text-primary-600 dark:text-cyan-400" />
+            </div>
+            <h3 className="text-xl font-bold text-primary-900 dark:text-slate-100 mb-2">Basic Operations</h3>
+            <p className="text-primary-600 dark:text-slate-400">
+              Learn FHE arithmetic, comparisons, and counters with step-by-step examples
+            </p>
+          </div>
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-gray-200 dark:border-slate-700 hover:shadow-xl transition-shadow">
+            <div className="w-12 h-12 bg-primary-100 dark:bg-cyan-900/30 rounded-lg flex items-center justify-center mb-4">
               <ShieldCheckIcon className="h-6 w-6 text-primary-600 dark:text-cyan-400" />
             </div>
-            <h3 className="text-xl font-bold text-primary-900 dark:text-slate-100 mb-2">FHE Encryption</h3>
+            <h3 className="text-xl font-bold text-primary-900 dark:text-slate-100 mb-2">Encryption Patterns</h3>
             <p className="text-primary-600 dark:text-slate-400">
-              Seeds and entropy remain encrypted on-chain using Fully Homomorphic Encryption
+              Understand how to encrypt and store values on-chain using FHE
             </p>
           </div>
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-gray-200 dark:border-slate-700 hover:shadow-xl transition-shadow">
             <div className="w-12 h-12 bg-primary-100 dark:bg-cyan-900/30 rounded-lg flex items-center justify-center mb-4">
-              <BoltIcon className="h-6 w-6 text-primary-600 dark:text-cyan-400" />
+              <LightBulbIcon className="h-6 w-6 text-primary-600 dark:text-cyan-400" />
             </div>
-            <h3 className="text-xl font-bold text-primary-900 dark:text-slate-100 mb-2">Ultra Low Cost</h3>
+            <h3 className="text-xl font-bold text-primary-900 dark:text-slate-100 mb-2">Access Control</h3>
             <p className="text-primary-600 dark:text-slate-400">
-              Only 0.00001 ETH per request - the most affordable entropy solution
+              Master FHE permissions (FHE.allow, FHE.allowTransient) with practical examples
             </p>
           </div>
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-gray-200 dark:border-slate-700 hover:shadow-xl transition-shadow">
             <div className="w-12 h-12 bg-primary-100 dark:bg-cyan-900/30 rounded-lg flex items-center justify-center mb-4">
-              <CodeBracketIcon className="h-6 w-6 text-primary-600 dark:text-cyan-400" />
+              <RocketLaunchIcon className="h-6 w-6 text-primary-600 dark:text-cyan-400" />
             </div>
-            <h3 className="text-xl font-bold text-primary-900 dark:text-slate-100 mb-2">Easy Integration</h3>
+            <h3 className="text-xl font-bold text-primary-900 dark:text-slate-100 mb-2">Real-World Patterns</h3>
             <p className="text-primary-600 dark:text-slate-400">
-              Simple interface - just import and call. Works with any Solidity contract
-            </p>
-          </div>
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-gray-200 dark:border-slate-700 hover:shadow-xl transition-shadow">
-            <div className="w-12 h-12 bg-primary-100 dark:bg-cyan-900/30 rounded-lg flex items-center justify-center mb-4">
-              <GlobeAltIcon className="h-6 w-6 text-primary-600 dark:text-cyan-400" />
-            </div>
-            <h3 className="text-xl font-bold text-primary-900 dark:text-slate-100 mb-2">On-Chain Only</h3>
-            <p className="text-primary-600 dark:text-slate-400">
-              No external dependencies. All randomness generated from blockchain data
+              Build complete applications like lotteries, NFTs, and token swaps
             </p>
           </div>
         </div>
@@ -149,10 +153,10 @@ const Home: React.FC = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-primary-900 dark:text-slate-100 mb-4">
-              Zama FHEVM Technology
+              Learn Zama FHEVM Through Examples
             </h2>
             <p className="text-xl text-primary-600 dark:text-slate-400 max-w-3xl mx-auto">
-              This project is built entirely using <strong className="text-blue-600 dark:text-cyan-400">Zama FHEVM</strong> - a full-stack framework for integrating Fully Homomorphic Encryption (FHE) with blockchain applications.
+              All examples demonstrate real-world usage of <strong className="text-blue-600 dark:text-cyan-400">Zama FHEVM</strong> features. Learn by doing with hands-on examples.
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-8">
@@ -166,7 +170,7 @@ const Home: React.FC = () => {
               </p>
             </div>
             <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-gray-200 dark:border-slate-700">
-              <h3 className="text-2xl font-bold text-primary-900 dark:text-slate-100 mb-4">Zama FHEVM Features Used</h3>
+              <h3 className="text-2xl font-bold text-primary-900 dark:text-slate-100 mb-4">What You'll Learn</h3>
               <ul className="space-y-2 text-primary-600 dark:text-slate-400">
                 <li className="flex items-start">
                   <CheckCircleIcon className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
@@ -220,15 +224,15 @@ const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* How It Works Section */}
+      {/* How Examples Work Section */}
       <section className="py-12 bg-gradient-to-br from-primary-50 to-cyan-50 dark:from-slate-900 dark:to-slate-800 rounded-3xl">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-primary-900 dark:text-slate-100 mb-4">
-              How It Works
+              How Examples Are Structured
             </h2>
             <p className="text-xl text-primary-600 dark:text-slate-400">
-              Simple, secure, and fast entropy generation
+              Each example follows a clear learning structure
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -236,141 +240,158 @@ const Home: React.FC = () => {
               <div className="w-16 h-16 bg-primary-600 dark:bg-cyan-600 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
                 1
               </div>
-              <h3 className="text-lg font-semibold text-primary-900 dark:text-slate-100 mb-2">Request Entropy</h3>
+              <h3 className="text-lg font-semibold text-primary-900 dark:text-slate-100 mb-2">Clone Example</h3>
               <p className="text-primary-600 dark:text-slate-400 text-sm">
-                Call requestEntropy() with a unique tag and pay 0.00001 ETH
+                Each example is a standalone GitHub repository you can clone and study
               </p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-primary-600 dark:bg-cyan-600 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
                 2
               </div>
-              <h3 className="text-lg font-semibold text-primary-900 dark:text-slate-100 mb-2">Seed Collection</h3>
+              <h3 className="text-lg font-semibold text-primary-900 dark:text-slate-100 mb-2">Study Code</h3>
               <p className="text-primary-600 dark:text-slate-400 text-sm">
-                System collects internal seeds from blockchain data
+                Learn from well-documented contracts and comprehensive test files
               </p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-primary-600 dark:bg-cyan-600 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
                 3
               </div>
-              <h3 className="text-lg font-semibold text-primary-900 dark:text-slate-100 mb-2">Chaos Generation</h3>
+              <h3 className="text-lg font-semibold text-primary-900 dark:text-slate-100 mb-2">Run Tests</h3>
               <p className="text-primary-600 dark:text-slate-400 text-sm">
-                Logistic map function generates entropy while encrypted
+                See correct usage patterns and common pitfalls demonstrated in tests
               </p>
             </div>
             <div className="text-center">
               <div className="w-16 h-16 bg-primary-600 dark:bg-cyan-600 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
                 4
               </div>
-              <h3 className="text-lg font-semibold text-primary-900 dark:text-slate-100 mb-2">Get Result</h3>
+              <h3 className="text-lg font-semibold text-primary-900 dark:text-slate-100 mb-2">Build Your Own</h3>
               <p className="text-primary-600 dark:text-slate-400 text-sm">
-                Receive encrypted entropy (euint64) ready for FHE operations
+                Apply what you learned to your own privacy-preserving smart contracts
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Use Cases Section */}
+      {/* Example Categories Section */}
       <section className="py-12">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-primary-900 dark:text-slate-100 mb-4">
-            Use Cases
+            Example Categories
           </h2>
           <p className="text-xl text-primary-600 dark:text-slate-400">
-            Perfect for a wide range of blockchain applications
+            22 examples organized by learning path
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           <Link
-            to="/examples"
+            to="/examples?category=basic"
             className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-gray-200 dark:border-slate-700 hover:shadow-xl transition-all group"
           >
             <div className="w-12 h-12 bg-primary-100 dark:bg-cyan-900/30 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary-200 dark:group-hover:bg-cyan-900/50 transition">
-              <TrophyIcon className="h-6 w-6 text-primary-600 dark:text-cyan-400" />
+              <CalculatorIcon className="h-6 w-6 text-primary-600 dark:text-cyan-400" />
             </div>
-            <h3 className="text-xl font-bold text-primary-900 dark:text-slate-100 mb-2">Lottery Systems</h3>
+            <h3 className="text-xl font-bold text-primary-900 dark:text-slate-100 mb-2">Basic Examples</h3>
             <p className="text-primary-600 dark:text-slate-400 mb-4">
-              Fair winner selection using encrypted entropy for transparent lotteries
+              3 examples teaching core FHE operations (arithmetic, comparisons, counters)
             </p>
             <span className="text-primary-600 dark:text-cyan-400 font-semibold flex items-center space-x-1">
-              <span>Try Example</span>
+              <span>Explore Examples</span>
               <ArrowRightIcon className="h-4 w-4" />
             </span>
           </Link>
           <Link
-            to="/examples"
+            to="/examples?category=decryption"
             className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-gray-200 dark:border-slate-700 hover:shadow-xl transition-all group"
           >
             <div className="w-12 h-12 bg-primary-100 dark:bg-cyan-900/30 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary-200 dark:group-hover:bg-cyan-900/50 transition">
-              <CubeIcon className="h-6 w-6 text-primary-600 dark:text-cyan-400" />
+              <LightBulbIcon className="h-6 w-6 text-primary-600 dark:text-cyan-400" />
             </div>
-            <h3 className="text-xl font-bold text-primary-900 dark:text-slate-100 mb-2">NFT Minting</h3>
+            <h3 className="text-xl font-bold text-primary-900 dark:text-slate-100 mb-2">Decryption Examples</h3>
             <p className="text-primary-600 dark:text-slate-400 mb-4">
-              Random trait selection for NFTs with IPFS metadata support
+              4 examples teaching user and public decryption patterns with FHE.allow
             </p>
             <span className="text-primary-600 dark:text-cyan-400 font-semibold flex items-center space-x-1">
-              <span>Try Example</span>
+              <span>Explore Examples</span>
               <ArrowRightIcon className="h-4 w-4" />
             </span>
           </Link>
           <Link
-            to="/examples"
+            to="/examples?category=advanced"
             className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-gray-200 dark:border-slate-700 hover:shadow-xl transition-all group"
           >
             <div className="w-12 h-12 bg-primary-100 dark:bg-cyan-900/30 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary-200 dark:group-hover:bg-cyan-900/50 transition">
-              <SparklesIcon className="h-6 w-6 text-primary-600 dark:text-cyan-400" />
+              <RocketLaunchIcon className="h-6 w-6 text-primary-600 dark:text-cyan-400" />
             </div>
-            <h3 className="text-xl font-bold text-primary-900 dark:text-slate-100 mb-2">Random Numbers</h3>
+            <h3 className="text-xl font-bold text-primary-900 dark:text-slate-100 mb-2">Advanced Examples</h3>
             <p className="text-primary-600 dark:text-slate-400 mb-4">
-              Generate encrypted random numbers for gaming and applications
+              3 examples teaching real-world applications (lotteries, NFTs, random numbers)
             </p>
             <span className="text-primary-600 dark:text-cyan-400 font-semibold flex items-center space-x-1">
-              <span>Try Example</span>
+              <span>Explore Examples</span>
               <ArrowRightIcon className="h-4 w-4" />
             </span>
           </Link>
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* Learning Resources Section */}
       <section className="py-12 bg-gradient-to-r from-primary-600 to-cyan-600 dark:from-slate-800 dark:to-slate-900 rounded-3xl">
         <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-white mb-2">Learning Resources</h2>
+            <p className="text-primary-100 dark:text-slate-300">Everything you need to master FHEVM</p>
+          </div>
           <div className="grid md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-4xl font-bold text-white mb-2">0.00001 ETH</div>
-              <div className="text-primary-100 dark:text-slate-300">Per Request</div>
+              <div className="text-4xl font-bold text-white mb-2">22</div>
+              <div className="text-primary-100 dark:text-slate-300">Standalone Examples</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-white mb-2">Sepolia</div>
-              <div className="text-primary-100 dark:text-slate-300">Testnet</div>
+              <div className="text-4xl font-bold text-white mb-2">10</div>
+              <div className="text-primary-100 dark:text-slate-300">Learning Categories</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-white mb-2">FHE</div>
-              <div className="text-primary-100 dark:text-slate-300">Encrypted</div>
+              <div className="text-4xl font-bold text-white mb-2">100%</div>
+              <div className="text-primary-100 dark:text-slate-300">Test Coverage</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-white mb-2">∞</div>
-              <div className="text-primary-100 dark:text-slate-300">Unlimited</div>
+              <div className="text-4xl font-bold text-white mb-2">Auto</div>
+              <div className="text-primary-100 dark:text-slate-300">Generated Docs</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Quick Links Section */}
+      {/* Start Learning Section */}
       <section className="py-12">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-primary-900 dark:text-slate-100 mb-4">
-            Get Started
+            Start Learning
           </h2>
           <p className="text-xl text-primary-600 dark:text-slate-400">
-            Explore examples, read docs, or scan the network
+            Choose your learning path
           </p>
         </div>
         <div className="grid md:grid-cols-3 gap-6">
           <Link
-            to="/examples"
+            to="/examples?type=tutorial"
+            className="bg-gradient-to-br from-primary-50 to-cyan-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-8 border-2 border-primary-200 dark:border-slate-700 hover:border-primary-400 dark:hover:border-cyan-600 transition-all group"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <AcademicCapIcon className="h-10 w-10 text-primary-600 dark:text-cyan-400" />
+              <ArrowRightIcon className="h-6 w-6 text-primary-600 dark:text-cyan-400 group-hover:translate-x-1 transition" />
+            </div>
+            <h3 className="text-2xl font-bold text-primary-900 dark:text-slate-100 mb-2">Tutorial Examples</h3>
+            <p className="text-primary-600 dark:text-slate-400">
+              22 step-by-step examples with code, tests, and documentation
+            </p>
+          </Link>
+          <Link
+            to="/examples?type=live"
             className="bg-gradient-to-br from-primary-50 to-cyan-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-8 border-2 border-primary-200 dark:border-slate-700 hover:border-primary-400 dark:hover:border-cyan-600 transition-all group"
           >
             <div className="flex items-center justify-between mb-4">
@@ -379,7 +400,7 @@ const Home: React.FC = () => {
             </div>
             <h3 className="text-2xl font-bold text-primary-900 dark:text-slate-100 mb-2">Live Examples</h3>
             <p className="text-primary-600 dark:text-slate-400">
-              Try our deployed example contracts: Lottery, Random Numbers, and NFT Minting
+              Try deployed contracts on Sepolia: Lottery, Random Numbers, and NFT
             </p>
           </Link>
           <Link
@@ -392,20 +413,7 @@ const Home: React.FC = () => {
             </div>
             <h3 className="text-2xl font-bold text-primary-900 dark:text-slate-100 mb-2">Documentation</h3>
             <p className="text-primary-600 dark:text-slate-400">
-              Complete integration guide, API reference, and code examples
-            </p>
-          </Link>
-          <Link
-            to="/scan"
-            className="bg-gradient-to-br from-primary-50 to-cyan-50 dark:from-slate-800 dark:to-slate-900 rounded-2xl p-8 border-2 border-primary-200 dark:border-slate-700 hover:border-primary-400 dark:hover:border-cyan-600 transition-all group"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <ChartBarIcon className="h-10 w-10 text-primary-600 dark:text-cyan-400" />
-              <ArrowRightIcon className="h-6 w-6 text-primary-600 dark:text-cyan-400 group-hover:translate-x-1 transition" />
-            </div>
-            <h3 className="text-2xl font-bold text-primary-900 dark:text-slate-100 mb-2">Entropy Scan</h3>
-            <p className="text-primary-600 dark:text-slate-400">
-              View all entropy requests on the network in real-time
+              Complete guides, tutorials, and API reference
             </p>
           </Link>
         </div>
@@ -415,25 +423,25 @@ const Home: React.FC = () => {
       <section className="py-16 bg-gradient-to-r from-primary-600 to-cyan-600 dark:from-slate-800 dark:to-slate-900 rounded-3xl text-center">
         <div className="max-w-3xl mx-auto px-4">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to Build?
+            Ready to Learn FHEVM?
           </h2>
           <p className="text-xl text-primary-100 dark:text-slate-300 mb-8">
-            Start integrating encrypted entropy into your dApp today. It only takes a few lines of code.
+            Start with basic examples and progress to advanced patterns. Each example teaches one clear concept with step-by-step guidance.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
               to="/examples"
               className="inline-flex items-center space-x-2 px-8 py-4 bg-white text-primary-600 rounded-xl hover:bg-gray-50 transition-all font-semibold text-lg shadow-lg"
             >
-              <SparklesIcon className="h-6 w-6" />
-              <span>Try Examples</span>
+              <AcademicCapIcon className="h-6 w-6" />
+              <span>Start Learning</span>
             </Link>
             <Link
               to="/docs"
               className="inline-flex items-center space-x-2 px-8 py-4 bg-transparent border-2 border-white text-white rounded-xl hover:bg-white/10 transition-all font-semibold text-lg"
             >
               <BookOpenIcon className="h-6 w-6" />
-              <span>Read Docs</span>
+              <span>Read Tutorials</span>
             </Link>
             <a
               href="https://github.com/zacnider/entrofhe"
@@ -442,27 +450,31 @@ const Home: React.FC = () => {
               className="inline-flex items-center space-x-2 px-8 py-4 bg-transparent border-2 border-white text-white rounded-xl hover:bg-white/10 transition-all font-semibold text-lg"
             >
               <CodeBracketIcon className="h-6 w-6" />
-              <span>GitHub</span>
+              <span>View Source</span>
             </a>
           </div>
         </div>
       </section>
 
-      {/* Contract Info */}
+      {/* Example Context */}
       <section className="py-8 bg-gray-50 dark:bg-slate-900 rounded-2xl">
         <div className="max-w-4xl mx-auto px-4">
-          <h3 className="text-xl font-bold text-primary-900 dark:text-slate-100 mb-4 text-center">Contract Addresses</h3>
-          <div className="grid md:grid-cols-2 gap-4 text-sm">
+          <h3 className="text-xl font-bold text-primary-900 dark:text-slate-100 mb-4 text-center">Example Context</h3>
+          <p className="text-primary-600 dark:text-slate-400 mb-4 text-center max-w-2xl mx-auto">
+            All examples use a practical scenario (encrypted randomness) to teach FHEVM concepts. This gives you real-world context while learning, rather than abstract examples.
+          </p>
+          <div className="grid md:grid-cols-2 gap-4 text-sm mt-6">
             <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-slate-700">
-              <div className="font-semibold text-primary-700 dark:text-cyan-400 mb-1">EntropyOracle</div>
-              <div className="font-mono text-primary-600 dark:text-slate-300 break-all">
+              <div className="font-semibold text-primary-700 dark:text-cyan-400 mb-1">Example Contract</div>
+              <div className="font-mono text-primary-600 dark:text-slate-300 break-all text-xs">
                 0x75b923d7940E1BD6689EbFdbBDCD74C1f6695361
               </div>
+              <div className="text-primary-500 dark:text-slate-400 text-xs mt-1">Sepolia Testnet</div>
             </div>
             <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-gray-200 dark:border-slate-700">
-              <div className="font-semibold text-primary-700 dark:text-cyan-400 mb-1">Network</div>
+              <div className="font-semibold text-primary-700 dark:text-cyan-400 mb-1">Learning Focus</div>
               <div className="text-primary-600 dark:text-slate-300">
-                Sepolia Testnet (Chain ID: 11155111)
+                FHEVM patterns and concepts, not the randomness contract itself
               </div>
             </div>
           </div>
