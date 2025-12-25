@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { 
   BookOpenIcon, 
   CodeBracketIcon, 
-  QuestionMarkCircleIcon,
   RocketLaunchIcon,
   CpuChipIcon,
   ShieldCheckIcon,
@@ -36,7 +35,6 @@ const Docs: React.FC = () => {
     { id: 'tutorials', title: 'Tutorials', icon: AcademicCapIcon },
     { id: 'integration', title: 'Integration', icon: CodeBracketIcon },
     { id: 'api-reference', title: 'API Reference', icon: DocumentTextIcon },
-    { id: 'faq', title: 'FAQ', icon: QuestionMarkCircleIcon },
   ];
 
   const renderContent = () => {
@@ -51,8 +49,6 @@ const Docs: React.FC = () => {
         return <Integration />;
       case 'api-reference':
         return <APIReference />;
-      case 'faq':
-        return <FAQ />;
       default:
         return <QuickStart />;
     }
@@ -1936,97 +1932,6 @@ const EntropyCounterTutorial: React.FC = () => (
   </div>
 );
 
-// FAQ Section
-const FAQ: React.FC = () => (
-  <div className="space-y-6">
-    <div>
-      <h1 className="text-4xl font-bold text-primary-900 dark:text-slate-100 mb-4">
-        Frequently Asked Questions
-      </h1>
-    </div>
-
-    <div className="space-y-4">
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 mb-2">
-          What is the fee for requesting entropy?
-        </h3>
-        <p className="text-gray-700 dark:text-slate-300">
-          The fee is fixed at 0.00001 ETH (10,000,000,000,000 wei) per entropy request. This fee covers the cost of FHE operations and maintains the oracle infrastructure.
-        </p>
-      </div>
-
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 mb-2">
-          How do I decrypt the entropy?
-        </h3>
-        <p className="text-gray-700 dark:text-slate-300">
-          Entropy is returned as <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">euint64</code> (encrypted uint64). 
-          You can decrypt it using FHEVM's relayer SDK in your frontend, or use it directly in FHE operations without decryption.
-        </p>
-      </div>
-
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 mb-2">
-          What network is Entrofhe deployed on?
-        </h3>
-        <p className="text-gray-700 dark:text-slate-300">
-          Currently, Entrofhe is deployed on Sepolia Testnet (Chain ID: 11155111). Mainnet deployment will be available in the future.
-        </p>
-      </div>
-
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 mb-2">
-          Can I use entropy in multiple FHE operations?
-        </h3>
-        <p className="text-gray-700 dark:text-slate-300">
-          Yes! The encrypted entropy can be used in any FHE operation (add, mul, xor, etc.) without needing to decrypt it first. 
-          This is one of the key advantages of FHE technology.
-        </p>
-      </div>
-
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 mb-2">
-          How unique is each entropy value?
-        </h3>
-        <p className="text-gray-700 dark:text-slate-300">
-          Each entropy value is unique because it combines:
-          <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
-            <li>Master seed (encrypted, initialized once)</li>
-            <li>Blockchain data (timestamp, prevrandao, blockhash)</li>
-            <li>Request-specific data (request ID, consumer address, tag)</li>
-            <li>Chaos function iterations</li>
-          </ul>
-        </p>
-      </div>
-
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 mb-2">
-          What happens if I send the wrong fee amount?
-        </h3>
-        <p className="text-gray-700 dark:text-slate-300">
-          The transaction will revert with an <code className="bg-gray-200 dark:bg-slate-700 px-2 py-1 rounded">InsufficientFee</code> error. 
-          You must send exactly 0.00001 ETH for the request to succeed.
-        </p>
-      </div>
-
-      <div className="bg-gray-50 dark:bg-slate-900 rounded-lg p-6">
-        <h3 className="text-xl font-semibold text-primary-800 dark:text-cyan-300 mb-2">
-          Is the entropy truly random?
-        </h3>
-        <p className="text-gray-700 dark:text-slate-300">
-          Yes! Entropy is generated using a combination of:
-          <ul className="list-disc list-inside ml-4 mt-2 space-y-1">
-            <li>Cryptographically secure master seed</li>
-            <li>Blockchain randomness (prevrandao, blockhash)</li>
-            <li>Chaos theory (logistic map function)</li>
-            <li>Request-specific data</li>
-          </ul>
-          This ensures high-quality randomness suitable for cryptographic applications.
-        </p>
-      </div>
-    </div>
-  </div>
-);
 
 // GitHub repo mapping for submodules
 const getExampleRepoUrl = (exampleId: string): string => {
